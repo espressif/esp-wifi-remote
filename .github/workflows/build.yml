@@ -3,13 +3,12 @@ name: "esp_wifi_remote: build-tests"
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
     types: [opened, synchronize, reopened, labeled]
 
 jobs:
   wifi_remote_api_compat:
-    if: contains(github.event.pull_request.labels.*.name, 'wifi_remote') || github.event_name == 'push'
     name: Check API compatibility of WiFi Remote
     strategy:
       matrix:
@@ -17,7 +16,7 @@ jobs:
     runs-on: ubuntu-20.04
     container: espressif/idf:${{ matrix.idf_ver }}
     steps:
-      - name: Checkout esp-protocols
+      - name: Checkout code
         uses: actions/checkout@v3
       - name: Check that headers are the same as generated
         shell: bash
@@ -29,7 +28,6 @@ jobs:
           python generate_and_check.py --base-dir ../../esp_wifi_remote_base
 
   build_wifi_remote:
-    if: contains(github.event.pull_request.labels.*.name, 'wifi_remote') || github.event_name == 'push'
     name: Build WiFi Remote Test
     strategy:
       matrix:
@@ -38,8 +36,18 @@ jobs:
     runs-on: ubuntu-20.04
     container: espressif/idf:${{ matrix.idf_ver }}
     steps:
-      - name: Checkout esp-protocols
+      - name: Checkout code
         uses: actions/checkout@v3
+      - name: Checkout protocols
+        uses: actions/checkout@v3
+        with:
+          repository: espressif/esp-protocols
+          ref: wifi_remote-v0.4.0
+          sparse-checkout: |
+            ci/build_apps.py
+            ci/ignore_build_warnings.txt
+          sparse-checkout-cone-mode: false
+          path: protocols
       - name: ccache
         uses: hendrikmuhs/ccache-action@v1.2
         with:
@@ -50,10 +58,9 @@ jobs:
           . ${IDF_PATH}/export.sh
           pip install idf-component-manager idf-build-apps --upgrade
           python ./components/esp_wifi_remote/scripts/generate_slave_configs.py ./components/esp_wifi_remote/${{matrix.test.path}}
-          python ./ci/build_apps.py ./components/esp_wifi_remote/${{matrix.test.path}} -vv --preserve-all
+          python $GITHUB_WORKSPACE/protocols/ci/build_apps.py ./components/esp_wifi_remote/${{matrix.test.path}} -vv --preserve-all
 
   build_wifi_remote_example:
-    if: contains(github.event.pull_request.labels.*.name, 'wifi_remote') || github.event_name == 'push'
     name: Build WiFi Remote Example
     strategy:
       matrix:
@@ -67,8 +74,18 @@ jobs:
     runs-on: ubuntu-20.04
     container: espressif/idf:${{ matrix.idf_ver }}
     steps:
-      - name: Checkout esp-protocols
+      - name: Checkout code
         uses: actions/checkout@v3
+      - name: Checkout protocols
+        uses: actions/checkout@v3
+        with:
+          repository: espressif/esp-protocols
+          ref: wifi_remote-v0.4.0
+          sparse-checkout: |
+            ci/build_apps.py
+            ci/ignore_build_warnings.txt
+          sparse-checkout-cone-mode: false
+          path: protocols
       - name: Build ${{ matrix.example.app }} with IDF-${{ matrix.idf_ver }}
         env:
           EXPECTED_WARNING: ${{ matrix.warning }}
@@ -76,10 +93,9 @@ jobs:
         run: |
           . ${IDF_PATH}/export.sh
           pip install idf-component-manager idf-build-apps --upgrade
-          python ./ci/build_apps.py ./components/esp_wifi_remote/${{matrix.example.path}} -vv --preserve-all
+          python $GITHUB_WORKSPACE/protocols/ci/build_apps.py ./components/esp_wifi_remote/${{matrix.example.path}} -vv --preserve-all
 
   build_idf_examples_with_wifi_remote:
-    if: contains(github.event.pull_request.labels.*.name, 'wifi_remote') || github.event_name == 'push'
     name: Build IDF examples with WiFi Remote
     strategy:
       matrix:
@@ -89,7 +105,7 @@ jobs:
     runs-on: ubuntu-20.04
     container: espressif/idf:${{ matrix.idf_ver }}
     steps:
-      - name: Checkout esp-protocols
+      - name: Checkout code
         uses: actions/checkout@v3
       - name: ccache
         uses: hendrikmuhs/ccache-action@v1.2

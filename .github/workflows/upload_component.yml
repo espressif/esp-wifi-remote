@@ -14,6 +14,7 @@ jobs:
       - name: Upload esp_wifi_remote to IDF Component Registry
         uses: espressif/upload-components-ci-action@v1
         with:
-          name: esp_wifi_remote
+          directories: >
+            components/console_cmd_wifi;
           namespace: "espressif"
           api_token: ${{ secrets.IDF_COMPONENT_API_TOKEN }}
