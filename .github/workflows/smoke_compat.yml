@@ -6,6 +6,8 @@ on:
       - main
   pull_request:
     types: [opened, synchronize, reopened, labeled]
+  schedule:
+    - cron: '0 0 * * *' # Once per day at midnight
 
 jobs:
   wifi_remote_api_compat:
