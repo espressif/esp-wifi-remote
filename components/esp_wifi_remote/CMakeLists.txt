@@ -1,6 +1,6 @@
 set(IDF_VER_DIR "idf_v${IDF_VERSION_MAJOR}.${IDF_VERSION_MINOR}")
 
-if(NOT CONFIG_ESP_WIFI_ENABLED)
+if(NOT CONFIG_ESP_WIFI_ENABLED AND NOT CONFIG_ESP_HOST_WIFI_ENABLED)
     set(src_wifi_is_remote esp_wifi_remote.c ${IDF_VER_DIR}/esp_wifi_with_remote.c esp_wifi_remote_net.c)
 endif()
 
