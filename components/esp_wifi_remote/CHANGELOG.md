@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.1](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v0.4.1)
+
+### Bug Fixes
+
+- Remove unused Kconfig from scripts ([3c5d58f](https://github.com/espressif/esp-wifi-remote/commit/3c5d58f))
+- Disable WiFi remote impl if ESP_HOST_WIFI_ENABLED=y ([1f6fe16](https://github.com/espressif/esp-wifi-remote/commit/1f6fe16))
+
 ## [0.4.0](https://github.com/espressif/esp-protocols/commits/wifi_remote-v0.4.0)
 
 ### Features
