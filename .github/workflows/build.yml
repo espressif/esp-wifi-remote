@@ -46,7 +46,7 @@ jobs:
     strategy:
       matrix:
         idf_ver: ["latest"]
-        example: [ { app: host, path: "examples/mqtt" }, { app: slave, path: "examples/server" }]
+        example: [ { app: host, path: "examples/mqtt", bin: "build_esp32p4_p4" }, { app: slave, path: "examples/server", bin: "build_esp32c6_c6" }]
         include:
           - idf_ver: "latest"
             example: { app: slave, path: "examples/server" }
@@ -65,6 +65,7 @@ jobs:
           sparse-checkout: |
             ci/build_apps.py
             ci/ignore_build_warnings.txt
+            ci/clean_build_artifacts.sh
           sparse-checkout-cone-mode: false
           path: protocols
       - name: Build ${{ matrix.example.app }} with IDF-${{ matrix.idf_ver }}
@@ -75,3 +76,45 @@ jobs:
           . ${IDF_PATH}/export.sh
           pip install idf-component-manager idf-build-apps --upgrade
           python $GITHUB_WORKSPACE/protocols/ci/build_apps.py ./components/esp_wifi_remote/${{matrix.example.path}} -vv --preserve-all
+          cd ./components/esp_wifi_remote/${{matrix.example.path}}
+          ${GITHUB_WORKSPACE}/protocols/ci/clean_build_artifacts.sh `pwd`/${{matrix.example.bin}}
+          zip -qur artifacts.zip ${{matrix.example.bin}}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: eppp_${{ matrix.idf_ver }}_${{matrix.example.bin}}
+          path: components/esp_wifi_remote/${{matrix.example.path}}/artifacts.zip
+          if-no-files-found: error
+
+  run_example:
+    # Skip running on forks since it won't have access to secrets
+    if: github.repository == 'espressif/esp-wifi-remote'
+    name: EPP target test
+    needs: build_wifi_remote_example
+    strategy:
+      matrix:
+        idf_ver: ["latest"]
+    runs-on: [self-hosted, wifi-remote]
+    container:
+      image: python:3.7-buster
+      options: --privileged # Privileged mode has access to serial ports
+    env:
+      TEST_DIR: components/esp_wifi_remote/examples
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: eppp_${{ matrix.idf_ver }}_build_esp32p4_p4
+          path: ${{ env.TEST_DIR }}/mqtt/
+      - uses: actions/download-artifact@v4
+        with:
+          name: eppp_${{ matrix.idf_ver }}_build_esp32c6_c6
+          path: ${{ env.TEST_DIR }}/server/
+      - name: Run Test
+        working-directory: ${{ env.TEST_DIR }}
+        run: |
+          python -m pip install pytest-embedded-serial-esp pytest-embedded-idf pytest-rerunfailures pytest-timeout pytest-ignore-test-results
+          unzip server/artifacts.zip -d server/
+          mv server/build_esp32c6_c6/ server/build/
+          unzip mqtt/artifacts.zip -d mqtt/
+          mv mqtt/build_esp32p4_p4/ mqtt/build/
+          python -m pytest --log-cli-level DEBUG --target esp32p4,esp32c6

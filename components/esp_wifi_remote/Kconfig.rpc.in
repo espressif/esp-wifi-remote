@@ -26,14 +26,14 @@ endchoice
         config ESP_WIFI_REMOTE_EPPP_UART_TX_PIN
             int "TXD Pin Number"
             default 10
-            range 0 31
+            range 0 54
             help
                 Pin number of UART TX.
 
         config ESP_WIFI_REMOTE_EPPP_UART_RX_PIN
             int "RXD Pin Number"
             default 11
-            range 0 31
+            range 0 54
             help
                 Pin number of UART RX.
 
