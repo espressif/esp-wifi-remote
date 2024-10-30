@@ -16,6 +16,13 @@ endchoice
 
     if ESP_WIFI_REMOTE_LIBRARY_EPPP
 
+        config ESP_WIFI_REMOTE_EPPP_UART_PORT
+            int "UART port number"
+            default 1
+            range 0 3
+            help
+                UART Port number.
+
         config ESP_WIFI_REMOTE_EPPP_UART_TX_PIN
             int "TXD Pin Number"
             default 10
