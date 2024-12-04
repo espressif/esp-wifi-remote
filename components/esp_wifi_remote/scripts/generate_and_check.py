@@ -82,7 +82,7 @@ def exec_cmd(what, out_file=None):
 
 
 def preprocess(idf_path, header):
-    project_dir = os.path.join(idf_path, 'examples', 'get-started', 'blink')
+    project_dir = os.path.join(idf_path, 'examples', 'wifi', 'getting_started', 'station')
     build_dir = os.path.join(project_dir, 'build')
     subprocess.check_call(['idf.py', '-B', build_dir, 'reconfigure'], cwd=project_dir)
     build_commands_json = os.path.join(build_dir, 'compile_commands.json')
@@ -172,16 +172,23 @@ def generate_kconfig_wifi_caps(idf_path, idf_ver_dir, component_path):
             add_slave = False
             kconfig_content = []
             soc_caps = os.path.join(idf_path, 'components', 'soc', slave_target, 'include', 'soc', 'Kconfig.soc_caps.in')
-            with open(soc_caps, 'r') as f:
-                for line in f:
-                    if line.strip().startswith('config SOC_WIFI_'):
-                        if 'config SOC_WIFI_SUPPORTED' in line:
-                            # if WiFi supported for this target, add it to Kconfig slave options and test this slave
-                            add_slave = True
-                        replaced = re.sub(r'SOC_WIFI_', 'SLAVE_SOC_WIFI_', line)
-                        kconfig_content.append(f'    {replaced}')
-                        kconfig_content.append(f'    {f.readline()}')  # type
-                        kconfig_content.append(f'    {f.readline()}\n')  # default
+            try:
+                with open(soc_caps, 'r') as f:
+                    for line in f:
+                        if line.strip().startswith('config SOC_WIFI_'):
+                            if 'config SOC_WIFI_SUPPORTED' in line:
+                                # if WiFi supported for this target, add it to Kconfig slave options and test this slave
+                                add_slave = True
+                            replaced = re.sub(r'SOC_WIFI_', 'SLAVE_SOC_WIFI_', line)
+                            kconfig_content.append(f'    {replaced}')
+                            kconfig_content.append(f'    {f.readline()}')  # type
+                            kconfig_content.append(f'    {f.readline()}\n')  # default
+            except FileNotFoundError:
+                print(f'Warning: File {soc_caps} not found. Skipping target {slave_target}.')
+                continue
+            except IOError as e:
+                print(f'Error reading file {soc_caps}: {e}')
+                continue
             if add_slave:
                 slave_caps.write(f'\nif SLAVE_IDF_TARGET_{slave_target.upper()}\n\n')
                 slave_caps.writelines(kconfig_content)
