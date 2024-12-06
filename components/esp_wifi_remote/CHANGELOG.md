@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.5.2](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v0.5.2)
+
+### Features
+
+- Add wifi-remote target test ([f413031](https://github.com/espressif/esp-wifi-remote/commit/f413031))
+- Make UART port number configurable ([c088f44](https://github.com/espressif/esp-wifi-remote/commit/c088f44))
+
+### Bug Fixes
+
+- Fix script to skip preview targets missing config.caps ([469dbaf](https://github.com/espressif/esp-wifi-remote/commit/469dbaf))
+- Update v5.4 per espressif/esp-idf@e65acc95109 ([c2110d6](https://github.com/espressif/esp-wifi-remote/commit/c2110d6))
+
 ## [0.5.1](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v0.5.1)
 
 ### Bug Fixes
