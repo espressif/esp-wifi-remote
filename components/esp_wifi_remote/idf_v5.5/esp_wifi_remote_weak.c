@@ -366,6 +366,11 @@ WEAK esp_err_t esp_wifi_remote_config_80211_tx_rate(wifi_interface_t ifx, wifi_p
     LOG_UNSUPPORTED_AND_RETURN(ESP_ERR_NOT_SUPPORTED);
 }
 
+WEAK esp_err_t esp_wifi_remote_config_80211_tx(wifi_interface_t ifx, wifi_tx_rate_config_t *config)
+{
+    LOG_UNSUPPORTED_AND_RETURN(ESP_ERR_NOT_SUPPORTED);
+}
+
 WEAK esp_err_t esp_wifi_remote_disable_pmf_config(wifi_interface_t ifx)
 {
     LOG_UNSUPPORTED_AND_RETURN(ESP_ERR_NOT_SUPPORTED);
