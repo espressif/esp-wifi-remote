@@ -36,9 +36,7 @@ jobs:
       - name: Build ${{ matrix.test.app }} with IDF-${{ matrix.idf_ver }}
         shell: bash
         run: |
-          ${IDF_PATH}/install.sh
           . ${IDF_PATH}/export.sh
-          pip install esp-idf-kconfig==2.3.0
           pip install idf-component-manager idf-build-apps --upgrade
           python ./components/esp_wifi_remote/scripts/generate_slave_configs.py ./components/esp_wifi_remote/${{matrix.test.path}}
           python $GITHUB_WORKSPACE/protocols/ci/build_apps.py ./components/esp_wifi_remote/${{matrix.test.path}} -vv --preserve-all
@@ -75,9 +73,7 @@ jobs:
           EXPECTED_WARNING: ${{ matrix.warning }}
         shell: bash
         run: |
-          ${IDF_PATH}/install.sh
           . ${IDF_PATH}/export.sh
-          pip install esp-idf-kconfig==2.3.0
           pip install idf-component-manager idf-build-apps --upgrade
           python $GITHUB_WORKSPACE/protocols/ci/build_apps.py ./components/esp_wifi_remote/${{matrix.example.path}} -vv --preserve-all
           cd ./components/esp_wifi_remote/${{matrix.example.path}}
