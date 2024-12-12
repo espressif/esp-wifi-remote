@@ -23,9 +23,7 @@ jobs:
       - name: Check that headers are the same as generated
         shell: bash
         run: |
-          ${IDF_PATH}/install.sh
           . ${IDF_PATH}/export.sh
-          pip install esp-idf-kconfig==2.3.0
           pip install idf-component-manager idf-build-apps --upgrade
           cp -r ./components/esp_wifi_remote ./components/esp_wifi_remote_base
           cd ./components/esp_wifi_remote/scripts
@@ -50,9 +48,7 @@ jobs:
       - name: Build ${{ matrix.test.app }} with IDF-${{ matrix.idf_ver }} for ${{ matrix.idf_target }}
         shell: bash
         run: |
-          ${IDF_PATH}/install.sh
           . ${IDF_PATH}/export.sh
-          pip install esp-idf-kconfig==2.3.0
           pip install idf-component-manager idf-build-apps --upgrade
           export OVERRIDE_PATH=`pwd`/components/esp_wifi_remote
           echo ${OVERRIDE_PATH}
