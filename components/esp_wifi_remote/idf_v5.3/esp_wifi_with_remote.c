@@ -362,6 +362,11 @@ esp_err_t esp_wifi_config_80211_tx_rate(wifi_interface_t ifx, wifi_phy_rate_t ra
     return esp_wifi_remote_config_80211_tx_rate(ifx, rate);
 }
 
+esp_err_t esp_wifi_config_80211_tx(wifi_interface_t ifx, wifi_tx_rate_config_t *config)
+{
+    return esp_wifi_remote_config_80211_tx(ifx, config);
+}
+
 esp_err_t esp_wifi_disable_pmf_config(wifi_interface_t ifx)
 {
     return esp_wifi_remote_disable_pmf_config(ifx);
