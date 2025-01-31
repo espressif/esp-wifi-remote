@@ -327,6 +327,36 @@ def generate_kconfig(idf_path, idf_ver_dir, component_path):
     return [remote_kconfig]
 
 
+def generate_wifi_static(idf_vr_dir, component_path):
+    wifi_static = os.path.join(component_path, idf_ver_dir, 'include', 'esp_wifi_default_config.h')
+    with open(wifi_static, 'w') as f:
+        f.write(COPYRIGHT_HEADER)
+        f.write('#pragma once\n')
+    kconfig_path = os.path.join(component_path, 'Kconfig')
+    all_targets = SUPPORTED_TARGETS + PREVIEW_TARGETS
+    for target in all_targets:
+        if target == 'linux':
+            continue
+        default_config = f'default.{target}'
+        with open(default_config, 'w') as file:
+            for slave_target in all_targets:
+                value = 'y' if slave_target == target else 'n'
+                file.write(f'CONFIG_SLAVE_IDF_TARGET_{slave_target.upper()}={value}\n')
+        rc, _, err, cmd = exec_cmd(['python', '-m', 'kconfgen', '--kconfig', f'{kconfig_path}',
+                                    '--config', f'{default_config}', '--output', 'header', f'{default_config}'])
+        if rc != 0:
+            print(f'command {cmd} failed!')
+            print(err)
+        with open(wifi_static, 'a') as f:
+            f.write(f'\n#if CONFIG_SLAVE_IDF_TARGET_{target.upper()}\n')
+            with open(default_config, 'r') as config_file:
+                for line in config_file:
+                    if line.strip().startswith('#define'):
+                        f.write(line)
+            f.write(f'#endif // CONFIG_SLAVE_IDF_TARGET_{target.upper()}\n')
+    return [wifi_static]
+
+
 def compare_files(base_dir, component_path, files_to_check):
     failures = []
     for file_path in files_to_check:
@@ -388,6 +418,8 @@ making changes you might need to modify 'copyright_header.h' in the script direc
     files_to_check += generate_wifi_native(idf_path, idf_ver_dir, component_path)
 
     files_to_check += generate_kconfig(idf_path, idf_ver_dir, component_path)
+
+    files_to_check += generate_wifi_static(idf_ver_dir, component_path)
 
     for f in files_to_check:
         print(f)
