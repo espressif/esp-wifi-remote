@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.0](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v0.6.0)
+
+### Features
+
+- Add static config headers ([b419fd6](https://github.com/espressif/esp-wifi-remote/commit/b419fd6))
+- Generate static default config header ([a0e98bc](https://github.com/espressif/esp-wifi-remote/commit/a0e98bc), [#13](https://github.com/espressif/esp-wifi-remote/issues/13))
+
 ## [0.5.5](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v0.5.5)
 
 ### Bug Fixes
