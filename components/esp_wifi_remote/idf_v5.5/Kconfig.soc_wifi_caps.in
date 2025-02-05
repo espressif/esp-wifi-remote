@@ -2,27 +2,27 @@
 
 if SLAVE_IDF_TARGET_ESP32
 
-    config SLAVE_SOC_WIFI_SUPPORTED
+    config SLAVE_SOC_WIFI_SUPPORTED # kconfig ignore: multiple-definition
         bool
         default y
 
-    config SLAVE_SOC_WIFI_WAPI_SUPPORT
+    config SLAVE_SOC_WIFI_WAPI_SUPPORT # kconfig ignore: multiple-definition
         bool
         default y
 
-    config SLAVE_SOC_WIFI_CSI_SUPPORT
+    config SLAVE_SOC_WIFI_CSI_SUPPORT # kconfig ignore: multiple-definition
         bool
         default y
 
-    config SLAVE_SOC_WIFI_MESH_SUPPORT
+    config SLAVE_SOC_WIFI_MESH_SUPPORT # kconfig ignore: multiple-definition
         bool
         default y
 
-    config SLAVE_SOC_WIFI_SUPPORT_VARIABLE_BEACON_WINDOW
+    config SLAVE_SOC_WIFI_SUPPORT_VARIABLE_BEACON_WINDOW # kconfig ignore: multiple-definition
         bool
         default y
 
-    config SLAVE_SOC_WIFI_NAN_SUPPORT
+    config SLAVE_SOC_WIFI_NAN_SUPPORT # kconfig ignore: multiple-definition
         bool
         default y
 
@@ -30,39 +30,39 @@ endif # ESP32
 
 if SLAVE_IDF_TARGET_ESP32S2
 
-    config SLAVE_SOC_WIFI_SUPPORTED
+    config SLAVE_SOC_WIFI_SUPPORTED # kconfig ignore: multiple-definition
         bool
         default y
 
-    config SLAVE_SOC_WIFI_LIGHT_SLEEP_CLK_WIDTH
+    config SLAVE_SOC_WIFI_LIGHT_SLEEP_CLK_WIDTH # kconfig ignore: multiple-definition
         int
         default 12
 
-    config SLAVE_SOC_WIFI_HW_TSF
+    config SLAVE_SOC_WIFI_HW_TSF # kconfig ignore: multiple-definition
         bool
         default y
 
-    config SLAVE_SOC_WIFI_FTM_SUPPORT
+    config SLAVE_SOC_WIFI_FTM_SUPPORT # kconfig ignore: multiple-definition
         bool
         default y
 
-    config SLAVE_SOC_WIFI_WAPI_SUPPORT
+    config SLAVE_SOC_WIFI_WAPI_SUPPORT # kconfig ignore: multiple-definition
         bool
         default y
 
-    config SLAVE_SOC_WIFI_CSI_SUPPORT
+    config SLAVE_SOC_WIFI_CSI_SUPPORT # kconfig ignore: multiple-definition
         bool
         default y
 
-    config SLAVE_SOC_WIFI_MESH_SUPPORT
+    config SLAVE_SOC_WIFI_MESH_SUPPORT # kconfig ignore: multiple-definition
         bool
         default y
 
-    config SLAVE_SOC_WIFI_SUPPORT_VARIABLE_BEACON_WINDOW
+    config SLAVE_SOC_WIFI_SUPPORT_VARIABLE_BEACON_WINDOW # kconfig ignore: multiple-definition
         bool
         default y
 
-    config SLAVE_SOC_WIFI_NAN_SUPPORT
+    config SLAVE_SOC_WIFI_NAN_SUPPORT # kconfig ignore: multiple-definition
         bool
         default y
 
@@ -70,43 +70,43 @@ endif # ESP32S2
 
 if SLAVE_IDF_TARGET_ESP32C3
 
-    config SLAVE_SOC_WIFI_SUPPORTED
+    config SLAVE_SOC_WIFI_SUPPORTED # kconfig ignore: multiple-definition
         bool
         default y
 
-    config SLAVE_SOC_WIFI_LIGHT_SLEEP_CLK_WIDTH
+    config SLAVE_SOC_WIFI_LIGHT_SLEEP_CLK_WIDTH # kconfig ignore: multiple-definition
         int
         default 12
 
-    config SLAVE_SOC_WIFI_HW_TSF
+    config SLAVE_SOC_WIFI_HW_TSF # kconfig ignore: multiple-definition
         bool
         default y
 
-    config SLAVE_SOC_WIFI_FTM_SUPPORT
+    config SLAVE_SOC_WIFI_FTM_SUPPORT # kconfig ignore: multiple-definition
         bool
         default y
 
-    config SLAVE_SOC_WIFI_GCMP_SUPPORT
+    config SLAVE_SOC_WIFI_GCMP_SUPPORT # kconfig ignore: multiple-definition
         bool
         default y
 
-    config SLAVE_SOC_WIFI_WAPI_SUPPORT
+    config SLAVE_SOC_WIFI_WAPI_SUPPORT # kconfig ignore: multiple-definition
         bool
         default y
 
-    config SLAVE_SOC_WIFI_CSI_SUPPORT
+    config SLAVE_SOC_WIFI_CSI_SUPPORT # kconfig ignore: multiple-definition
         bool
         default y
 
-    config SLAVE_SOC_WIFI_MESH_SUPPORT
+    config SLAVE_SOC_WIFI_MESH_SUPPORT # kconfig ignore: multiple-definition
         bool
         default y
 
-    config SLAVE_SOC_WIFI_SUPPORT_VARIABLE_BEACON_WINDOW
+    config SLAVE_SOC_WIFI_SUPPORT_VARIABLE_BEACON_WINDOW # kconfig ignore: multiple-definition
         bool
         default y
 
-    config SLAVE_SOC_WIFI_PHY_NEEDS_USB_WORKAROUND
+    config SLAVE_SOC_WIFI_PHY_NEEDS_USB_WORKAROUND # kconfig ignore: multiple-definition
         bool
         default y
 
@@ -114,43 +114,43 @@ endif # ESP32C3
 
 if SLAVE_IDF_TARGET_ESP32S3
 
-    config SLAVE_SOC_WIFI_SUPPORTED
+    config SLAVE_SOC_WIFI_SUPPORTED # kconfig ignore: multiple-definition
         bool
         default y
 
-    config SLAVE_SOC_WIFI_LIGHT_SLEEP_CLK_WIDTH
+    config SLAVE_SOC_WIFI_LIGHT_SLEEP_CLK_WIDTH # kconfig ignore: multiple-definition
         int
         default 12
 
-    config SLAVE_SOC_WIFI_HW_TSF
+    config SLAVE_SOC_WIFI_HW_TSF # kconfig ignore: multiple-definition
         bool
         default y
 
-    config SLAVE_SOC_WIFI_FTM_SUPPORT
+    config SLAVE_SOC_WIFI_FTM_SUPPORT # kconfig ignore: multiple-definition
         bool
         default y
 
-    config SLAVE_SOC_WIFI_GCMP_SUPPORT
+    config SLAVE_SOC_WIFI_GCMP_SUPPORT # kconfig ignore: multiple-definition
         bool
         default y
 
-    config SLAVE_SOC_WIFI_WAPI_SUPPORT
+    config SLAVE_SOC_WIFI_WAPI_SUPPORT # kconfig ignore: multiple-definition
         bool
         default y
 
-    config SLAVE_SOC_WIFI_CSI_SUPPORT
+    config SLAVE_SOC_WIFI_CSI_SUPPORT # kconfig ignore: multiple-definition
         bool
         default y
 
-    config SLAVE_SOC_WIFI_MESH_SUPPORT
+    config SLAVE_SOC_WIFI_MESH_SUPPORT # kconfig ignore: multiple-definition
         bool
         default y
 
-    config SLAVE_SOC_WIFI_SUPPORT_VARIABLE_BEACON_WINDOW
+    config SLAVE_SOC_WIFI_SUPPORT_VARIABLE_BEACON_WINDOW # kconfig ignore: multiple-definition
         bool
         default y
 
-    config SLAVE_SOC_WIFI_PHY_NEEDS_USB_WORKAROUND
+    config SLAVE_SOC_WIFI_PHY_NEEDS_USB_WORKAROUND # kconfig ignore: multiple-definition
         bool
         default y
 
@@ -158,27 +158,27 @@ endif # ESP32S3
 
 if SLAVE_IDF_TARGET_ESP32C2
 
-    config SLAVE_SOC_WIFI_SUPPORTED
+    config SLAVE_SOC_WIFI_SUPPORTED # kconfig ignore: multiple-definition
         bool
         default y
 
-    config SLAVE_SOC_WIFI_LIGHT_SLEEP_CLK_WIDTH
+    config SLAVE_SOC_WIFI_LIGHT_SLEEP_CLK_WIDTH # kconfig ignore: multiple-definition
         int
         default 12
 
-    config SLAVE_SOC_WIFI_HW_TSF
+    config SLAVE_SOC_WIFI_HW_TSF # kconfig ignore: multiple-definition
         bool
         default y
 
-    config SLAVE_SOC_WIFI_FTM_SUPPORT
+    config SLAVE_SOC_WIFI_FTM_SUPPORT # kconfig ignore: multiple-definition
         bool
         default y
 
-    config SLAVE_SOC_WIFI_SUPPORT_VARIABLE_BEACON_WINDOW
+    config SLAVE_SOC_WIFI_SUPPORT_VARIABLE_BEACON_WINDOW # kconfig ignore: multiple-definition
         bool
         default y
 
-    config SLAVE_SOC_WIFI_PHY_NEEDS_USB_WORKAROUND
+    config SLAVE_SOC_WIFI_PHY_NEEDS_USB_WORKAROUND # kconfig ignore: multiple-definition
         bool
         default y
 
@@ -186,43 +186,43 @@ endif # ESP32C2
 
 if SLAVE_IDF_TARGET_ESP32C6
 
-    config SLAVE_SOC_WIFI_SUPPORTED
+    config SLAVE_SOC_WIFI_SUPPORTED # kconfig ignore: multiple-definition
         bool
         default y
 
-    config SLAVE_SOC_WIFI_LIGHT_SLEEP_CLK_WIDTH
+    config SLAVE_SOC_WIFI_LIGHT_SLEEP_CLK_WIDTH # kconfig ignore: multiple-definition
         int
         default 12
 
-    config SLAVE_SOC_WIFI_HW_TSF
+    config SLAVE_SOC_WIFI_HW_TSF # kconfig ignore: multiple-definition
         bool
         default y
 
-    config SLAVE_SOC_WIFI_FTM_SUPPORT
+    config SLAVE_SOC_WIFI_FTM_SUPPORT # kconfig ignore: multiple-definition
         bool
         default y
 
-    config SLAVE_SOC_WIFI_GCMP_SUPPORT
+    config SLAVE_SOC_WIFI_GCMP_SUPPORT # kconfig ignore: multiple-definition
         bool
         default y
 
-    config SLAVE_SOC_WIFI_WAPI_SUPPORT
+    config SLAVE_SOC_WIFI_WAPI_SUPPORT # kconfig ignore: multiple-definition
         bool
         default y
 
-    config SLAVE_SOC_WIFI_CSI_SUPPORT
+    config SLAVE_SOC_WIFI_CSI_SUPPORT # kconfig ignore: multiple-definition
         bool
         default y
 
-    config SLAVE_SOC_WIFI_MESH_SUPPORT
+    config SLAVE_SOC_WIFI_MESH_SUPPORT # kconfig ignore: multiple-definition
         bool
         default y
 
-    config SLAVE_SOC_WIFI_HE_SUPPORT
+    config SLAVE_SOC_WIFI_HE_SUPPORT # kconfig ignore: multiple-definition
         bool
         default y
 
-    config SLAVE_SOC_WIFI_MAC_VERSION_NUM
+    config SLAVE_SOC_WIFI_MAC_VERSION_NUM # kconfig ignore: multiple-definition
         int
         default 2
 
@@ -230,47 +230,47 @@ endif # ESP32C6
 
 if SLAVE_IDF_TARGET_ESP32C5
 
-    config SLAVE_SOC_WIFI_SUPPORTED
+    config SLAVE_SOC_WIFI_SUPPORTED # kconfig ignore: multiple-definition
         bool
         default y
 
-    config SLAVE_SOC_WIFI_LIGHT_SLEEP_CLK_WIDTH
+    config SLAVE_SOC_WIFI_LIGHT_SLEEP_CLK_WIDTH # kconfig ignore: multiple-definition
         int
         default 12
 
-    config SLAVE_SOC_WIFI_HW_TSF
+    config SLAVE_SOC_WIFI_HW_TSF # kconfig ignore: multiple-definition
         bool
         default y
 
-    config SLAVE_SOC_WIFI_FTM_SUPPORT
+    config SLAVE_SOC_WIFI_FTM_SUPPORT # kconfig ignore: multiple-definition
         bool
         default n
 
-    config SLAVE_SOC_WIFI_GCMP_SUPPORT
+    config SLAVE_SOC_WIFI_GCMP_SUPPORT # kconfig ignore: multiple-definition
         bool
         default y
 
-    config SLAVE_SOC_WIFI_WAPI_SUPPORT
+    config SLAVE_SOC_WIFI_WAPI_SUPPORT # kconfig ignore: multiple-definition
         bool
         default y
 
-    config SLAVE_SOC_WIFI_CSI_SUPPORT
+    config SLAVE_SOC_WIFI_CSI_SUPPORT # kconfig ignore: multiple-definition
         bool
         default y
 
-    config SLAVE_SOC_WIFI_MESH_SUPPORT
+    config SLAVE_SOC_WIFI_MESH_SUPPORT # kconfig ignore: multiple-definition
         bool
         default y
 
-    config SLAVE_SOC_WIFI_HE_SUPPORT
+    config SLAVE_SOC_WIFI_HE_SUPPORT # kconfig ignore: multiple-definition
         bool
         default y
 
-    config SLAVE_SOC_WIFI_SUPPORT_5G
+    config SLAVE_SOC_WIFI_SUPPORT_5G # kconfig ignore: multiple-definition
         bool
         default y
 
-    config SLAVE_SOC_WIFI_MAC_VERSION_NUM
+    config SLAVE_SOC_WIFI_MAC_VERSION_NUM # kconfig ignore: multiple-definition
         int
         default 3
 
@@ -278,43 +278,43 @@ endif # ESP32C5
 
 if SLAVE_IDF_TARGET_ESP32C61
 
-    config SLAVE_SOC_WIFI_SUPPORTED
+    config SLAVE_SOC_WIFI_SUPPORTED # kconfig ignore: multiple-definition
         bool
         default y
 
-    config SLAVE_SOC_WIFI_LIGHT_SLEEP_CLK_WIDTH
+    config SLAVE_SOC_WIFI_LIGHT_SLEEP_CLK_WIDTH # kconfig ignore: multiple-definition
         int
         default 12
 
-    config SLAVE_SOC_WIFI_HW_TSF
+    config SLAVE_SOC_WIFI_HW_TSF # kconfig ignore: multiple-definition
         bool
         default y
 
-    config SLAVE_SOC_WIFI_FTM_SUPPORT
+    config SLAVE_SOC_WIFI_FTM_SUPPORT # kconfig ignore: multiple-definition
         bool
         default n
 
-    config SLAVE_SOC_WIFI_GCMP_SUPPORT
+    config SLAVE_SOC_WIFI_GCMP_SUPPORT # kconfig ignore: multiple-definition
         bool
         default y
 
-    config SLAVE_SOC_WIFI_WAPI_SUPPORT
+    config SLAVE_SOC_WIFI_WAPI_SUPPORT # kconfig ignore: multiple-definition
         bool
         default y
 
-    config SLAVE_SOC_WIFI_CSI_SUPPORT
+    config SLAVE_SOC_WIFI_CSI_SUPPORT # kconfig ignore: multiple-definition
         bool
         default y
 
-    config SLAVE_SOC_WIFI_MESH_SUPPORT
+    config SLAVE_SOC_WIFI_MESH_SUPPORT # kconfig ignore: multiple-definition
         bool
         default y
 
-    config SLAVE_SOC_WIFI_HE_SUPPORT
+    config SLAVE_SOC_WIFI_HE_SUPPORT # kconfig ignore: multiple-definition
         bool
         default y
 
-    config SLAVE_SOC_WIFI_MAC_VERSION_NUM
+    config SLAVE_SOC_WIFI_MAC_VERSION_NUM # kconfig ignore: multiple-definition
         int
         default 3
 
