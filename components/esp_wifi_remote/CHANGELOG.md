@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.6.1](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v0.6.1)
+
+### Bug Fixes
+
+- Ignore potential duplicate of Kconfg symbols ([14e0339](https://github.com/espressif/esp-wifi-remote/commit/14e0339))
+
 ## [0.6.0](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v0.6.0)
 
 ### Features
