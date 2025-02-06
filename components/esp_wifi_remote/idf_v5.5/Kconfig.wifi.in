@@ -204,7 +204,7 @@
                 Select this option to enable WiFi NVS flash
 
         choice ESP_WIFI_TASK_CORE_ID # kconfig ignore: multiple-definition
-            depends on !FREERTOS_UNICORE
+            depends on !SLAVE_FREERTOS_UNICORE
             prompt "WiFi Task Core ID"
             default ESP_WIFI_TASK_PINNED_TO_CORE_0
             help

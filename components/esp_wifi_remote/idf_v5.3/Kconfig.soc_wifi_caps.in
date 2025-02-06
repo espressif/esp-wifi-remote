@@ -26,6 +26,10 @@ if SLAVE_IDF_TARGET_ESP32
         bool
         default y
 
+    config SLAVE_IDF_TARGET_ARCH_XTENSA
+        bool
+        default y
+
 endif # ESP32
 
 if SLAVE_IDF_TARGET_ESP32S2
@@ -63,6 +67,14 @@ if SLAVE_IDF_TARGET_ESP32S2
         default y
 
     config SLAVE_SOC_WIFI_NAN_SUPPORT # kconfig ignore: multiple-definition
+        bool
+        default y
+
+    config SLAVE_FREERTOS_UNICORE
+        bool
+        default y
+
+    config SLAVE_IDF_TARGET_ARCH_XTENSA
         bool
         default y
 
@@ -110,6 +122,14 @@ if SLAVE_IDF_TARGET_ESP32C3
         bool
         default y
 
+    config SLAVE_FREERTOS_UNICORE
+        bool
+        default y
+
+    config SLAVE_IDF_TARGET_ARCH_RISCV
+        bool
+        default y
+
 endif # ESP32C3
 
 if SLAVE_IDF_TARGET_ESP32S3
@@ -154,6 +174,10 @@ if SLAVE_IDF_TARGET_ESP32S3
         bool
         default y
 
+    config SLAVE_IDF_TARGET_ARCH_XTENSA
+        bool
+        default y
+
 endif # ESP32S3
 
 if SLAVE_IDF_TARGET_ESP32C2
@@ -179,6 +203,14 @@ if SLAVE_IDF_TARGET_ESP32C2
         default y
 
     config SLAVE_SOC_WIFI_PHY_NEEDS_USB_WORKAROUND # kconfig ignore: multiple-definition
+        bool
+        default y
+
+    config SLAVE_FREERTOS_UNICORE
+        bool
+        default y
+
+    config SLAVE_IDF_TARGET_ARCH_RISCV
         bool
         default y
 
@@ -219,6 +251,14 @@ if SLAVE_IDF_TARGET_ESP32C6
         default y
 
     config SLAVE_SOC_WIFI_HE_SUPPORT # kconfig ignore: multiple-definition
+        bool
+        default y
+
+    config SLAVE_FREERTOS_UNICORE
+        bool
+        default y
+
+    config SLAVE_IDF_TARGET_ARCH_RISCV
         bool
         default y
 

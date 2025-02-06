@@ -162,6 +162,20 @@ def get_vars(parameters):
 def generate_kconfig_wifi_caps(idf_path, idf_ver_dir, component_path):
     kconfig = os.path.join(component_path, idf_ver_dir, 'Kconfig.soc_wifi_caps.in')
     slave_select = os.path.join(component_path, idf_ver_dir, 'Kconfig.slave_select.in')
+
+    # Read and parse the global Kconfig file for target selections
+    target_selections = {}
+    current_target = None
+    with open(os.path.join(idf_path, 'Kconfig'), 'r') as f:
+        for line in f:
+            line = line.strip()
+            if line.startswith('config IDF_TARGET_'):
+                current_target = line.split()[1]
+                target_selections[current_target] = []
+            elif current_target and line.strip().startswith('select'):
+                selection = line.split()[1]
+                target_selections[current_target].append(selection)
+
     with open(kconfig, 'w') as slave_caps, open(slave_select, 'w') as slave:
         slave_caps.write(f'# {AUTO_GENERATED}\n')
         slave.write(f'# {AUTO_GENERATED}\n')
@@ -189,9 +203,19 @@ def generate_kconfig_wifi_caps(idf_path, idf_ver_dir, component_path):
             except IOError as e:
                 print(f'Error reading file {soc_caps}: {e}')
                 continue
+
             if add_slave:
                 slave_caps.write(f'\nif SLAVE_IDF_TARGET_{slave_target.upper()}\n\n')
                 slave_caps.writelines(kconfig_content)
+
+                # Add any target-specific selections from global Kconfig
+                target_key = f'IDF_TARGET_{slave_target.upper()}'
+                if target_key in target_selections:
+                    for selection in target_selections[target_key]:
+                        slave_caps.write(f'    config SLAVE_{selection}\n')
+                        slave_caps.write(f'        bool\n')
+                        slave_caps.write(f'        default y\n\n')
+
                 slave_caps.write(f'endif # {slave_target.upper()}\n')
 
                 slave_config_name = 'SLAVE_IDF_TARGET_' + slave_target.upper()
@@ -299,9 +323,30 @@ def generate_wifi_native(idf_path, idf_ver_dir, component_path):
     return [wifi_native]
 
 
+def get_global_configs(idf_path):
+    """Extract global configs from Kconfig that are selected by IDF_TARGET configs"""
+    global_configs = set()
+    current_target = None
+    with open(os.path.join(idf_path, 'Kconfig'), 'r') as f:
+        for line in f:
+            line = line.strip()
+            if line.startswith('config IDF_TARGET_'):
+                current_target = True
+            elif current_target and line.strip().startswith('select'):
+                selection = line.split()[1]
+                global_configs.add(selection)
+            elif line.startswith('config') or line.startswith('choice'):
+                current_target = False
+    return global_configs
+
+
 def generate_kconfig(idf_path, idf_ver_dir, component_path):
     remote_kconfig = os.path.join(component_path, idf_ver_dir, 'Kconfig.wifi.in')
-    slave_configs = ['SOC_WIFI_', 'IDF_TARGET_']
+    # Get base configs to be replaced
+    base_configs = ['SOC_WIFI_', 'IDF_TARGET_']
+    # Add global configs from Kconfig file
+    global_configs = get_global_configs(idf_path)
+
     lines = open(os.path.join(idf_path, 'components', 'esp_wifi', 'Kconfig'), 'r').readlines()
     copy = 100      # just a big number to be greater than nested_if in the first few iterations
     nested_if = 0
@@ -316,9 +361,15 @@ def generate_kconfig(idf_path, idf_ver_dir, component_path):
                 nested_if -= 1
 
             if nested_if >= copy:
-
-                for config in slave_configs:
+                # First replace the base configs
+                for config in base_configs:
                     line1 = re.compile(config).sub('SLAVE_' + config, line1)
+
+                # Then replace any global configs
+                for config in global_configs:
+                    # Only replace whole words to avoid partial matches
+                    line1 = re.compile(r'\b' + config + r'\b').sub('SLAVE_' + config, line1)
+
                 if re.match(r'^(config|choice)\s+ESP_WIFI_', line):
                     line1 = line1.rstrip() + ' # kconfig ignore: multiple-definition\n'
                 f.write(line1)
