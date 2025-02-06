@@ -16,6 +16,7 @@ AUTO_GENERATED = 'This file is auto-generated'
 COPYRIGHT_HEADER = open('copyright_header.h', 'r').read()
 NAMESPACE = re.compile(r'^esp_wifi')
 DEPRECATED_API = ['esp_wifi_set_ant_gpio', 'esp_wifi_get_ant', 'esp_wifi_get_ant_gpio', 'esp_wifi_set_ant']
+KCONFIG_MULTIPLE_DEF = '# kconfig ignore: multiple-definition'
 
 
 class FunctionVisitor(c_ast.NodeVisitor):
@@ -194,7 +195,7 @@ def generate_kconfig_wifi_caps(idf_path, idf_ver_dir, component_path):
                                 # if WiFi supported for this target, add it to Kconfig slave options and test this slave
                                 add_slave = True
                             replaced = re.sub(r'SOC_WIFI_', 'SLAVE_SOC_WIFI_', line.strip())
-                            kconfig_content.append(f'    {replaced} # kconfig ignore: multiple-definition\n')
+                            kconfig_content.append(f'    {replaced} {KCONFIG_MULTIPLE_DEF}\n')
                             kconfig_content.append(f'    {f.readline()}')  # type
                             kconfig_content.append(f'    {f.readline()}\n')  # default
             except FileNotFoundError:
@@ -212,7 +213,7 @@ def generate_kconfig_wifi_caps(idf_path, idf_ver_dir, component_path):
                 target_key = f'IDF_TARGET_{slave_target.upper()}'
                 if target_key in target_selections:
                     for selection in target_selections[target_key]:
-                        slave_caps.write(f'    config SLAVE_{selection}\n')
+                        slave_caps.write(f'    config SLAVE_{selection} {KCONFIG_MULTIPLE_DEF}\n')
                         slave_caps.write(f'        bool\n')
                         slave_caps.write(f'        default y\n\n')
 
@@ -371,7 +372,7 @@ def generate_kconfig(idf_path, idf_ver_dir, component_path):
                     line1 = re.compile(r'\b' + config + r'\b').sub('SLAVE_' + config, line1)
 
                 if re.match(r'^(config|choice)\s+ESP_WIFI_', line):
-                    line1 = line1.rstrip() + ' # kconfig ignore: multiple-definition\n'
+                    line1 = line1.rstrip() + f' {KCONFIG_MULTIPLE_DEF}\n'
                 f.write(line1)
 
             if re.match(r'^if\s+\(?ESP_WIFI_ENABLED', line):
