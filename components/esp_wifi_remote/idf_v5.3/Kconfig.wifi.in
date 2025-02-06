@@ -1,7 +1,7 @@
 # Wi-Fi configuration
 # This file is auto-generated
 
-        config ESP_WIFI_STATIC_RX_BUFFER_NUM
+        config ESP_WIFI_STATIC_RX_BUFFER_NUM # kconfig ignore: multiple-definition
             int "Max number of WiFi static RX buffers"
             range 2 25 if !SLAVE_SOC_WIFI_HE_SUPPORT
             range 2 128 if SLAVE_SOC_WIFI_HE_SUPPORT
@@ -17,7 +17,7 @@
                 is enabled, this value is recommended to set equal or bigger than ESP_WIFI_RX_BA_WIN in order to
                 achieve better throughput and compatibility with both stations and APs.
 
-        config ESP_WIFI_DYNAMIC_RX_BUFFER_NUM
+        config ESP_WIFI_DYNAMIC_RX_BUFFER_NUM # kconfig ignore: multiple-definition
             int "Max number of WiFi dynamic RX buffers"
             range 0 128 if !LWIP_WND_SCALE
             range 0 1024 if LWIP_WND_SCALE
@@ -36,7 +36,7 @@
 
                 If a dynamic RX buffer limit is set, it should be at least the number of static RX buffers.
 
-        choice ESP_WIFI_TX_BUFFER
+        choice ESP_WIFI_TX_BUFFER # kconfig ignore: multiple-definition
             prompt "Type of WiFi TX buffers"
             default ESP_WIFI_DYNAMIC_TX_BUFFER
             help
@@ -53,19 +53,19 @@
                 If PSRAM is enabled, "Static" should be selected to guarantee enough WiFi TX buffers.
                 If PSRAM is disabled, "Dynamic" should be selected to improve the utilization of RAM.
 
-            config ESP_WIFI_STATIC_TX_BUFFER
+            config ESP_WIFI_STATIC_TX_BUFFER # kconfig ignore: multiple-definition
                 bool "Static"
-            config ESP_WIFI_DYNAMIC_TX_BUFFER
+            config ESP_WIFI_DYNAMIC_TX_BUFFER # kconfig ignore: multiple-definition
                 bool "Dynamic"
                 depends on !(SPIRAM_TRY_ALLOCATE_WIFI_LWIP && !SPIRAM_IGNORE_NOTFOUND)
         endchoice
 
-        config ESP_WIFI_TX_BUFFER_TYPE
+        config ESP_WIFI_TX_BUFFER_TYPE # kconfig ignore: multiple-definition
             int
             default 0 if ESP_WIFI_STATIC_TX_BUFFER
             default 1 if ESP_WIFI_DYNAMIC_TX_BUFFER
 
-        config ESP_WIFI_STATIC_TX_BUFFER_NUM
+        config ESP_WIFI_STATIC_TX_BUFFER_NUM # kconfig ignore: multiple-definition
             int "Max number of WiFi static TX buffers"
             depends on ESP_WIFI_STATIC_TX_BUFFER
             range 1 64
@@ -80,7 +80,7 @@
                 layer can deliver frames faster than WiFi layer can transmit. In these cases, we may run out
                 of TX buffers.
 
-        config ESP_WIFI_CACHE_TX_BUFFER_NUM
+        config ESP_WIFI_CACHE_TX_BUFFER_NUM # kconfig ignore: multiple-definition
             int "Max number of WiFi cache TX buffers"
             depends on (SPIRAM_TRY_ALLOCATE_WIFI_LWIP && !SPIRAM_IGNORE_NOTFOUND)
             range 0 128
@@ -93,7 +93,7 @@
                 it caches the uplayer packets to a dedicated buffer queue, this option is used to configure the
                 size of the cached TX queue.
 
-        config ESP_WIFI_DYNAMIC_TX_BUFFER_NUM
+        config ESP_WIFI_DYNAMIC_TX_BUFFER_NUM # kconfig ignore: multiple-definition
             int "Max number of WiFi dynamic TX buffers"
             depends on ESP_WIFI_DYNAMIC_TX_BUFFER
             range 1 128
@@ -107,7 +107,7 @@
                 can deliver frames faster than WiFi layer can transmit. In these cases, we may run out of TX
                 buffers.
 
-        choice ESP_WIFI_MGMT_RX_BUFFER
+        choice ESP_WIFI_MGMT_RX_BUFFER # kconfig ignore: multiple-definition
             prompt "Type of WiFi RX MGMT buffers"
             default ESP_WIFI_STATIC_RX_MGMT_BUFFER
             help
@@ -120,18 +120,18 @@
                 received. The MGMT buffer is freed after the MGMT data frame has been processed by the WiFi driver.
 
 
-            config ESP_WIFI_STATIC_RX_MGMT_BUFFER
+            config ESP_WIFI_STATIC_RX_MGMT_BUFFER # kconfig ignore: multiple-definition
                 bool "Static"
-            config ESP_WIFI_DYNAMIC_RX_MGMT_BUFFER
+            config ESP_WIFI_DYNAMIC_RX_MGMT_BUFFER # kconfig ignore: multiple-definition
                 bool "Dynamic"
         endchoice
 
-        config ESP_WIFI_DYNAMIC_RX_MGMT_BUF
+        config ESP_WIFI_DYNAMIC_RX_MGMT_BUF # kconfig ignore: multiple-definition
             int
             default 0 if ESP_WIFI_STATIC_RX_MGMT_BUFFER
             default 1 if ESP_WIFI_DYNAMIC_RX_MGMT_BUFFER
 
-        config ESP_WIFI_RX_MGMT_BUF_NUM_DEF
+        config ESP_WIFI_RX_MGMT_BUF_NUM_DEF # kconfig ignore: multiple-definition
             int "Max number of WiFi RX MGMT buffers"
             range 1 10
             default 5
@@ -141,7 +141,7 @@
                 For Management buffers, the number of dynamic and static management buffers is the same.
                 In order to prevent memory fragmentation, the management buffer type should be set to static first.
 
-        config ESP_WIFI_CSI_ENABLED
+        config ESP_WIFI_CSI_ENABLED # kconfig ignore: multiple-definition
             bool "WiFi CSI(Channel State Information)"
             depends on SLAVE_SOC_WIFI_CSI_SUPPORT
             default n
@@ -150,14 +150,14 @@
                 CONFIG_ESP_WIFI_STATIC_RX_BUFFER_NUM KB of RAM. If CSI is not used, it is better to disable
                 this feature in order to save memory.
 
-        config ESP_WIFI_AMPDU_TX_ENABLED
+        config ESP_WIFI_AMPDU_TX_ENABLED # kconfig ignore: multiple-definition
             bool "WiFi AMPDU TX"
             default y
             help
                 Select this option to enable AMPDU TX feature
 
 
-        config ESP_WIFI_TX_BA_WIN
+        config ESP_WIFI_TX_BA_WIN # kconfig ignore: multiple-definition
             int "WiFi AMPDU TX BA window size"
             depends on ESP_WIFI_AMPDU_TX_ENABLED
             range 2 32 if !SLAVE_SOC_WIFI_HE_SUPPORT
@@ -169,13 +169,13 @@
                 test the maximum UDP TX throughput with iperf etc. For iperf test in shieldbox, the recommended
                 value is 9~12.
 
-        config ESP_WIFI_AMPDU_RX_ENABLED
+        config ESP_WIFI_AMPDU_RX_ENABLED # kconfig ignore: multiple-definition
             bool "WiFi AMPDU RX"
             default y
             help
                 Select this option to enable AMPDU RX feature
 
-        config ESP_WIFI_RX_BA_WIN
+        config ESP_WIFI_RX_BA_WIN # kconfig ignore: multiple-definition
             int "WiFi AMPDU RX BA window size"
             depends on ESP_WIFI_AMPDU_RX_ENABLED
             range 2 32 if !SLAVE_SOC_WIFI_HE_SUPPORT
@@ -190,33 +190,33 @@
                 the default and minimum value should be 16 to achieve better throughput and compatibility with both
                 stations and APs.
 
-        config ESP_WIFI_AMSDU_TX_ENABLED
+        config ESP_WIFI_AMSDU_TX_ENABLED # kconfig ignore: multiple-definition
             bool "WiFi AMSDU TX"
             depends on (ESP_WIFI_CACHE_TX_BUFFER_NUM >= 2)
             default n
             help
                 Select this option to enable AMSDU TX feature
 
-        config ESP_WIFI_NVS_ENABLED
+        config ESP_WIFI_NVS_ENABLED # kconfig ignore: multiple-definition
             bool "WiFi NVS flash"
             default y
             help
                 Select this option to enable WiFi NVS flash
 
-        choice ESP_WIFI_TASK_CORE_ID
+        choice ESP_WIFI_TASK_CORE_ID # kconfig ignore: multiple-definition
             depends on !FREERTOS_UNICORE
             prompt "WiFi Task Core ID"
             default ESP_WIFI_TASK_PINNED_TO_CORE_0
             help
                 Pinned WiFi task to core 0 or core 1.
 
-            config ESP_WIFI_TASK_PINNED_TO_CORE_0
+            config ESP_WIFI_TASK_PINNED_TO_CORE_0 # kconfig ignore: multiple-definition
                 bool "Core 0"
-            config ESP_WIFI_TASK_PINNED_TO_CORE_1
+            config ESP_WIFI_TASK_PINNED_TO_CORE_1 # kconfig ignore: multiple-definition
                 bool "Core 1"
         endchoice
 
-        config ESP_WIFI_SOFTAP_BEACON_MAX_LEN
+        config ESP_WIFI_SOFTAP_BEACON_MAX_LEN # kconfig ignore: multiple-definition
             int "Max length of WiFi SoftAP Beacon"
             range 752 1256
             default 752
@@ -239,7 +239,7 @@
                 Setting a longer beacon length also assists with debugging as the conflicting root nodes can be
                 identified more quickly.
 
-        config ESP_WIFI_MGMT_SBUF_NUM
+        config ESP_WIFI_MGMT_SBUF_NUM # kconfig ignore: multiple-definition
             int "WiFi mgmt short buffer number"
             range 6 32
             default 32
@@ -249,7 +249,7 @@
                 packet is less than 64 bytes, the Wi-Fi driver classifies it as a short management packet and
                 assigns it to one of these buffers.
 
-        config ESP_WIFI_IRAM_OPT
+        config ESP_WIFI_IRAM_OPT # kconfig ignore: multiple-definition
             bool "WiFi IRAM speed optimization"
             default n if (BT_ENABLED && SPIRAM && SLAVE_IDF_TARGET_ESP32)
             default y
@@ -258,7 +258,7 @@
                 When this option is disabled, more than 10Kbytes of IRAM memory will be saved
                 but Wi-Fi throughput will be reduced.
 
-        config ESP_WIFI_EXTRA_IRAM_OPT
+        config ESP_WIFI_EXTRA_IRAM_OPT # kconfig ignore: multiple-definition
             bool "WiFi EXTRA IRAM speed optimization"
             default y if SLAVE_SOC_WIFI_HE_SUPPORT
             default n
@@ -267,7 +267,7 @@
                 in IRAM. When this option is disabled, more than 5Kbytes of IRAM memory will be saved
                 but Wi-Fi throughput will be reduced.
 
-        config ESP_WIFI_RX_IRAM_OPT
+        config ESP_WIFI_RX_IRAM_OPT # kconfig ignore: multiple-definition
             bool "WiFi RX IRAM speed optimization"
             default n if (BT_ENABLED && SPIRAM && SLAVE_IDF_TARGET_ESP32)
             default y
@@ -276,7 +276,7 @@
                 When this option is disabled, more than 17Kbytes of IRAM memory will be saved
                 but Wi-Fi performance will be reduced.
 
-        config ESP_WIFI_ENABLE_WPA3_SAE
+        config ESP_WIFI_ENABLE_WPA3_SAE # kconfig ignore: multiple-definition
             bool "Enable WPA3-Personal"
             default y
             select ESP_WIFI_MBEDTLS_CRYPTO
@@ -286,14 +286,14 @@
                 explicitly configured before attempting connection. Please refer to the Wi-Fi Driver API Guide
                 for details.
 
-        config ESP_WIFI_ENABLE_SAE_PK
+        config ESP_WIFI_ENABLE_SAE_PK # kconfig ignore: multiple-definition
             bool "Enable SAE-PK"
             default y
             depends on ESP_WIFI_ENABLE_WPA3_SAE
             help
                 Select this option to enable SAE-PK
 
-        config ESP_WIFI_SOFTAP_SAE_SUPPORT
+        config ESP_WIFI_SOFTAP_SAE_SUPPORT # kconfig ignore: multiple-definition
             bool "Enable WPA3 Personal(SAE) SoftAP"
             default y
             depends on ESP_WIFI_ENABLE_WPA3_SAE
@@ -301,7 +301,7 @@
             help
                 Select this option to enable SAE support in softAP mode.
 
-        config ESP_WIFI_ENABLE_WPA3_OWE_STA
+        config ESP_WIFI_ENABLE_WPA3_OWE_STA # kconfig ignore: multiple-definition
             bool "Enable OWE STA"
             default y
             select ESP_WIFI_MBEDTLS_CRYPTO
@@ -311,7 +311,7 @@
                 explicitly configured before attempting connection. Please refer to the Wi-Fi Driver API Guide
                 for details.
 
-        config ESP_WIFI_SLP_IRAM_OPT
+        config ESP_WIFI_SLP_IRAM_OPT # kconfig ignore: multiple-definition
             bool "WiFi SLP IRAM speed optimization"
             select PM_SLP_DEFAULT_PARAMS_OPT
             select PERIPH_CTRL_FUNC_IN_IRAM
@@ -324,7 +324,7 @@
                 If neither of them are enabled, the other 7.4KB IRAM memory would be taken by this option.
                 Wi-Fi power-save mode average current would be reduced if this option is enabled.
 
-        config ESP_WIFI_SLP_DEFAULT_MIN_ACTIVE_TIME
+        config ESP_WIFI_SLP_DEFAULT_MIN_ACTIVE_TIME # kconfig ignore: multiple-definition
             int "Minimum active time"
             range 8 60
             default 50
@@ -334,7 +334,7 @@
                 during this period, the time will be refreshed. If the time is up, but the station still has packets
                 to receive or send, the time will also be refreshed. unit: milliseconds.
 
-        config ESP_WIFI_SLP_DEFAULT_MAX_ACTIVE_TIME
+        config ESP_WIFI_SLP_DEFAULT_MAX_ACTIVE_TIME # kconfig ignore: multiple-definition
             int "Maximum keep alive time"
             range 10 60
             default 10
@@ -343,7 +343,7 @@
                 sent within ESP_WIFI_SLP_DEFAULT_MAX_ACTIVE_TIME, a null data packet will be sent
                 to maintain the connection with the AP. unit: seconds.
 
-        config ESP_WIFI_SLP_DEFAULT_WAIT_BROADCAST_DATA_TIME
+        config ESP_WIFI_SLP_DEFAULT_WAIT_BROADCAST_DATA_TIME # kconfig ignore: multiple-definition
             int "Minimum wait broadcast data time"
             range 10 30
             default 15
@@ -353,63 +353,63 @@
                 before entering the sleep process. If a broadcast packet is received with more data bits, the time
                 will refreshed. unit: milliseconds.
 
-        config ESP_WIFI_FTM_ENABLE
+        config ESP_WIFI_FTM_ENABLE # kconfig ignore: multiple-definition
             bool "WiFi FTM"
             default n
             depends on SLAVE_SOC_WIFI_FTM_SUPPORT
             help
                 Enable feature Fine Timing Measurement for calculating WiFi Round-Trip-Time (RTT).
 
-        config ESP_WIFI_FTM_INITIATOR_SUPPORT
+        config ESP_WIFI_FTM_INITIATOR_SUPPORT # kconfig ignore: multiple-definition
             bool "FTM Initiator support"
             default y
             depends on ESP_WIFI_FTM_ENABLE
 
-        config ESP_WIFI_FTM_RESPONDER_SUPPORT
+        config ESP_WIFI_FTM_RESPONDER_SUPPORT # kconfig ignore: multiple-definition
             bool "FTM Responder support"
             default y
             depends on ESP_WIFI_FTM_ENABLE
 
-        config ESP_WIFI_STA_DISCONNECTED_PM_ENABLE
+        config ESP_WIFI_STA_DISCONNECTED_PM_ENABLE # kconfig ignore: multiple-definition
             bool "Power Management for station at disconnected"
             default y
             help
                 Select this option to enable power_management for station when disconnected.
                 Chip will do modem-sleep when rf module is not in use any more.
 
-        config ESP_WIFI_GCMP_SUPPORT
+        config ESP_WIFI_GCMP_SUPPORT # kconfig ignore: multiple-definition
             bool "WiFi GCMP Support(GCMP128 and GCMP256)"
             default n
             depends on SLAVE_SOC_WIFI_GCMP_SUPPORT
             help
                 Select this option to enable GCMP support. GCMP support is compulsory for WiFi Suite-B support.
 
-        config ESP_WIFI_GMAC_SUPPORT
+        config ESP_WIFI_GMAC_SUPPORT # kconfig ignore: multiple-definition
             bool "WiFi GMAC Support(GMAC128 and GMAC256)"
             default y
             help
                 Select this option to enable GMAC support. GMAC support is compulsory for WiFi 192 bit certification.
 
-        config ESP_WIFI_SOFTAP_SUPPORT
+        config ESP_WIFI_SOFTAP_SUPPORT # kconfig ignore: multiple-definition
             bool "WiFi SoftAP Support"
             default y
             help
                 WiFi module can be compiled without SoftAP to save code size.
 
-        config ESP_WIFI_ENHANCED_LIGHT_SLEEP
+        config ESP_WIFI_ENHANCED_LIGHT_SLEEP # kconfig ignore: multiple-definition
             bool "WiFi modem automatically receives the beacon"
             default n
             depends on ESP_PHY_MAC_BB_PD && SOC_PM_SUPPORT_BEACON_WAKEUP
             help
                 The wifi modem automatically receives the beacon frame during light sleep.
 
-        config ESP_WIFI_SLP_BEACON_LOST_OPT
+        config ESP_WIFI_SLP_BEACON_LOST_OPT # kconfig ignore: multiple-definition
             bool "Wifi sleep optimize when beacon lost"
             help
                 Enable wifi sleep optimization when beacon loss occurs and immediately enter
                 sleep mode when the WiFi module detects beacon loss.
 
-        config ESP_WIFI_SLP_BEACON_LOST_TIMEOUT
+        config ESP_WIFI_SLP_BEACON_LOST_TIMEOUT # kconfig ignore: multiple-definition
             int "Beacon loss timeout"
             range 5 100
             default 10
@@ -417,7 +417,7 @@
             help
                 Timeout time for close rf phy when beacon loss occurs, Unit: 1024 microsecond.
 
-        config ESP_WIFI_SLP_BEACON_LOST_THRESHOLD
+        config ESP_WIFI_SLP_BEACON_LOST_THRESHOLD # kconfig ignore: multiple-definition
             int "Maximum number of consecutive lost beacons allowed"
             range 0 8
             default 3
@@ -426,7 +426,7 @@
                 Maximum number of consecutive lost beacons allowed, WiFi keeps Rx state when
                 the number of consecutive beacons lost is greater than the given threshold.
 
-        config ESP_WIFI_SLP_PHY_ON_DELTA_EARLY_TIME
+        config ESP_WIFI_SLP_PHY_ON_DELTA_EARLY_TIME # kconfig ignore: multiple-definition
             int "Delta early time for RF PHY on"
             range 0 100
             default 2
@@ -435,7 +435,7 @@
                 Delta early time for rf phy on, When the beacon is lost, the next rf phy on will
                 be earlier the time specified by the configuration item, Unit: 32 microsecond.
 
-        config ESP_WIFI_SLP_PHY_OFF_DELTA_TIMEOUT_TIME
+        config ESP_WIFI_SLP_PHY_OFF_DELTA_TIMEOUT_TIME # kconfig ignore: multiple-definition
             int "Delta timeout time for RF PHY off"
             range 0 8
             default 2
@@ -444,7 +444,7 @@
                 Delta timeout time for rf phy off, When the beacon is lost, the next rf phy off will
                 be delayed for the time specified by the configuration item. Unit: 1024 microsecond.
 
-        config ESP_WIFI_ESPNOW_MAX_ENCRYPT_NUM
+        config ESP_WIFI_ESPNOW_MAX_ENCRYPT_NUM # kconfig ignore: multiple-definition
             int "Maximum espnow encrypt peers number"
             range 0 4 if SLAVE_IDF_TARGET_ESP32C2
             range 0 17 if (!SLAVE_IDF_TARGET_ESP32C2)
@@ -457,14 +457,14 @@
                 Maximum espnow encrypted peers number + maximum number of connections of SoftAP = Max hardware
                 keys number. When using ESP mesh, this value should be set to a maximum of 6.
 
-        config ESP_WIFI_NAN_ENABLE
+        config ESP_WIFI_NAN_ENABLE # kconfig ignore: multiple-definition
             bool "WiFi Aware"
             default n
             depends on SLAVE_SOC_WIFI_NAN_SUPPORT
             help
                 Enable WiFi Aware (NAN) feature.
 
-        config ESP_WIFI_MBEDTLS_CRYPTO
+        config ESP_WIFI_MBEDTLS_CRYPTO # kconfig ignore: multiple-definition
             bool "Use MbedTLS crypto APIs"
             default y
             select MBEDTLS_AES_C
@@ -483,7 +483,7 @@
                 resulting in significantly faster cryptographic operations.
 
         if ESP_WIFI_MBEDTLS_CRYPTO
-            config ESP_WIFI_MBEDTLS_TLS_CLIENT
+            config ESP_WIFI_MBEDTLS_TLS_CLIENT # kconfig ignore: multiple-definition
                 bool "Use MbedTLS TLS client for WiFi Enterprise connection"
                 depends on ESP_WIFI_ENTERPRISE_SUPPORT
                 default y
@@ -495,7 +495,7 @@
                     it is advisable to update your server.
                     Please disable this option for compatibility with older TLS versions.
 
-            config ESP_WIFI_EAP_TLS1_3
+            config ESP_WIFI_EAP_TLS1_3 # kconfig ignore: multiple-definition
                 bool "Enable EAP-TLS v1.3 Support for WiFi Enterprise connection"
                 default n
                 select MBEDTLS_SSL_PROTO_TLS1_3
@@ -510,7 +510,7 @@
 
         endif
 
-        config ESP_WIFI_WAPI_PSK
+        config ESP_WIFI_WAPI_PSK # kconfig ignore: multiple-definition
             bool "Enable WAPI PSK support"
             depends on SLAVE_SOC_WIFI_WAPI_SUPPORT
             default n
@@ -518,7 +518,7 @@
                 Select this option to enable WAPI-PSK
                 which is a Chinese National Standard Encryption for Wireless LANs (GB 15629.11-2003).
 
-        config ESP_WIFI_SUITE_B_192
+        config ESP_WIFI_SUITE_B_192 # kconfig ignore: multiple-definition
             bool "Enable NSA suite B support with 192 bit key"
             default n
             depends on SLAVE_SOC_WIFI_GCMP_SUPPORT
@@ -528,7 +528,7 @@
                 Select this option to enable 192 bit NSA suite-B.
                 This is necessary to support WPA3 192 bit security.
 
-        config ESP_WIFI_11KV_SUPPORT
+        config ESP_WIFI_11KV_SUPPORT # kconfig ignore: multiple-definition
             bool "Enable 802.11k, 802.11v APIs Support"
             default n
             help
@@ -544,7 +544,7 @@
                 and on the radio environment. Current implementation adds beacon report,
                 link measurement, neighbor report.
 
-        config ESP_WIFI_SCAN_CACHE
+        config ESP_WIFI_SCAN_CACHE # kconfig ignore: multiple-definition
             bool "Keep scan results in cache"
             depends on ESP_WIFI_11KV_SUPPORT
             default n
@@ -552,7 +552,7 @@
                 Keep scan results in cache, if not enabled, those
                 will be flushed immediately.
 
-        config ESP_WIFI_MBO_SUPPORT
+        config ESP_WIFI_MBO_SUPPORT # kconfig ignore: multiple-definition
             bool "Enable Multi Band Operation Certification Support"
             default n
             select ESP_WIFI_11KV_SUPPORT
@@ -560,7 +560,7 @@
             help
                 Select this option to enable WiFi Multiband operation certification support.
 
-        config ESP_WIFI_ENABLE_ROAMING_APP
+        config ESP_WIFI_ENABLE_ROAMING_APP # kconfig ignore: multiple-definition
             bool "Advanced support for Wi-Fi Roaming (Experimental)"
             depends on IDF_EXPERIMENTAL_FEATURES
             default n
@@ -580,27 +580,27 @@
             rsource "wifi_apps/roaming_app/src/Kconfig.roaming"
         endmenu
 
-        config ESP_WIFI_DPP_SUPPORT
+        config ESP_WIFI_DPP_SUPPORT # kconfig ignore: multiple-definition
             bool "Enable DPP support"
             default n
             select ESP_WIFI_MBEDTLS_CRYPTO
             help
                 Select this option to enable WiFi Easy Connect Support.
 
-        config ESP_WIFI_11R_SUPPORT
+        config ESP_WIFI_11R_SUPPORT # kconfig ignore: multiple-definition
             bool "Enable 802.11R (Fast Transition) Support"
             default n
             help
                 Select this option to enable WiFi Fast Transition Support.
 
-        config ESP_WIFI_WPS_SOFTAP_REGISTRAR
+        config ESP_WIFI_WPS_SOFTAP_REGISTRAR # kconfig ignore: multiple-definition
             bool "Add WPS Registrar support in SoftAP mode"
             depends on ESP_WIFI_SOFTAP_SUPPORT
             default n
             help
                 Select this option to enable WPS registrar support in softAP mode.
 
-        config ESP_WIFI_ENABLE_WIFI_TX_STATS
+        config ESP_WIFI_ENABLE_WIFI_TX_STATS # kconfig ignore: multiple-definition
             bool "Enable Wi-Fi transmission statistics"
             depends on SLAVE_SOC_WIFI_HE_SUPPORT
             default n
@@ -608,7 +608,7 @@
                 Enable Wi-Fi transmission statistics. Total support 4 access category. Each access category
                 will use 346 bytes memory.
 
-        config ESP_WIFI_ENABLE_WIFI_RX_STATS
+        config ESP_WIFI_ENABLE_WIFI_RX_STATS # kconfig ignore: multiple-definition
             bool "Enable Wi-Fi reception statistics"
             depends on SLAVE_SOC_WIFI_HE_SUPPORT
             default n
@@ -616,14 +616,14 @@
                 Enable Wi-Fi reception statistics. Total support 2 access category. Each access category
                 will use 190 bytes memory.
 
-        config ESP_WIFI_ENABLE_WIFI_RX_MU_STATS
+        config ESP_WIFI_ENABLE_WIFI_RX_MU_STATS # kconfig ignore: multiple-definition
             bool "Enable Wi-Fi DL MU-MIMO and DL OFDMA reception statistics"
             depends on ESP_WIFI_ENABLE_WIFI_RX_STATS
             default n
             help
                 Enable Wi-Fi DL MU-MIMO and DL OFDMA reception statistics. Will use 10932 bytes memory.
 
-        config ESP_WIFI_TX_HETB_QUEUE_NUM
+        config ESP_WIFI_TX_HETB_QUEUE_NUM # kconfig ignore: multiple-definition
             int "WiFi TX HE TB QUEUE number for STA HE TB PPDU transmission"
             depends on SLAVE_SOC_WIFI_HE_SUPPORT
             range 1 4
@@ -632,28 +632,28 @@
                 Set the maximum number of queue that can be aggregated by the STA in the A-MPDU carried in the
                 HE TB PPDU.
 
-        config ESP_WIFI_ENABLE_DUMP_HESIGB
+        config ESP_WIFI_ENABLE_DUMP_HESIGB # kconfig ignore: multiple-definition
             bool "Enable Wi-Fi dump HE-SIGB which is contained in DL HE MU PPDUs"
             depends on SLAVE_SOC_WIFI_HE_SUPPORT_5G
             default "n"
             help
                 Enable Wi-Fi dump HE-SIGB which is contained in DL HE MU PPDUs.
 
-        config ESP_WIFI_ENABLE_DUMP_MU_CFO
+        config ESP_WIFI_ENABLE_DUMP_MU_CFO # kconfig ignore: multiple-definition
             bool "Enable Wi-Fi dump MU CFO"
             depends on SLAVE_SOC_WIFI_HE_SUPPORT_5G
             default "n"
             help
                 Enable Wi-Fi dump MU CFO.
 
-        config ESP_WIFI_ENABLE_DUMP_CTRL_NDPA
+        config ESP_WIFI_ENABLE_DUMP_CTRL_NDPA # kconfig ignore: multiple-definition
             bool "Enable Wi-Fi dump NDPA frames"
             depends on SLAVE_SOC_WIFI_HE_SUPPORT_5G
             default "n"
             help
                 Enable Wi-Fi dump NDPA frames.
 
-        config ESP_WIFI_ENABLE_DUMP_CTRL_BFRP
+        config ESP_WIFI_ENABLE_DUMP_CTRL_BFRP # kconfig ignore: multiple-definition
             bool "Enable Wi-Fi dump BFRP frames"
             depends on SLAVE_SOC_WIFI_HE_SUPPORT_5G
             default "n"
@@ -661,7 +661,7 @@
                 Enable Wi-Fi dump BFRP frames.
 
         menu "WPS Configuration Options"
-            config ESP_WIFI_WPS_STRICT
+            config ESP_WIFI_WPS_STRICT # kconfig ignore: multiple-definition
                 bool "Strictly validate all WPS attributes"
                 default n
                 help
@@ -669,7 +669,7 @@
                     rigorously. Disabling this add the workarounds with various APs.
                     Enabling this may cause inter operability issues with some APs.
 
-            config ESP_WIFI_WPS_PASSPHRASE
+            config ESP_WIFI_WPS_PASSPHRASE # kconfig ignore: multiple-definition
                 bool "Get WPA2 passphrase in WPS config"
                 default n
                 help
@@ -683,7 +683,7 @@
         endmenu # "WPS Configuration Options"
 
 
-        config ESP_WIFI_DEBUG_PRINT
+        config ESP_WIFI_DEBUG_PRINT # kconfig ignore: multiple-definition
             bool "Print debug messages from WPA Supplicant"
             default n
             help
@@ -694,13 +694,13 @@
                 Enabling this could increase the build size ~60kb
                 depending on the project logging level.
 
-        config ESP_WIFI_TESTING_OPTIONS
+        config ESP_WIFI_TESTING_OPTIONS # kconfig ignore: multiple-definition
             bool "Add DPP testing code"
             default n
             help
                 Select this to enable unity test for DPP.
 
-        config ESP_WIFI_ENTERPRISE_SUPPORT
+        config ESP_WIFI_ENTERPRISE_SUPPORT # kconfig ignore: multiple-definition
             bool "Enable enterprise option"
             default y
             help
@@ -714,7 +714,7 @@
                 if it is enabled. For precise information on timing requirements, you can check
                 performance numbers at https://github.com/espressif/mbedtls/wiki/Performance-Numbers.
 
-        config ESP_WIFI_ENT_FREE_DYNAMIC_BUFFER
+        config ESP_WIFI_ENT_FREE_DYNAMIC_BUFFER # kconfig ignore: multiple-definition
             bool "Free dynamic buffers during WiFi enterprise connection"
             depends on ESP_WIFI_ENTERPRISE_SUPPORT
             default y if SLAVE_IDF_TARGET_ESP32C2

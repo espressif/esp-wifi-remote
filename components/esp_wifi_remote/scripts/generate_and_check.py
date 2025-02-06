@@ -179,8 +179,8 @@ def generate_kconfig_wifi_caps(idf_path, idf_ver_dir, component_path):
                             if 'config SOC_WIFI_SUPPORTED' in line:
                                 # if WiFi supported for this target, add it to Kconfig slave options and test this slave
                                 add_slave = True
-                            replaced = re.sub(r'SOC_WIFI_', 'SLAVE_SOC_WIFI_', line)
-                            kconfig_content.append(f'    {replaced}')
+                            replaced = re.sub(r'SOC_WIFI_', 'SLAVE_SOC_WIFI_', line.strip())
+                            kconfig_content.append(f'    {replaced} # kconfig ignore: multiple-definition\n')
                             kconfig_content.append(f'    {f.readline()}')  # type
                             kconfig_content.append(f'    {f.readline()}\n')  # default
             except FileNotFoundError:
@@ -319,6 +319,8 @@ def generate_kconfig(idf_path, idf_ver_dir, component_path):
 
                 for config in slave_configs:
                     line1 = re.compile(config).sub('SLAVE_' + config, line1)
+                if re.match(r'^(config|choice)\s+ESP_WIFI_', line):
+                    line1 = line1.rstrip() + ' # kconfig ignore: multiple-definition\n'
                 f.write(line1)
 
             if re.match(r'^if\s+\(?ESP_WIFI_ENABLED', line):
