@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.2](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v0.6.2)
+
+### Bug Fixes
+
+- Allow global configs to be defined multiple times ([deb6d4c](https://github.com/espressif/esp-wifi-remote/commit/deb6d4c))
+- Account for global target configs in slave select ([0ffdd63](https://github.com/espressif/esp-wifi-remote/commit/0ffdd63))
+
 ## [0.6.1](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v0.6.1)
 
 ### Bug Fixes
