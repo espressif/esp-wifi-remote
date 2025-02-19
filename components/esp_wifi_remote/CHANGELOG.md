@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.7.0](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v0.7.0)
+
+### Features
+
+- Support for esp32h4 ([3666134](https://github.com/espressif/esp-wifi-remote/commit/3666134))
+
+### Bug Fixes
+
+- Fixed ignore tag for multiple definitions ([3c4bc4a](https://github.com/espressif/esp-wifi-remote/commit/3c4bc4a))
+
 ## [0.6.2](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v0.6.2)
 
 ### Bug Fixes
