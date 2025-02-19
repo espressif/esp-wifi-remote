@@ -16,7 +16,7 @@ AUTO_GENERATED = 'This file is auto-generated'
 COPYRIGHT_HEADER = open('copyright_header.h', 'r').read()
 NAMESPACE = re.compile(r'^esp_wifi')
 DEPRECATED_API = ['esp_wifi_set_ant_gpio', 'esp_wifi_get_ant', 'esp_wifi_get_ant_gpio', 'esp_wifi_set_ant']
-KCONFIG_MULTIPLE_DEF = '# kconfig ignore: multiple-definition'
+KCONFIG_MULTIPLE_DEF = '# ignore: multiple-definition'
 
 
 class FunctionVisitor(c_ast.NodeVisitor):
