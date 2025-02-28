@@ -123,55 +123,55 @@ typedef struct {
     int                    magic;                  /**< WiFi init magic number, it should be the last field */
 } wifi_init_config_t;
 
-#ifdef CONFIG_ESP_WIFI_STATIC_TX_BUFFER_NUM
-#define WIFI_STATIC_TX_BUFFER_NUM CONFIG_ESP_WIFI_STATIC_TX_BUFFER_NUM
+#ifdef CONFIG_WIFI_RMT_STATIC_TX_BUFFER_NUM
+#define WIFI_STATIC_TX_BUFFER_NUM CONFIG_WIFI_RMT_STATIC_TX_BUFFER_NUM
 #else
 #define WIFI_STATIC_TX_BUFFER_NUM 0
 #endif
 
-#ifdef CONFIG_ESP_WIFI_CACHE_TX_BUFFER_NUM
-#define WIFI_CACHE_TX_BUFFER_NUM  CONFIG_ESP_WIFI_CACHE_TX_BUFFER_NUM
+#ifdef CONFIG_WIFI_RMT_CACHE_TX_BUFFER_NUM
+#define WIFI_CACHE_TX_BUFFER_NUM  CONFIG_WIFI_RMT_CACHE_TX_BUFFER_NUM
 #else
 #define WIFI_CACHE_TX_BUFFER_NUM  0
 #endif
 
-#ifdef CONFIG_ESP_WIFI_DYNAMIC_TX_BUFFER_NUM
-#define WIFI_DYNAMIC_TX_BUFFER_NUM CONFIG_ESP_WIFI_DYNAMIC_TX_BUFFER_NUM
+#ifdef CONFIG_WIFI_RMT_DYNAMIC_TX_BUFFER_NUM
+#define WIFI_DYNAMIC_TX_BUFFER_NUM CONFIG_WIFI_RMT_DYNAMIC_TX_BUFFER_NUM
 #else
 #define WIFI_DYNAMIC_TX_BUFFER_NUM 0
 #endif
 
-#ifdef CONFIG_ESP_WIFI_RX_MGMT_BUF_NUM_DEF
-#define WIFI_RX_MGMT_BUF_NUM_DEF CONFIG_ESP_WIFI_RX_MGMT_BUF_NUM_DEF
+#ifdef CONFIG_WIFI_RMT_RX_MGMT_BUF_NUM_DEF
+#define WIFI_RX_MGMT_BUF_NUM_DEF CONFIG_WIFI_RMT_RX_MGMT_BUF_NUM_DEF
 #else
 #define WIFI_RX_MGMT_BUF_NUM_DEF 0
 #endif
 
-#if CONFIG_ESP_WIFI_CSI_ENABLED
+#if CONFIG_WIFI_RMT_CSI_ENABLED
 #define WIFI_CSI_ENABLED         1
 #else
 #define WIFI_CSI_ENABLED         0
 #endif
 
-#if CONFIG_ESP_WIFI_AMPDU_RX_ENABLED
+#if CONFIG_WIFI_RMT_AMPDU_RX_ENABLED
 #define WIFI_AMPDU_RX_ENABLED        1
 #else
 #define WIFI_AMPDU_RX_ENABLED        0
 #endif
 
-#if CONFIG_ESP_WIFI_AMPDU_TX_ENABLED
+#if CONFIG_WIFI_RMT_AMPDU_TX_ENABLED
 #define WIFI_AMPDU_TX_ENABLED        1
 #else
 #define WIFI_AMPDU_TX_ENABLED        0
 #endif
 
-#if CONFIG_ESP_WIFI_AMSDU_TX_ENABLED
+#if CONFIG_WIFI_RMT_AMSDU_TX_ENABLED
 #define WIFI_AMSDU_TX_ENABLED        1
 #else
 #define WIFI_AMSDU_TX_ENABLED        0
 #endif
 
-#if CONFIG_ESP_WIFI_NVS_ENABLED
+#if CONFIG_WIFI_RMT_NVS_ENABLED
 #define WIFI_NVS_ENABLED          1
 #else
 #define WIFI_NVS_ENABLED          0
@@ -188,37 +188,37 @@ extern wifi_osi_funcs_t g_wifi_osi_funcs;
 
 #define WIFI_INIT_CONFIG_MAGIC    0x1F2F3F4F
 
-#ifdef CONFIG_ESP_WIFI_AMPDU_RX_ENABLED
-#define WIFI_DEFAULT_RX_BA_WIN CONFIG_ESP_WIFI_RX_BA_WIN
+#ifdef CONFIG_WIFI_RMT_AMPDU_RX_ENABLED
+#define WIFI_DEFAULT_RX_BA_WIN CONFIG_WIFI_RMT_RX_BA_WIN
 #else
 #define WIFI_DEFAULT_RX_BA_WIN 0 /* unused if ampdu_rx_enable == false */
 #endif
 
-#if CONFIG_ESP_WIFI_TASK_PINNED_TO_CORE_1
+#if CONFIG_WIFI_RMT_TASK_PINNED_TO_CORE_1
 #define WIFI_TASK_CORE_ID 1
 #else
 #define WIFI_TASK_CORE_ID 0
 #endif
 
-#ifdef CONFIG_ESP_WIFI_SOFTAP_BEACON_MAX_LEN
-#define WIFI_SOFTAP_BEACON_MAX_LEN CONFIG_ESP_WIFI_SOFTAP_BEACON_MAX_LEN
+#ifdef CONFIG_WIFI_RMT_SOFTAP_BEACON_MAX_LEN
+#define WIFI_SOFTAP_BEACON_MAX_LEN CONFIG_WIFI_RMT_SOFTAP_BEACON_MAX_LEN
 #else
 #define WIFI_SOFTAP_BEACON_MAX_LEN 752
 #endif
 
-#ifdef CONFIG_ESP_WIFI_MGMT_SBUF_NUM
-#define WIFI_MGMT_SBUF_NUM CONFIG_ESP_WIFI_MGMT_SBUF_NUM
+#ifdef CONFIG_WIFI_RMT_MGMT_SBUF_NUM
+#define WIFI_MGMT_SBUF_NUM CONFIG_WIFI_RMT_MGMT_SBUF_NUM
 #else
 #define WIFI_MGMT_SBUF_NUM 32
 #endif
 
-#if CONFIG_ESP_WIFI_STA_DISCONNECTED_PM_ENABLE
+#if CONFIG_WIFI_RMT_STA_DISCONNECTED_PM_ENABLE
 #define WIFI_STA_DISCONNECTED_PM_ENABLED true
 #else
 #define WIFI_STA_DISCONNECTED_PM_ENABLED false
 #endif
 
-#if CONFIG_ESP_WIFI_ENABLE_WPA3_SAE
+#if CONFIG_WIFI_RMT_ENABLE_WPA3_SAE
 #define WIFI_ENABLE_WPA3_SAE (1<<0)
 #else
 #define WIFI_ENABLE_WPA3_SAE 0
@@ -230,50 +230,50 @@ extern wifi_osi_funcs_t g_wifi_osi_funcs;
 #define WIFI_ENABLE_CACHE_TX_BUFFER 0
 #endif
 
-#if CONFIG_ESP_WIFI_FTM_INITIATOR_SUPPORT
+#if CONFIG_WIFI_RMT_FTM_INITIATOR_SUPPORT
 #define WIFI_FTM_INITIATOR (1<<2)
 #else
 #define WIFI_FTM_INITIATOR 0
 #endif
 
-#if CONFIG_ESP_WIFI_FTM_RESPONDER_SUPPORT
+#if CONFIG_WIFI_RMT_FTM_RESPONDER_SUPPORT
 #define WIFI_FTM_RESPONDER (1<<3)
 #else
 #define WIFI_FTM_RESPONDER 0
 #endif
 
-#if CONFIG_ESP_WIFI_GCMP_SUPPORT
+#if CONFIG_WIFI_RMT_GCMP_SUPPORT
 #define WIFI_ENABLE_GCMP (1<<4)
 #else
 #define WIFI_ENABLE_GCMP 0
 #endif
 
-#if CONFIG_ESP_WIFI_GMAC_SUPPORT
+#if CONFIG_WIFI_RMT_GMAC_SUPPORT
 #define WIFI_ENABLE_GMAC (1<<5)
 #else
 #define WIFI_ENABLE_GMAC 0
 #endif
 
-#if CONFIG_ESP_WIFI_11R_SUPPORT
+#if CONFIG_WIFI_RMT_11R_SUPPORT
 #define WIFI_ENABLE_11R (1<<6)
 #else
 #define WIFI_ENABLE_11R 0
 #endif
 
-#if CONFIG_ESP_WIFI_ENTERPRISE_SUPPORT
+#if CONFIG_WIFI_RMT_ENTERPRISE_SUPPORT
 #define WIFI_ENABLE_ENTERPRISE (1<<7)
 #else
 #define WIFI_ENABLE_ENTERPRISE 0
 #endif
 
-#if CONFIG_ESP_WIFI_ENABLE_DUMP_HESIGB && !WIFI_CSI_ENABLED
+#if CONFIG_WIFI_RMT_ENABLE_DUMP_HESIGB && !WIFI_CSI_ENABLED
 #define WIFI_DUMP_HESIGB_ENABLED  true
 #else
 #define WIFI_DUMP_HESIGB_ENABLED  false
 #endif
 
-#if CONFIG_ESP_WIFI_TX_HETB_QUEUE_NUM
-#define WIFI_TX_HETB_QUEUE_NUM CONFIG_ESP_WIFI_TX_HETB_QUEUE_NUM
+#if CONFIG_WIFI_RMT_TX_HETB_QUEUE_NUM
+#define WIFI_TX_HETB_QUEUE_NUM CONFIG_WIFI_RMT_TX_HETB_QUEUE_NUM
 #else
 #define WIFI_TX_HETB_QUEUE_NUM 1
 #endif
@@ -300,12 +300,12 @@ extern wifi_osi_funcs_t g_wifi_osi_funcs;
 #define WIFI_INIT_CONFIG_DEFAULT() { \
     .osi_funcs = &g_wifi_osi_funcs, \
     .wpa_crypto_funcs = g_wifi_default_wpa_crypto_funcs, \
-    .static_rx_buf_num = CONFIG_ESP_WIFI_STATIC_RX_BUFFER_NUM,\
-    .dynamic_rx_buf_num = CONFIG_ESP_WIFI_DYNAMIC_RX_BUFFER_NUM,\
-    .tx_buf_type = CONFIG_ESP_WIFI_TX_BUFFER_TYPE,\
+    .static_rx_buf_num = CONFIG_WIFI_RMT_STATIC_RX_BUFFER_NUM,\
+    .dynamic_rx_buf_num = CONFIG_WIFI_RMT_DYNAMIC_RX_BUFFER_NUM,\
+    .tx_buf_type = CONFIG_WIFI_RMT_TX_BUFFER_TYPE,\
     .static_tx_buf_num = WIFI_STATIC_TX_BUFFER_NUM,\
     .dynamic_tx_buf_num = WIFI_DYNAMIC_TX_BUFFER_NUM,\
-    .rx_mgmt_buf_type = CONFIG_ESP_WIFI_DYNAMIC_RX_MGMT_BUF,\
+    .rx_mgmt_buf_type = CONFIG_WIFI_RMT_DYNAMIC_RX_MGMT_BUF,\
     .rx_mgmt_buf_num = WIFI_RX_MGMT_BUF_NUM_DEF,\
     .cache_tx_buf_num = WIFI_CACHE_TX_BUFFER_NUM,\
     .csi_enable = WIFI_CSI_ENABLED,\
@@ -320,7 +320,7 @@ extern wifi_osi_funcs_t g_wifi_osi_funcs;
     .mgmt_sbuf_num = WIFI_MGMT_SBUF_NUM, \
     .feature_caps = WIFI_FEATURE_CAPS, \
     .sta_disconnected_pm = WIFI_STA_DISCONNECTED_PM_ENABLED,  \
-    .espnow_max_encrypt_num = CONFIG_ESP_WIFI_ESPNOW_MAX_ENCRYPT_NUM, \
+    .espnow_max_encrypt_num = CONFIG_WIFI_RMT_ESPNOW_MAX_ENCRYPT_NUM, \
     .tx_hetb_queue_num = WIFI_TX_HETB_QUEUE_NUM, \
     .dump_hesigb_enable = WIFI_DUMP_HESIGB_ENABLED, \
     .magic = WIFI_INIT_CONFIG_MAGIC\
@@ -676,8 +676,8 @@ esp_err_t esp_wifi_get_ps(wifi_ps_type_t *type);
 /**
   * @brief     Set protocol type of specified interface
   *            The default protocol is (WIFI_PROTOCOL_11B|WIFI_PROTOCOL_11G|WIFI_PROTOCOL_11N).
-  *            if CONFIG_SOC_WIFI_HE_SUPPORT and band mode is 2.4G, the default protocol is (WIFI_PROTOCOL_11B|WIFI_PROTOCOL_11G|WIFI_PROTOCOL_11N|WIFI_PROTOCOL_11AX).
-  *            if CONFIG_SOC_WIFI_SUPPORT_5G and band mode is 5G, the default protocol is (WIFI_PROTOCOL_11A|WIFI_PROTOCOL_11N|WIFI_PROTOCOL_11AC|WIFI_PROTOCOL_11AX).
+  *            if CONFIG_SLAVE_SOC_WIFI_HE_SUPPORT and band mode is 2.4G, the default protocol is (WIFI_PROTOCOL_11B|WIFI_PROTOCOL_11G|WIFI_PROTOCOL_11N|WIFI_PROTOCOL_11AX).
+  *            if CONFIG_SLAVE_SOC_WIFI_SUPPORT_5G and band mode is 5G, the default protocol is (WIFI_PROTOCOL_11A|WIFI_PROTOCOL_11N|WIFI_PROTOCOL_11AC|WIFI_PROTOCOL_11AX).
   *
   * @attention 1. When WiFi band mode is 2.4G only, support 802.11b or 802.11bg or 802.11bgn or 802.11bgnax or LR mode
   * @attention 2. When WiFi band mode is 5G only, support 802.11a or 802.11an or 802.11anac or 802.11anacax
@@ -1669,8 +1669,8 @@ esp_err_t esp_wifi_get_band(wifi_band_t* band);
   * @attention 1. When the WiFi band mode is set to 2.4G only, it operates exclusively on the 2.4GHz channels.
   * @attention 2. When the WiFi band mode is set to 5G only, it operates exclusively on the 5GHz channels.
   * @attention 3. When the WiFi band mode is set to 2.4G + 5G (WIFI_BAND_MODE_AUTO), it can operate on both the 2.4GHz and 5GHz channels.
-  * @attention 4. WiFi band mode can be set to 5G only or 2.4G + 5G (WIFI_BAND_MODE_AUTO) if CONFIG_SOC_WIFI_SUPPORT_5G is supported.
-  * @attention 5. If CONFIG_SOC_WIFI_SUPPORT_5G is not supported, the API will return ESP_ERR_INVALID_ARG when the band mode is set to either 5G only or 2.4G + 5G (WIFI_BAND_MODE_AUTO).
+  * @attention 4. WiFi band mode can be set to 5G only or 2.4G + 5G (WIFI_BAND_MODE_AUTO) if CONFIG_SLAVE_SOC_WIFI_SUPPORT_5G is supported.
+  * @attention 5. If CONFIG_SLAVE_SOC_WIFI_SUPPORT_5G is not supported, the API will return ESP_ERR_INVALID_ARG when the band mode is set to either 5G only or 2.4G + 5G (WIFI_BAND_MODE_AUTO).
   * @attention 6. When a WiFi band mode change triggers a band change, if no channel is set for the current band, a default channel will be assigned: channel 1 for 2.4G band and channel 36 for 5G band.
   *
   * @param[in]    band_mode store the band mode of WiFi
@@ -1733,7 +1733,7 @@ esp_err_t esp_wifi_set_protocols(wifi_interface_t ifx, wifi_protocols_t *protoco
 /**
   * @brief     Get the current protocol of the specified interface and specified band
   *
-  * @attention 1. The 5G protocol can only be read when CONFIG_SOC_WIFI_SUPPORT_5G is enabled.
+  * @attention 1. The 5G protocol can only be read when CONFIG_SLAVE_SOC_WIFI_SUPPORT_5G is enabled.
   * @attention 2. When the WiFi band mode is set to 2.4G only, it will not get 5G protocol
   * @attention 3. When the WiFi band mode is set to 5G only, it will not get 2.4G protocol
   *
@@ -1772,7 +1772,7 @@ esp_err_t esp_wifi_set_bandwidths(wifi_interface_t ifx, wifi_bandwidths_t* bw);
 /**
   * @brief     Get the bandwidth of specified interface and specified band
   *
-  * @attention 1. The 5G bandwidth can only be read when CONFIG_SOC_WIFI_SUPPORT_5G is enabled.
+  * @attention 1. The 5G bandwidth can only be read when CONFIG_SLAVE_SOC_WIFI_SUPPORT_5G is enabled.
   * @attention 2. When the WiFi band mode is set to 2.4G only, it will not get 5G bandwidth
   * @attention 3. When the WiFi band mode is set to 5G only, it will not get 2.4G bandwidth
   *

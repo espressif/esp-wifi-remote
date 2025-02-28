@@ -35,7 +35,7 @@ typedef enum {
 typedef enum {
     WIFI_IF_STA = ESP_IF_WIFI_STA,    /**< Station interface */
     WIFI_IF_AP  = ESP_IF_WIFI_AP,     /**< Soft-AP interface */
-#if CONFIG_SOC_WIFI_NAN_SUPPORT || !CONFIG_SOC_WIFI_ENABLED
+#if CONFIG_SLAVE_SOC_WIFI_NAN_SUPPORT || !CONFIG_SLAVE_SOC_WIFI_ENABLED
     WIFI_IF_NAN = ESP_IF_WIFI_NAN,    /**< NAN interface */
 #endif
     WIFI_IF_MAX                       /**< Maximum number of interfaces */
@@ -64,7 +64,7 @@ typedef struct {
     uint8_t               nchan;   /**< Total channel number of the allowed 2.4GHz Wi-Fi channels */
     int8_t                max_tx_power;   /**< This field is used for getting Wi-Fi maximum transmitting power, call esp_wifi_set_max_tx_power to set the maximum transmitting power. */
     wifi_country_policy_t policy;  /**< Country policy */
-#if CONFIG_SOC_WIFI_SUPPORT_5G
+#if CONFIG_SLAVE_SOC_WIFI_SUPPORT_5G
     uint32_t              wifi_5g_channel_mask;  /**< A bitmask representing the allowed 5GHz Wi-Fi channels.
                                                       Each bit in the mask corresponds to a specific channel as wifi_5g_channel_bit_t shown.
                                                       Bitmask set to 0 indicates 5GHz channels are allowed according to local regulatory rules.
@@ -936,7 +936,7 @@ typedef enum {
     WIFI_PHY_RATE_MCS5_LGI  = 0x15, /**< MCS5 with long GI */
     WIFI_PHY_RATE_MCS6_LGI  = 0x16, /**< MCS6 with long GI */
     WIFI_PHY_RATE_MCS7_LGI  = 0x17, /**< MCS7 with long GI */
-#if CONFIG_SOC_WIFI_HE_SUPPORT || !CONFIG_SOC_WIFI_SUPPORTED
+#if CONFIG_SLAVE_SOC_WIFI_HE_SUPPORT || !CONFIG_SLAVE_SOC_WIFI_SUPPORTED
     WIFI_PHY_RATE_MCS8_LGI,         /**< MCS8 with long GI */
     WIFI_PHY_RATE_MCS9_LGI,         /**< MCS9 with long GI */
 #endif
@@ -949,7 +949,7 @@ typedef enum {
     WIFI_PHY_RATE_MCS5_SGI,         /**< MCS5 with short GI */
     WIFI_PHY_RATE_MCS6_SGI,         /**< MCS6 with short GI */
     WIFI_PHY_RATE_MCS7_SGI,         /**< MCS7 with short GI */
-#if CONFIG_SOC_WIFI_HE_SUPPORT || !CONFIG_SOC_WIFI_SUPPORTED
+#if CONFIG_SLAVE_SOC_WIFI_HE_SUPPORT || !CONFIG_SLAVE_SOC_WIFI_SUPPORTED
     WIFI_PHY_RATE_MCS8_SGI,         /**< MCS8 with short GI */
     WIFI_PHY_RATE_MCS9_SGI,         /**< MCS9 with short GI */
 #endif
