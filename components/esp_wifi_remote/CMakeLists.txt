@@ -14,7 +14,7 @@ idf_component_register(INCLUDE_DIRS include
                     PRIV_REQUIRES esp_wifi esp-tls vfs)
 
 
-set(IDF_VER_DIR "idf_v${IDF_VERSION_MAJOR}.${IDF_VERSION_MINOR}")
+set(IDF_VER_DIR "${CMAKE_CURRENT_SOURCE_DIR}/idf_v${IDF_VERSION_MAJOR}.${IDF_VERSION_MINOR}")
 
 # Check if we're on tagged version of ESP-IDF and if we need to supply specific version
 string(REGEX MATCH "^v[0-9]+\\.[0-9]+(\\.[0-9]+)?(-dirty)?$" IDF_VER_TAG "${IDF_VER}")
@@ -48,7 +48,7 @@ idf_component_get_property(wifi esp_wifi COMPONENT_LIB)
 
 # Update wifi include directories to prepend the injected dir with modified headers supporting SLAVE capability
 get_target_property(original_wifi_dirs ${wifi} INTERFACE_INCLUDE_DIRECTORIES)
-set(updated_wifi_dirs "${CMAKE_CURRENT_SOURCE_DIR}/${IDF_VER_DIR}/include/injected" ${original_wifi_dirs})
+set(updated_wifi_dirs "${IDF_VER_DIR}/include/injected" ${original_wifi_dirs})
 set_target_properties(${wifi} PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${updated_wifi_dirs}")
 
 target_link_libraries(${wifi} PUBLIC ${COMPONENT_LIB})

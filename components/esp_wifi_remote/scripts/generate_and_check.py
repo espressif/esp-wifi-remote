@@ -322,42 +322,36 @@ def generate_test_cases(function_prototypes, idf_ver_dir, component_path):
 
 def generate_wifi_native(idf_path, idf_ver_dir, component_path):
     native_headers = []
-    wifi_native = os.path.join(component_path, idf_ver_dir, 'include', 'esp_wifi_types_native.h')
-    native_header = os.path.join(idf_path, 'components', 'esp_wifi', 'include', 'local', 'esp_wifi_types_native.h')
-    orig_content = open(native_header, 'r').read()
-    content = orig_content.replace('CONFIG_','CONFIG_SLAVE_')
-    open(wifi_native, 'w').write(content)
-    native_headers.append(wifi_native)
 
-    injected_wifi_h = os.path.join(component_path, idf_ver_dir, 'include', 'injected', 'esp_wifi.h')
+    def replace_configs(original, replaced):
+        content = open(original, 'r').read()
+        content = content.replace(r'CONFIG_ESP_WIFI_','CONFIG_WIFI_RMT_')
+        content = content.replace(r'CONFIG_SOC_WIFI_','CONFIG_SLAVE_SOC_WIFI_')
+        content = content.replace(r'CONFIG_FREERTOS_','CONFIG_SLAVE_FREERTOS_')
+        content = content.replace(r'CONFIG_IDF_TARGET_','CONFIG_SLAVE_IDF_TARGET_')
+        open(replaced, 'w').write(content)
+        return replaced
+
+    original_native_wifi_h = os.path.join(idf_path, 'components', 'esp_wifi', 'include', 'local', 'esp_wifi_types_native.h')
+    slave_native_wifi_h = os.path.join(component_path, idf_ver_dir, 'include', 'esp_wifi_types_native.h')
+    native_headers.append(replace_configs(original_native_wifi_h, slave_native_wifi_h))
+
     original_wifi_h = os.path.join(idf_path, 'components', 'esp_wifi', 'include', 'esp_wifi.h')
-    content = open(original_wifi_h, 'r').read()
-    content = content.replace(r'CONFIG_ESP_WIFI_','CONFIG_WIFI_RMT_')
-    content = content.replace(r'CONFIG_SOC_WIFI_','CONFIG_SLAVE_SOC_WIFI_')
-    content = content.replace(r'CONFIG_FREERTOS_','CONFIG_SLAVE_FREERTOS_')
-    content = content.replace(r'CONFIG_IDF_TARGET_','CONFIG_SLAVE_IDF_TARGET_')
-    open(injected_wifi_h, 'w').write(content)
-    native_headers.append(injected_wifi_h)
+    injected_wifi_h = os.path.join(component_path, idf_ver_dir, 'include', 'injected', 'esp_wifi.h')
+    native_headers.append(replace_configs(original_wifi_h, injected_wifi_h))
 
     injected_wifi_generic_types = os.path.join(component_path, idf_ver_dir, 'include', 'injected', 'esp_wifi_types_generic.h')
     original_wifi_generic_types = os.path.join(idf_path, 'components', 'esp_wifi', 'include', 'esp_wifi_types_generic.h')
-    content = open(original_wifi_generic_types, 'r').read()
-    content = content.replace(r'CONFIG_ESP_WIFI_','CONFIG_WIFI_RMT_')
-    content = content.replace(r'CONFIG_SOC_WIFI_','CONFIG_SLAVE_SOC_WIFI_')
-    content = content.replace(r'CONFIG_FREERTOS_','CONFIG_SLAVE_FREERTOS_')
-    content = content.replace(r'CONFIG_IDF_TARGET_','CONFIG_SLAVE_IDF_TARGET_')
-    open(injected_wifi_generic_types, 'w').write(content)
-    native_headers.append(injected_wifi_generic_types)
+    native_headers.append(replace_configs(original_wifi_generic_types, injected_wifi_generic_types))
 
-    injected_wifi_he_types = os.path.join(component_path, idf_ver_dir, 'include', 'injected', 'esp_wifi_he_types.h')
     original_wifi_he_types = os.path.join(idf_path, 'components', 'esp_wifi', 'include', 'esp_wifi_he_types.h')
-    content = open(original_wifi_he_types, 'r').read()
-    content = content.replace(r'CONFIG_ESP_WIFI_','CONFIG_WIFI_RMT_')
-    content = content.replace(r'CONFIG_SOC_WIFI_','CONFIG_SLAVE_SOC_WIFI_')
-    content = content.replace(r'CONFIG_FREERTOS_','CONFIG_SLAVE_FREERTOS_')
-    content = content.replace(r'CONFIG_IDF_TARGET_','CONFIG_SLAVE_IDF_TARGET_')
-    open(injected_wifi_he_types, 'w').write(content)
-    native_headers.append(injected_wifi_he_types)
+    injected_wifi_he_types = os.path.join(component_path, idf_ver_dir, 'include', 'injected', 'esp_wifi_he_types.h')
+    native_headers.append(replace_configs(original_wifi_he_types, injected_wifi_he_types))
+
+    original_wifi_types = os.path.join(idf_path, 'components', 'esp_wifi', 'include', 'esp_wifi_types.h')
+    injected_wifi_types = os.path.join(component_path, idf_ver_dir, 'include', 'injected', 'esp_wifi_types.h')
+    native_headers.append(replace_configs(original_wifi_types, injected_wifi_types))
+
     return native_headers
 
 
