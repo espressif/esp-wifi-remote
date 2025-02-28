@@ -17,6 +17,7 @@ COPYRIGHT_HEADER = open('copyright_header.h', 'r').read()
 NAMESPACE = re.compile(r'^esp_wifi')
 DEPRECATED_API = ['esp_wifi_set_ant_gpio', 'esp_wifi_get_ant', 'esp_wifi_get_ant_gpio', 'esp_wifi_set_ant']
 KCONFIG_MULTIPLE_DEF = '# ignore: multiple-definition'
+wifi_configs = []
 
 
 class FunctionVisitor(c_ast.NodeVisitor):
@@ -320,12 +321,44 @@ def generate_test_cases(function_prototypes, idf_ver_dir, component_path):
 
 
 def generate_wifi_native(idf_path, idf_ver_dir, component_path):
+    native_headers = []
     wifi_native = os.path.join(component_path, idf_ver_dir, 'include', 'esp_wifi_types_native.h')
     native_header = os.path.join(idf_path, 'components', 'esp_wifi', 'include', 'local', 'esp_wifi_types_native.h')
     orig_content = open(native_header, 'r').read()
     content = orig_content.replace('CONFIG_','CONFIG_SLAVE_')
     open(wifi_native, 'w').write(content)
-    return [wifi_native]
+    native_headers.append(wifi_native)
+
+    injected_wifi_h = os.path.join(component_path, idf_ver_dir, 'include', 'injected', 'esp_wifi.h')
+    original_wifi_h = os.path.join(idf_path, 'components', 'esp_wifi', 'include', 'esp_wifi.h')
+    content = open(original_wifi_h, 'r').read()
+    # content = content.replace(r'CONFIG_ESP_WIFI_','CONFIG_WIFI_RMT_')
+    # content = content.replace(r'CONFIG_SOC_WIFI_','CONFIG_SLAVE_SOC_WIFI_')
+    # content = content.replace(r'CONFIG_FREERTOS_','CONFIG_SLAVE_FREERTOS_')
+    # content = content.replace(r'CONFIG_IDF_TARGET_','CONFIG_SLAVE_IDF_TARGET_')
+    open(injected_wifi_h, 'w').write(content)
+    native_headers.append(injected_wifi_h)
+
+    injected_wifi_generic_types = os.path.join(component_path, idf_ver_dir, 'include', 'injected', 'esp_wifi_types_generic.h')
+    original_wifi_generic_types = os.path.join(idf_path, 'components', 'esp_wifi', 'include', 'esp_wifi_types_generic.h')
+    content = open(original_wifi_generic_types, 'r').read()
+    # content = content.replace(r'CONFIG_ESP_WIFI_','CONFIG_WIFI_RMT_')
+    # content = content.replace(r'CONFIG_SOC_WIFI_','CONFIG_SLAVE_SOC_WIFI_')
+    # content = content.replace(r'CONFIG_FREERTOS_','CONFIG_SLAVE_FREERTOS_')
+    # content = content.replace(r'CONFIG_IDF_TARGET_','CONFIG_SLAVE_IDF_TARGET_')
+    open(injected_wifi_generic_types, 'w').write(content)
+    native_headers.append(injected_wifi_generic_types)
+
+    injected_wifi_he_types = os.path.join(component_path, idf_ver_dir, 'include', 'injected', 'esp_wifi_he_types.h')
+    original_wifi_he_types = os.path.join(idf_path, 'components', 'esp_wifi', 'include', 'esp_wifi_he_types.h')
+    content = open(original_wifi_he_types, 'r').read()
+    # content = content.replace(r'CONFIG_ESP_WIFI_','CONFIG_WIFI_RMT_')
+    # content = content.replace(r'CONFIG_SOC_WIFI_','CONFIG_SLAVE_SOC_WIFI_')
+    # content = content.replace(r'CONFIG_FREERTOS_','CONFIG_SLAVE_FREERTOS_')
+    # content = content.replace(r'CONFIG_IDF_TARGET_','CONFIG_SLAVE_IDF_TARGET_')
+    open(injected_wifi_he_types, 'w').write(content)
+    native_headers.append(injected_wifi_he_types)
+    return native_headers
 
 
 def get_global_configs(idf_path):
@@ -355,6 +388,8 @@ def generate_kconfig(idf_path, idf_ver_dir, component_path):
     lines = open(os.path.join(idf_path, 'components', 'esp_wifi', 'Kconfig'), 'r').readlines()
     copy = 100      # just a big number to be greater than nested_if in the first few iterations
     nested_if = 0
+    initial_indent = -1  # Track the initial indentation level
+
     with open(remote_kconfig, 'w') as f:
         f.write(f'# Wi-Fi configuration\n')
         f.write(f'# {AUTO_GENERATED}\n')
@@ -366,6 +401,10 @@ def generate_kconfig(idf_path, idf_ver_dir, component_path):
                 nested_if -= 1
 
             if nested_if >= copy:
+                # Capture initial indentation
+                if initial_indent == -1 and re.match(r'^(config|choice)\s+ESP_WIFI_', line):
+                    initial_indent = len(re.match(r'^\s*', line1).group())
+
                 # First replace the base configs
                 for config in base_configs:
                     line1 = re.compile(config).sub('SLAVE_' + config, line1)
@@ -375,12 +414,19 @@ def generate_kconfig(idf_path, idf_ver_dir, component_path):
                     # Only replace whole words to avoid partial matches
                     line1 = re.compile(r'\b' + config + r'\b').sub('SLAVE_' + config, line1)
 
-                if re.match(r'^(config|choice)\s+ESP_WIFI_', line):
-                    line1 = line1.rstrip() + f' {KCONFIG_MULTIPLE_DEF}\n'
+                line1 = re.compile(r'\bESP_WIFI_').sub('WIFI_RMT_', line1)
+
+                match = re.match(r'^(config|choice)\s+(ESP_WIFI_[A-Z0-9_]+)', line)
+                if match:
+                    wifi_configs.append(match.group(2))
+
+                if len(line1) > initial_indent and line1[:initial_indent].isspace():
+                    line1 = line1[initial_indent:]
                 f.write(line1)
 
             if re.match(r'^if\s+\(?ESP_WIFI_ENABLED', line):
                 copy = nested_if
+
         f.write(f'# Wi-Fi configuration end\n')
     return [remote_kconfig]
 

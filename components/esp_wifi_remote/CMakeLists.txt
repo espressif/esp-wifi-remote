@@ -45,4 +45,10 @@ target_sources(${COMPONENT_LIB}             ${TARGET_SOURCE_TYPE}  ${src_wifi_re
                                                                    ${src_wifi_with_remote})
 
 idf_component_get_property(wifi esp_wifi COMPONENT_LIB)
+
+# Update wifi include directories to prepend the injected dir with modified headers supporting SLAVE capability
+get_target_property(original_wifi_dirs ${wifi} INTERFACE_INCLUDE_DIRECTORIES)
+set(updated_wifi_dirs "${CMAKE_CURRENT_SOURCE_DIR}/include/injected" ${original_wifi_dirs})
+set_target_properties(${wifi} PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${updated_wifi_dirs}")
+
 target_link_libraries(${wifi} PUBLIC ${COMPONENT_LIB})
