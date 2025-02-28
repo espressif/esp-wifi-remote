@@ -314,6 +314,10 @@ if SLAVE_IDF_TARGET_ESP32C5
         int
         default 3
 
+    config SLAVE_SOC_WIFI_NAN_SUPPORT # ignore: multiple-definition
+        bool
+        default y
+
     config SLAVE_FREERTOS_UNICORE # ignore: multiple-definition
         bool
         default y
@@ -365,6 +369,10 @@ if SLAVE_IDF_TARGET_ESP32C61
     config SLAVE_SOC_WIFI_MAC_VERSION_NUM # ignore: multiple-definition
         int
         default 3
+
+    config SLAVE_SOC_WIFI_NAN_SUPPORT # ignore: multiple-definition
+        bool
+        default y
 
     config SLAVE_FREERTOS_UNICORE # ignore: multiple-definition
         bool
