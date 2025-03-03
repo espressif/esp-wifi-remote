@@ -266,6 +266,8 @@ def generate_remote_wifi_api(function_prototypes, idf_ver_dir, component_path):
 
 
 def generate_hosted_mocks(function_prototypes, idf_ver_dir, component_path):
+    if 'tag' in idf_ver_dir:
+        return []
     source = os.path.join(component_path, 'test', 'smoke_test', 'components', 'esp_hosted', idf_ver_dir, 'esp_hosted_mock.c')
     header = os.path.join(component_path, 'test', 'smoke_test', 'components', 'esp_hosted', idf_ver_dir, 'include', 'esp_hosted_mock.h')
     with open(source, 'w') as f, open(header, 'w') as h:
@@ -290,6 +292,8 @@ def generate_hosted_mocks(function_prototypes, idf_ver_dir, component_path):
 
 
 def generate_test_cases(function_prototypes, idf_ver_dir, component_path):
+    if 'tag' in idf_ver_dir:
+        return []
     wifi_cases = os.path.join(component_path, 'test', 'smoke_test', 'main', idf_ver_dir, 'all_wifi_calls.c')
     remote_wifi_cases = os.path.join(component_path, 'test', 'smoke_test', 'main', idf_ver_dir, 'all_wifi_remote_calls.c')
     with open(wifi_cases, 'w') as wifi, open(remote_wifi_cases, 'w') as remote:
@@ -430,6 +434,30 @@ def compare_files(base_dir, component_path, files_to_check):
     return failures
 
 
+def get_idf_ver_dir(idf_path, component_path):
+    try:
+        # Run `git describe` inside the IDF_PATH directory
+        result = subprocess.run(
+            ['git', 'describe', '--tags', '--dirty'],
+            cwd=idf_path,
+            capture_output=True,
+            text=True,
+            check=True
+        )
+        idf_ver = result.stdout.strip()
+    except subprocess.CalledProcessError:
+        raise RuntimeError('Failed to retrieve IDF version using `git describe`.')
+    # Regex to match version tags like vX.Y or vX.Y.Z (with optional -dirty)
+    match = re.match(r'^(v\d+\.\d+(\.\d+)?)(-dirty)?$', idf_ver)
+
+    if match and os.path.isdir(os.path.join(component_path, f'idf_tag_{match.group(1)}')):
+        return f'idf_tag_{match.group(1)}'  # Return the clean tag (without -dirty)
+    idf_version = os.getenv('ESP_IDF_VERSION')
+    if idf_version is None:
+        raise RuntimeError("Environment variable 'ESP_IDF_VERSION' wasn't set.")
+    return f'idf_v{idf_version}'
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description='Build all projects',
@@ -447,15 +475,16 @@ making changes you might need to modify 'copyright_header.h' in the script direc
     parser.add_argument('--base-dir', help='Base directory to compare generated files against')
     args = parser.parse_args()
 
-    idf_version = os.getenv('ESP_IDF_VERSION')
-    if idf_version is None:
-        raise RuntimeError("Environment variable 'ESP_IDF_VERSION' wasn't set.")
-    idf_ver_dir = f'idf_v{idf_version}'
+    idf_path = os.getenv('IDF_PATH')
+    if idf_path is None:
+        raise RuntimeError("Environment variable 'IDF_PATH' wasn't set.")
 
     component_path = os.path.normpath(os.path.join(os.path.realpath(__file__),'..', '..'))
     idf_path = os.getenv('IDF_PATH')
     if idf_path is None:
         raise RuntimeError("Environment variable 'IDF_PATH' wasn't set.")
+    idf_ver_dir = get_idf_ver_dir(idf_path, component_path)
+
     header = os.path.join(idf_path, 'components', 'esp_wifi', 'include', 'esp_wifi.h')
     function_prototypes = extract_function_prototypes(preprocess(idf_path, header), header)
 
