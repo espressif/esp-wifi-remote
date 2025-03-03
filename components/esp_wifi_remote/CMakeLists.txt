@@ -2,8 +2,13 @@ if(NOT CONFIG_ESP_WIFI_ENABLED AND NOT CONFIG_ESP_HOST_WIFI_ENABLED)
     set(src_wifi_is_remote esp_wifi_remote.c esp_wifi_remote_net.c)
 endif()
 
+if(CONFIG_ESP_WIFI_REMOTE_LIBRARY_EPPP)
+    set(src_wifi_remote_eppp eppp/wifi_remote_rpc_client.cpp eppp/wifi_remote_rpc_server.cpp eppp/eppp_init.c)
+endif()
+
 idf_component_register(INCLUDE_DIRS include
                     SRCS ${src_wifi_is_remote}
+                         ${src_wifi_remote_eppp}
                     PRIV_INCLUDE_DIRS eppp
                     REQUIRES esp_event esp_netif
                     PRIV_REQUIRES esp_wifi esp-tls vfs)
@@ -20,21 +25,24 @@ if (IDF_VER_TAG)
     endif()
 endif()
 
+set(TARGET_INCLUDE_TYPE "INTERFACE")
+set(TARGET_SOURCE_TYPE "INTERFACE")
 if(NOT CONFIG_ESP_WIFI_ENABLED AND NOT CONFIG_ESP_HOST_WIFI_ENABLED)
     set(src_wifi_with_remote ${IDF_VER_DIR}/esp_wifi_with_remote.c)
+    set(TARGET_INCLUDE_TYPE "PUBLIC")
+    set(TARGET_SOURCE_TYPE "PRIVATE")
 endif()
 
 if(CONFIG_ESP_WIFI_REMOTE_LIBRARY_EPPP)
-    set(src_wifi_remote_eppp eppp/wifi_remote_rpc_client.cpp eppp/wifi_remote_rpc_server.cpp eppp/eppp_init.c)
+    set(TARGET_INCLUDE_TYPE "PUBLIC")
+    set(TARGET_SOURCE_TYPE "PRIVATE")
 else()
     set(src_wifi_remote_weak ${IDF_VER_DIR}/esp_wifi_remote_weak.c)
 endif()
 
-
-target_include_directories(${COMPONENT_LIB} PUBLIC ${IDF_VER_DIR}/include)
-target_sources(${COMPONENT_LIB} PRIVATE ${src_wifi_remote_weak}
-                                        ${src_wifi_remote_eppp}
-                                        ${src_wifi_with_remote})
+target_include_directories(${COMPONENT_LIB} ${TARGET_INCLUDE_TYPE} ${IDF_VER_DIR}/include)
+target_sources(${COMPONENT_LIB}             ${TARGET_SOURCE_TYPE}  ${src_wifi_remote_weak}
+                                                                   ${src_wifi_with_remote})
 
 idf_component_get_property(wifi esp_wifi COMPONENT_LIB)
 target_link_libraries(${wifi} PUBLIC ${COMPONENT_LIB})
