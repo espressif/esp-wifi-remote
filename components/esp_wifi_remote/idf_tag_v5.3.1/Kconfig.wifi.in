@@ -5,8 +5,8 @@
             int "Max number of WiFi static RX buffers"
             range 2 25 if !SLAVE_SOC_WIFI_HE_SUPPORT
             range 2 128 if SLAVE_SOC_WIFI_HE_SUPPORT
-            default 10 if !(SPIRAM_TRY_ALLOCATE_WIFI_LWIP && !SPIRAM_IGNORE_NOTFOUND)
-            default 16 if (SPIRAM_TRY_ALLOCATE_WIFI_LWIP && !SPIRAM_IGNORE_NOTFOUND)
+            default 10 if !SPIRAM_TRY_ALLOCATE_WIFI_LWIP
+            default 16 if SPIRAM_TRY_ALLOCATE_WIFI_LWIP
             help
                 Set the number of WiFi static RX buffers. Each buffer takes approximately 1.6KB of RAM.
                 The static rx buffers are allocated when esp_wifi_init is called, they are not freed
@@ -57,7 +57,7 @@
                 bool "Static"
             config ESP_WIFI_DYNAMIC_TX_BUFFER # ignore: multiple-definition
                 bool "Dynamic"
-                depends on !(SPIRAM_TRY_ALLOCATE_WIFI_LWIP && !SPIRAM_IGNORE_NOTFOUND)
+                depends on !SPIRAM_USE_MALLOC
         endchoice
 
         config ESP_WIFI_TX_BUFFER_TYPE # ignore: multiple-definition
@@ -82,8 +82,8 @@
 
         config ESP_WIFI_CACHE_TX_BUFFER_NUM # ignore: multiple-definition
             int "Max number of WiFi cache TX buffers"
-            depends on (SPIRAM_TRY_ALLOCATE_WIFI_LWIP && !SPIRAM_IGNORE_NOTFOUND)
-            range 0 128
+            depends on SPIRAM
+            range 16 128
             default 32
             help
                 Set the number of WiFi cache TX buffer number.
@@ -180,8 +180,8 @@
             depends on ESP_WIFI_AMPDU_RX_ENABLED
             range 2 32 if !SLAVE_SOC_WIFI_HE_SUPPORT
             range 2 64 if SLAVE_SOC_WIFI_HE_SUPPORT
-            default 6 if !(SPIRAM_TRY_ALLOCATE_WIFI_LWIP && !SPIRAM_IGNORE_NOTFOUND)
-            default 16 if (SPIRAM_TRY_ALLOCATE_WIFI_LWIP && !SPIRAM_IGNORE_NOTFOUND)
+            default 6 if !SPIRAM_TRY_ALLOCATE_WIFI_LWIP
+            default 16 if SPIRAM_TRY_ALLOCATE_WIFI_LWIP
             help
                 Set the size of WiFi Block Ack RX window. Generally a bigger value means higher throughput and better
                 compatibility but more memory. Most of time we should NOT change the default value unless special
@@ -192,7 +192,7 @@
 
         config ESP_WIFI_AMSDU_TX_ENABLED # ignore: multiple-definition
             bool "WiFi AMSDU TX"
-            depends on (ESP_WIFI_CACHE_TX_BUFFER_NUM >= 2)
+            depends on SPIRAM
             default n
             help
                 Select this option to enable AMSDU TX feature
@@ -244,10 +244,7 @@
             range 6 32
             default 32
             help
-                Set the maximum number of Wi-Fi management short buffers. These buffers are dynamically allocated,
-                with their size determined by the length of the management packet to be sent. When a management
-                packet is less than 64 bytes, the Wi-Fi driver classifies it as a short management packet and
-                assigns it to one of these buffers.
+                Set the number of WiFi management short buffer.
 
         config ESP_WIFI_IRAM_OPT # ignore: multiple-definition
             bool "WiFi IRAM speed optimization"
@@ -533,38 +530,20 @@
             default n
             help
                 Select this option to enable 802.11k 802.11v APIs(RRM and BTM support).
-
-        config ESP_WIFI_RRM_SUPPORT # ignore: multiple-definition
-            bool "Enable 802.11k APIs Support"
-            depends on ESP_WIFI_11KV_SUPPORT
-            default n
-            help
-                Select this option to enable 802.11k APIs(RRM support).
                 Only APIs which are helpful for network assisted roaming
                 are supported for now.
-                Enable this option with RRM enabled in sta config
+                Enable this option with BTM and RRM enabled in sta config
                 to make device ready for network assisted roaming.
+                BTM: BSS transition management enables an AP to request a station to transition
+                to a specific AP, or to indicate to a station a set of preferred APs.
                 RRM: Radio measurements enable STAs to understand the radio environment,
                 it enables STAs to observe and gather data on radio link performance
                 and on the radio environment. Current implementation adds beacon report,
                 link measurement, neighbor report.
 
-        config ESP_WIFI_WNM_SUPPORT # ignore: multiple-definition
-            bool "Enable 802.11v APIs Support"
-            depends on ESP_WIFI_11KV_SUPPORT
-            default n
-            help
-                Select this option to enable 802.11v APIs(BTM support).
-                Only APIs which are helpful for network assisted roaming
-                are supported for now.
-                Enable this option with BTM enabled in sta config
-                to make device ready for network assisted roaming.
-                BTM: BSS transition management enables an AP to request a station to transition
-                to a specific AP, or to indicate to a station a set of preferred APs.
-
         config ESP_WIFI_SCAN_CACHE # ignore: multiple-definition
             bool "Keep scan results in cache"
-            depends on ESP_WIFI_RRM_SUPPORT
+            depends on ESP_WIFI_11KV_SUPPORT
             default n
             help
                 Keep scan results in cache, if not enabled, those
@@ -574,8 +553,6 @@
             bool "Enable Multi Band Operation Certification Support"
             default n
             select ESP_WIFI_11KV_SUPPORT
-            select ESP_WIFI_RRM_SUPPORT
-            select ESP_WIFI_WNM_SUPPORT
             select ESP_WIFI_SCAN_CACHE
             help
                 Select this option to enable WiFi Multiband operation certification support.
