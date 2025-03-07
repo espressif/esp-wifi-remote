@@ -537,7 +537,7 @@ config WIFI_RMT_11KV_SUPPORT
 config WIFI_RMT_RRM_SUPPORT
     bool "Enable 802.11k APIs Support"
     depends on WIFI_RMT_11KV_SUPPORT
-    default n
+    default y
     help
         Select this option to enable 802.11k APIs(RRM support).
         Only APIs which are helpful for network assisted roaming
@@ -552,7 +552,7 @@ config WIFI_RMT_RRM_SUPPORT
 config WIFI_RMT_WNM_SUPPORT
     bool "Enable 802.11v APIs Support"
     depends on WIFI_RMT_11KV_SUPPORT
-    default n
+    default y
     help
         Select this option to enable 802.11v APIs(BTM support).
         Only APIs which are helpful for network assisted roaming
@@ -584,7 +584,6 @@ config WIFI_RMT_ENABLE_ROAMING_APP
     bool "Advanced support for Wi-Fi Roaming (Experimental)"
     depends on IDF_EXPERIMENTAL_FEATURES
     default n
-    select WIFI_RMT_SCAN_CACHE
     help
         Enable Espressif's roaming app to allow for efficient Wi-Fi roaming.
         This includes configurable periodic environment scans, maintaining a cache of the
