@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.8.0](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v0.8.0)
+
+### Features
+
+- Copy additional wifi headers to prepend-dir ([a936924](https://github.com/espressif/esp-wifi-remote/commit/a936924))
+- Add injected headers with slave/remote configs ([485d261](https://github.com/espressif/esp-wifi-remote/commit/485d261))
+- use WIFI_RMT_ prefix for remote wifi configs ([e1a9d6b](https://github.com/espressif/esp-wifi-remote/commit/e1a9d6b))
+
+### Bug Fixes
+
+- Update per v5.5 espressif/esp-idf@c0580480852 ([8ab3732](https://github.com/espressif/esp-wifi-remote/commit/8ab3732))
+- Update headers and configs on supported versions ([1279776](https://github.com/espressif/esp-wifi-remote/commit/1279776))
+- Preprocess injected headers ([6e981ff](https://github.com/espressif/esp-wifi-remote/commit/6e981ff))
+
 ## [0.7.2](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v0.7.2)
 
 ### Bug Fixes
