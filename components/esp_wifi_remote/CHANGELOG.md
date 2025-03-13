@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.8.2](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v0.8.2)
+
+### Bug Fixes
+
+- Inject also esp_mesh headers ([4ac7fbd](https://github.com/espressif/esp-wifi-remote/commit/4ac7fbd))
+
 ## [0.8.1](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v0.8.1)
 
 ### Bug Fixes

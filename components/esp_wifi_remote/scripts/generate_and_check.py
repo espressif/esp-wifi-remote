@@ -55,7 +55,7 @@ class FunctionVisitor(c_ast.NodeVisitor):
     def visit_FuncDecl(self, node):
         if isinstance(node.type, c_ast.TypeDecl):
             func_name = node.type.declname
-            if func_name.startswith('esp_wifi') and func_name in self.content:
+            if func_name.startswith('esp_wifi') and not func_name.endswith('_t') and func_name in self.content:
                 if func_name in DEPRECATED_API:
                     return
                 ret = node.type.type.names[0]
@@ -354,11 +354,12 @@ def generate_wifi_native(idf_path, idf_ver_dir, component_path):
         native_headers.append(replace_configs(original, replaced))
 
     # Copy remaining headers
-    for header in glob.glob(os.path.join(include_dir, 'esp_wifi*.h')):
-        dest = os.path.join(remote_dir, os.path.basename(header))
-        if dest not in native_headers:
-            shutil.copy(header, dest)
-            native_headers.append(dest)
+    for pattern in ['esp_wifi*.h', 'esp_mesh*.h']:
+        for header in glob.glob(os.path.join(include_dir, pattern)):
+            dest = os.path.join(remote_dir, os.path.basename(header))
+            if dest not in native_headers:
+                shutil.copy(header, dest)
+                native_headers.append(dest)
 
     return native_headers
 
