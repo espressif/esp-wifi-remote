@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.8.3](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v0.8.3)
+
+### Bug Fixes
+
+- Fix to propagate remote wifi settings to esp_wifi ([4ea96e1](https://github.com/espressif/esp-wifi-remote/commit/4ea96e1))
+
 ## [0.8.2](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v0.8.2)
 
 ### Bug Fixes

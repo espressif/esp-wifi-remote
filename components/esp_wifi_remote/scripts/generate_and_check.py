@@ -382,55 +382,119 @@ def get_global_configs(idf_path):
 
 
 def generate_kconfig(idf_path, idf_ver_dir, component_path):
+    # Define file paths
     remote_kconfig = os.path.join(component_path, idf_ver_dir, 'Kconfig.wifi.in')
-    # Get base configs to be replaced
+    esp_wifi_kconfig = os.path.join(idf_path, 'components', 'esp_wifi', 'Kconfig')
+    # Variables for accumulating configuration details
+    remote_configs = ''
+    current_config = None
+    current_config_indent = 0
+    depends_on = None
+
+    # Config prefixes to be replaced
     base_configs = ['SOC_WIFI_', 'IDF_TARGET_']
-    # Add global configs from Kconfig file
+    # Get global configs from the original Kconfig (assumed to be defined elsewhere)
     global_configs = get_global_configs(idf_path)
 
-    lines = open(os.path.join(idf_path, 'components', 'esp_wifi', 'Kconfig'), 'r').readlines()
-    copy = 100      # just a big number to be greater than nested_if in the first few iterations
-    nested_if = 0
-    initial_indent = -1  # Track the initial indentation level
+    # Read the source Kconfig lines
+    with open(esp_wifi_kconfig, 'r') as f:
+        lines = f.readlines()
 
-    with open(remote_kconfig, 'w') as f:
-        f.write(f'# Wi-Fi configuration\n')
-        f.write(f'# {AUTO_GENERATED}\n')
-        for line1 in lines:
-            line = line1.strip()
-            if re.match(r'^if\s+[A-Z_0-9]+\s*$', line):
+    # Setup counters and flags for nested ifs and choice blocks
+    nesting_threshold = 100  # Initial high threshold; will be adjusted later
+    nested_if = 0
+    initial_indent = -1  # Will be set once the first config/choice line is encountered
+    inside_choice = False
+
+    with open(remote_kconfig, 'w') as outfile:
+        # Write header comments
+        outfile.write('# Wi-Fi configuration\n')
+        outfile.write(f'# {AUTO_GENERATED}\n')
+
+        for original_line in lines:
+            stripped_line = original_line.strip()
+
+            # Update nesting level counters for if/endif blocks
+            if re.match(r'^if\s+[A-Z_0-9]+\s*$', stripped_line):
                 nested_if += 1
-            elif line.startswith('endif'):
+            elif stripped_line.startswith('endif'):
                 nested_if -= 1
 
-            if nested_if >= copy:
-                # Capture initial indentation
-                if initial_indent == -1 and re.match(r'^(config|choice)\s+ESP_WIFI_', line):
-                    initial_indent = len(re.match(r'^\s*', line1).group())
+            # Track whether we are inside a choice block
+            if re.match(r'^choice', stripped_line):
+                inside_choice = True
+            elif stripped_line.startswith('endchoice'):
+                inside_choice = False
 
-                # First replace the base configs
+            # Process lines after reaching the nesting threshold
+            if nested_if >= nesting_threshold:
+                # Capture the initial indentation level when encountering the first config/choice
+                if initial_indent == -1 and re.match(r'^(config|choice)\s+ESP_WIFI_', stripped_line):
+                    initial_indent = len(re.match(r'^\s*', original_line).group())
+
+                # Make a copy of the original line for modifications
+                modified_line = original_line
+                # Replace base configuration prefixes
                 for config in base_configs:
-                    line1 = re.compile(config).sub('SLAVE_' + config, line1)
-
-                # Then replace any global configs
+                    modified_line = re.compile(config).sub('SLAVE_' + config, modified_line)
+                # Replace global config names (ensuring whole word match)
                 for config in global_configs:
-                    # Only replace whole words to avoid partial matches
-                    line1 = re.compile(r'\b' + config + r'\b').sub('SLAVE_' + config, line1)
+                    modified_line = re.compile(r'\b' + config + r'\b').sub('SLAVE_' + config, modified_line)
+                # Replace the primary prefix ESP_WIFI_ with WIFI_RMT_
+                modified_line = re.compile(r'\bESP_WIFI_').sub('WIFI_RMT_', modified_line)
 
-                line1 = re.compile(r'\bESP_WIFI_').sub('WIFI_RMT_', line1)
+                # If a current config block is active, check for changes in indentation
+                if current_config is not None:
+                    # If the current line is still within the current config block (by indent)
+                    if len(re.match(r'^\s*', original_line).group()) > current_config_indent:
+                        # Check for config properties: type (int or bool) or dependency
+                        for keyword in ['int', 'bool', 'depends']:
+                            if re.match(fr'^{keyword}', stripped_line):
+                                if keyword == 'depends':
+                                    depends_on = modified_line.strip()
+                                else:
+                                    config_type = keyword
+                                    # Prepare the default remote value by replacing the prefix
+                                    remote_value = current_config.replace('ESP_WIFI_', 'WIFI_RMT_')
+                    else:
+                        # End of the current config block; append the accumulated remote config block
+                        if config_type == 'bool':
+                            remote_configs += f'if {remote_value}\n'
+                        remote_configs += f'    config {current_config} {KCONFIG_MULTIPLE_DEF}\n'
+                        remote_configs += f'        {config_type}\n'
+                        if depends_on is not None:
+                            remote_configs += f'        {depends_on}\n'
+                            depends_on = None
+                        remote_configs += f'        default {remote_value}\n'
+                        if config_type == 'bool':
+                            remote_configs += f'endif\n'
+                        remote_configs += '\n'
+                        current_config = None
 
-                match = re.match(r'^(config|choice)\s+(ESP_WIFI_[A-Z0-9_]+)', line)
+                # Check if the line declares a config or choice for ESP_WIFI_
+                match = re.match(r'^(config|choice)\s+(ESP_WIFI_[A-Z0-9_]+)', stripped_line)
                 if match:
                     wifi_configs.append(match.group(2))
+                    # Only treat non-choice config declarations as starting a config block
+                    if match.group(1) == 'config' and not inside_choice:
+                        current_config = match.group(2)
+                        current_config_indent = len(re.match(r'^\s*', modified_line).group())
 
-                if len(line1) > initial_indent and line1[:initial_indent].isspace():
-                    line1 = line1[initial_indent:]
-                f.write(line1)
+                # Adjust indentation relative to the captured initial indent
+                if len(modified_line) > initial_indent and modified_line[:initial_indent].isspace():
+                    modified_line = modified_line[initial_indent:]
+                outfile.write(modified_line)
 
-            if re.match(r'^if\s+\(?ESP_WIFI_ENABLED', line):
-                copy = nested_if
+            # When an ESP_WIFI_ENABLED condition is encountered, update the nesting threshold
+            if re.match(r'^if\s+\(?ESP_WIFI_ENABLED', stripped_line):
+                nesting_threshold = nested_if
 
-        f.write(f'# Wi-Fi configuration end\n')
+        # Append the accumulated remote configurations under the disabled ESP_WIFI condition
+        outfile.write('if !ESP_WIFI_ENABLED\n')
+        outfile.write(remote_configs)
+        outfile.write('endif # ESP_WIFI_ENABLED\n')
+        outfile.write('# Wi-Fi configuration end\n')
+
     return [remote_kconfig]
 
 
