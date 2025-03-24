@@ -431,3 +431,13 @@ esp_err_t esp_wifi_remote_get_bandwidths(wifi_interface_t ifx, wifi_bandwidths_t
 {
     return ESP_OK;
 }
+
+esp_err_t esp_wifi_remote_action_tx_req(wifi_action_tx_req_t *req)
+{
+    return ESP_OK;
+}
+
+esp_err_t esp_wifi_remote_remain_on_channel(wifi_roc_req_t *req)
+{
+    return ESP_OK;
+}
