@@ -32,7 +32,9 @@ set(TARGET_SOURCE_TYPE "INTERFACE")
 if(NOT CONFIG_ESP_WIFI_ENABLED AND NOT CONFIG_ESP_HOST_WIFI_ENABLED)
     set(src_wifi_with_remote ${IDF_VER_DIR}/esp_wifi_with_remote.c)
     # We need to build wifi sources with wifi-remote properties, so the injected wifi headers are used
-    get_target_property(wifi_sources ${wifi} SOURCES)
+    set(wifi_sources "esp_wifi_remote_netif.c")
+#                     "${IDF_VER_DIR}/injected/wifi_netif.c"
+#                     "${IDF_VER_DIR}/injected/wifi_default_ap.c")
     set_target_properties(${wifi} PROPERTIES SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/dummy_src.c")
     set(TARGET_INCLUDE_TYPE "PUBLIC")
     set(TARGET_SOURCE_TYPE "PRIVATE")
