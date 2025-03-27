@@ -354,7 +354,7 @@ def generate_wifi_native(idf_path, idf_ver_dir, component_path):
         native_headers.append(replace_configs(original, replaced))
 
     # Copy remaining headers
-    for pattern in ['esp_wifi*.h', 'esp_mesh*.h']:
+    for pattern in ['esp_wifi*.h', 'esp_mesh*.h', 'esp_now.h']:
         for header in glob.glob(os.path.join(include_dir, pattern)):
             dest = os.path.join(remote_dir, os.path.basename(header))
             if dest not in native_headers:
