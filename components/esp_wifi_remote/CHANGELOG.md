@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.5](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v0.8.5)
+
+### Bug Fixes
+
+- Update per v5.5 espressif/esp-idf@4355fc8fbc6b ([215d007](https://github.com/espressif/esp-wifi-remote/commit/215d007))
+- Add esp_now.h to injected headers ([09ffacc](https://github.com/espressif/esp-wifi-remote/commit/09ffacc))
+
 ## [0.8.4](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v0.8.4)
 
 ### Bug Fixes
