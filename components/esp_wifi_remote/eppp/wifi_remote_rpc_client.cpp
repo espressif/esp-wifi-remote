@@ -16,6 +16,12 @@
 #include "freertos/event_groups.h"
 #include "wifi_remote_rpc_params.h"
 
+#if defined(CONFIG_ESP_WIFI_ENABLED)
+extern "C" ESP_EVENT_DEFINE_BASE(WIFI_REMOTE_EVENT);
+#else
+#define WIFI_REMOTE_EVENT WIFI_EVENT
+#endif
+
 extern "C" esp_netif_t *wifi_remote_eppp_init(eppp_type_t role);
 
 namespace eppp_rpc {
@@ -145,7 +151,7 @@ private:
     esp_err_t process_wifi_event(RpcHeader &header)
     {
         auto event_id = rpc.get_payload<int32_t>(api_id::WIFI_EVENT, header);
-        ESP_RETURN_ON_ERROR(esp_event_post(WIFI_EVENT, event_id, nullptr, 0, 0), TAG, "Failed to post WiFi event");
+        ESP_RETURN_ON_ERROR(esp_event_post(WIFI_REMOTE_EVENT, event_id, nullptr, 0, 0), TAG, "Failed to post WiFi event");
         return ESP_OK;
     }
     esp_err_t perform()

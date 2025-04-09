@@ -299,7 +299,7 @@ esp_err_t esp_wifi_clear_default_wifi_driver_and_handlers(void *esp_netif)
     return ESP_OK;
 }
 
-#ifdef CONFIG_WIFI_RMT_SOFTAP_SUPPORT
+#if defined(CONFIG_WIFI_RMT_SOFTAP_SUPPORT) && !defined(CONFIG_ESP_WIFI_SOFTAP_SUPPORT)
 
 static const esp_netif_ip_info_t s_wifi_remote_soft_ap_ip = {
         .ip = { .addr = ESP_IP4TOADDR( 192, 168, 4, 1) },
@@ -325,27 +325,52 @@ static const esp_netif_ip_info_t s_wifi_remote_soft_ap_ip = {
         .route_prio = 10, \
         .bridge_info = NULL \
     }
+#endif
 
-/**
- * @brief User init default AP (official API)
- */
-esp_netif_t* esp_netif_create_default_wifi_ap(void)
+static esp_netif_t* create_default_ap(bool is_remote)
 {
     esp_netif_inherent_config_t esp_netif_config = ESP_NETIF_INHERENT_DEFAULT_WIFI_AP();
+    if (is_remote) {
+        esp_netif_config.if_key = "WIFI_AP_RMT";
+        esp_netif_config.if_desc = "wifi_ap_remote";
+    }
     esp_netif_t *netif= esp_netif_create_wifi(WIFI_IF_AP, &esp_netif_config);
     esp_wifi_set_default_wifi_ap_handlers();
     return netif;
 }
 
-/**
- * @brief User init default station (official API)
- */
-esp_netif_t* esp_netif_create_default_wifi_sta(void)
+static esp_netif_t* create_default_sta(bool is_remote)
 {
     esp_netif_inherent_config_t esp_netif_config = ESP_NETIF_INHERENT_DEFAULT_WIFI_STA();
+    if (is_remote) {
+        esp_netif_config.if_key = "WIFI_STA_RMT";
+        esp_netif_config.if_desc = "wifi_sta_remote";
+    }
     esp_netif_t *netif= esp_netif_create_wifi(WIFI_IF_STA, &esp_netif_config);
     esp_wifi_set_default_wifi_sta_handlers();
     return netif;
 }
 
-#endif
+
+/**
+ * User init official APIs
+ */
+esp_netif_t* esp_netif_create_default_wifi_sta(void)
+{
+    return create_default_sta(false);
+}
+
+esp_netif_t* esp_netif_create_default_wifi_ap(void)
+{
+    return create_default_ap(false);
+}
+
+esp_netif_t* esp_wifi_remote_create_default_sta(void)
+{
+    return create_default_sta(true);
+}
+
+esp_netif_t* esp_wifi_remote_create_default_ap(void)
+{
+    return create_default_ap(true);
+}
