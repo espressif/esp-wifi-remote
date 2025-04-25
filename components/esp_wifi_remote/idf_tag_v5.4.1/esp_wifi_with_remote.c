@@ -262,11 +262,6 @@ esp_err_t esp_wifi_80211_tx(wifi_interface_t ifx, const void *buffer, int len, _
     return esp_wifi_remote_80211_tx(ifx, buffer, len, en_sys_seq);
 }
 
-esp_err_t esp_wifi_register_80211_tx_cb(esp_wifi_80211_tx_done_cb_t cb)
-{
-    return esp_wifi_remote_register_80211_tx_cb(cb);
-}
-
 esp_err_t esp_wifi_set_csi_rx_cb(wifi_csi_cb_t cb, void *ctx)
 {
     return esp_wifi_remote_set_csi_rx_cb(cb, ctx);
@@ -435,14 +430,4 @@ esp_err_t esp_wifi_set_bandwidths(wifi_interface_t ifx, wifi_bandwidths_t *bw)
 esp_err_t esp_wifi_get_bandwidths(wifi_interface_t ifx, wifi_bandwidths_t *bw)
 {
     return esp_wifi_remote_get_bandwidths(ifx, bw);
-}
-
-esp_err_t esp_wifi_action_tx_req(wifi_action_tx_req_t *req)
-{
-    return esp_wifi_remote_action_tx_req(req);
-}
-
-esp_err_t esp_wifi_remain_on_channel(wifi_roc_req_t *req)
-{
-    return esp_wifi_remote_remain_on_channel(req);
 }

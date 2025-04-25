@@ -262,6 +262,11 @@ esp_err_t esp_wifi_remote_80211_tx(wifi_interface_t ifx, const void *buffer, int
     return ESP_OK;
 }
 
+esp_err_t esp_wifi_remote_register_80211_tx_cb(esp_wifi_80211_tx_done_cb_t cb)
+{
+    return ESP_OK;
+}
+
 esp_err_t esp_wifi_remote_set_csi_rx_cb(wifi_csi_cb_t cb, void *ctx)
 {
     return ESP_OK;

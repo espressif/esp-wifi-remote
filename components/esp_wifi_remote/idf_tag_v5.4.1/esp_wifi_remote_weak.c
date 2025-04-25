@@ -266,11 +266,6 @@ WEAK esp_err_t esp_wifi_remote_80211_tx(wifi_interface_t ifx, const void *buffer
     LOG_UNSUPPORTED_AND_RETURN(ESP_ERR_NOT_SUPPORTED);
 }
 
-WEAK esp_err_t esp_wifi_remote_register_80211_tx_cb(esp_wifi_80211_tx_done_cb_t cb)
-{
-    LOG_UNSUPPORTED_AND_RETURN(ESP_ERR_NOT_SUPPORTED);
-}
-
 WEAK esp_err_t esp_wifi_remote_set_csi_rx_cb(wifi_csi_cb_t cb, void *ctx)
 {
     LOG_UNSUPPORTED_AND_RETURN(ESP_ERR_NOT_SUPPORTED);
@@ -437,16 +432,6 @@ WEAK esp_err_t esp_wifi_remote_set_bandwidths(wifi_interface_t ifx, wifi_bandwid
 }
 
 WEAK esp_err_t esp_wifi_remote_get_bandwidths(wifi_interface_t ifx, wifi_bandwidths_t *bw)
-{
-    LOG_UNSUPPORTED_AND_RETURN(ESP_ERR_NOT_SUPPORTED);
-}
-
-WEAK esp_err_t esp_wifi_remote_action_tx_req(wifi_action_tx_req_t *req)
-{
-    LOG_UNSUPPORTED_AND_RETURN(ESP_ERR_NOT_SUPPORTED);
-}
-
-WEAK esp_err_t esp_wifi_remote_remain_on_channel(wifi_roc_req_t *req)
 {
     LOG_UNSUPPORTED_AND_RETURN(ESP_ERR_NOT_SUPPORTED);
 }

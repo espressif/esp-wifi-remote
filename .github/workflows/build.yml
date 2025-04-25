@@ -14,7 +14,7 @@ jobs:
       matrix:
         idf_ver: ["latest", "release-v5.4", "release-v5.3"]
         test: [ { app: smoke_test, path: "test/smoke_test" }]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     container: espressif/idf:${{ matrix.idf_ver }}
     steps:
       - name: Checkout code
@@ -52,7 +52,7 @@ jobs:
             example: { app: slave, path: "examples/server" }
             warning: "Warning: The smallest app partition is nearly full"
 
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     container: espressif/idf:${{ matrix.idf_ver }}
     steps:
       - name: Checkout code

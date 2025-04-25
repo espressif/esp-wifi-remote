@@ -289,16 +289,9 @@ config WIFI_RMT_ENABLE_WPA3_SAE
 config WIFI_RMT_ENABLE_SAE_PK
     bool "Enable SAE-PK"
     default y
-    depends on (WIFI_RMT_ENABLE_WPA3_SAE && WIFI_RMT_ENABLE_SAE_H2E)
-    help
-        Select this option to enable SAE-PK
-
-config WIFI_RMT_ENABLE_SAE_H2E
-    bool "Enable SAE-H2E"
-    default y
     depends on WIFI_RMT_ENABLE_WPA3_SAE
     help
-        Select this option to enable SAE-H2E
+        Select this option to enable SAE-PK
 
 config WIFI_RMT_SOFTAP_SAE_SUPPORT
     bool "Enable WPA3 Personal(SAE) SoftAP"
@@ -321,8 +314,7 @@ config WIFI_RMT_ENABLE_WPA3_OWE_STA
 config WIFI_RMT_SLP_IRAM_OPT
     bool "WiFi SLP IRAM speed optimization"
     select PM_SLP_DEFAULT_PARAMS_OPT
-    select PM_SLEEP_FUNC_IN_IRAM
-    select ESP_PERIPH_CTRL_FUNC_IN_IRAM
+    select PERIPH_CTRL_FUNC_IN_IRAM
     default y if SLAVE_SOC_WIFI_HE_SUPPORT
     help
         Select this option to place called Wi-Fi library TBTT process and receive beacon functions in IRAM.
@@ -342,24 +334,14 @@ config WIFI_RMT_SLP_DEFAULT_MIN_ACTIVE_TIME
         during this period, the time will be refreshed. If the time is up, but the station still has packets
         to receive or send, the time will also be refreshed. unit: milliseconds.
 
-config WIFI_RMT_BSS_MAX_IDLE_SUPPORT
-    bool "Enable bss max idle support"
-    default y if (SLAVE_SOC_WIFI_HE_SUPPORT || WIFI_RMT_WNM_SUPPORT)
-    help
-        Enables bss max idle support for Station and SoftAP. BSS max idle period enables an SoftAP to indicate
-        a time period during which the AP does not disassociate a STA due to nonreceipt of frames from the STA.
-        For station, max idle period is default 10 (1000TUs) and can be set through
-        WIFI_RMT_SLP_DEFAULT_MAX_ACTIVE_TIME. For softap, bss max idle parameters will be set through
-        bss_max_idle_cfg in wifi_ap_config_t.
-
 config WIFI_RMT_SLP_DEFAULT_MAX_ACTIVE_TIME
     int "Maximum keep alive time"
     range 10 60
     default 10
     help
-        Only for station. If no packet has been sent within WIFI_RMT_SLP_DEFAULT_MAX_ACTIVE_TIME, a null data
-        packet will be sent to maintain the connection with the AP. If WIFI_RMT_BSS_MAX_IDLE_SUPPORT is set,
-        it will be sent as bss max idle period in association request. unit: seconds.
+        Only for station in WIFI_PS_MIN_MODEM or WIFI_PS_MAX_MODEM. If no packet has been
+        sent within WIFI_RMT_SLP_DEFAULT_MAX_ACTIVE_TIME, a null data packet will be sent
+        to maintain the connection with the AP. unit: seconds.
 
 config WIFI_RMT_SLP_DEFAULT_WAIT_BROADCAST_DATA_TIME
     int "Minimum wait broadcast data time"
@@ -441,9 +423,8 @@ config WIFI_RMT_SLP_BEACON_LOST_THRESHOLD
     default 3
     depends on WIFI_RMT_SLP_BEACON_LOST_OPT
     help
-        Maximum number of consecutive lost beacons allowed, the WiFi Rx state behaviour
-        will be determined by WIFI_RMT_SLP_BEACON_LOST_OVER_THRESHOLD_POLICY
-        when the number of consecutive beacons lost is greater than the given threshold.
+        Maximum number of consecutive lost beacons allowed, WiFi keeps Rx state when
+        the number of consecutive beacons lost is greater than the given threshold.
 
 config WIFI_RMT_SLP_PHY_ON_DELTA_EARLY_TIME
     int "Delta early time for RF PHY on"
@@ -462,77 +443,6 @@ config WIFI_RMT_SLP_PHY_OFF_DELTA_TIMEOUT_TIME
     help
         Delta timeout time for rf phy off, When the beacon is lost, the next rf phy off will
         be delayed for the time specified by the configuration item. Unit: 1024 microsecond.
-
-choice WIFI_RMT_SLP_BEACON_LOST_OVER_THRESHOLD_POLICY
-    prompt "Beacon strategy when beacon loss exceeds threshold"
-    depends on WIFI_RMT_SLP_BEACON_LOST_OPT
-    default WIFI_RMT_SLP_BEACON_LOST_OVER_THRESHOLD_AUTO
-    help
-        Select the strategy to apply when the number of lost beacons exceeds the threshold.
-
-        - "Receive beacon": Keep RF on until a beacon is successfully received.
-
-        - "Drop beacon": Turn off RF and skip beacon reception during this period.
-
-        - "Auto": Beacon will been dropped only if WIFI_RMT_SLP_SAMPLE_BEACON_FEATURE enabled
-                  and expected rx beacon probability stays below the standard.
-
-    config WIFI_RMT_SLP_BEACON_LOST_OVER_THRESHOLD_RECEIVE
-        bool "Receive beacon"
-    config WIFI_RMT_SLP_BEACON_LOST_OVER_THRESHOLD_DROP
-        bool "Drop beacon"
-    config WIFI_RMT_SLP_BEACON_LOST_OVER_THRESHOLD_AUTO
-        bool "Auto"
-endchoice
-
-config WIFI_RMT_SLP_SAMPLE_BEACON_FEATURE
-    bool "Sample beacon to calculate beacon offset"
-    default n
-    depends on WIFI_RMT_SLP_BEACON_LOST_OPT && !WIFI_RMT_ENHANCED_LIGHT_SLEEP
-    help
-        Select to enable feature sampling beacons to calculate beacon offset.
-
-menu "Beacon Sample Configuration Options"
-    visible if WIFI_RMT_SLP_SAMPLE_BEACON_FEATURE
-    config WIFI_RMT_SLP_SAMPLE_BEACON_COUNT
-        int "Sample beacons at wifi connected to adjust beacon parameters"
-        range 100 1200
-        default 300
-        depends on WIFI_RMT_SLP_SAMPLE_BEACON_FEATURE
-        help
-            Numble of sampled beacons at wifi connected to adjust beacon parameters.
-
-    config WIFI_RMT_SLP_SAMPLE_BEACON_DIFFERENCE_PERCENT
-        int "Difference percentage triggers unstable event"
-        range 0 100
-        default 20
-        depends on WIFI_RMT_SLP_SAMPLE_BEACON_FEATURE
-        help
-            Difference triggers event WIFI_EVENT_STA_BEACON_OFFSET_UNSTABLE
-            when the actual rx beacon probability continuously falls below
-            the expected probability by this value.
-            unit: percentage
-
-    config WIFI_RMT_SLP_SAMPLE_BEACON_STANDARD_PERCENT
-        int "Standard percentage triggers beacon drop"
-        range 0 100
-        default 55
-        depends on WIFI_RMT_SLP_SAMPLE_BEACON_FEATURE
-        help
-            Standard triggers beacon drop when the expected rx beacon probability
-            falls below this value under WIFI_RMT_SLP_BEACON_LOST_DROP_BEACON_AUTO mode.
-            unit: percentage
-
-    config WIFI_RMT_SLP_SAMPLE_BEACON_RESAMPLE_PERIOD
-        int "Resample period"
-        range 0 255
-        default 3
-        depends on WIFI_RMT_SLP_SAMPLE_BEACON_FEATURE
-        help
-            Resample period if beacon drop is active under WIFI_RMT_SLP_BEACON_LOST_DROP_BEACON_AUTO mode.
-            It means never resample if setting this value to 0.
-            unit: hours
-endmenu # "Beacon Sample Configuration Options"
 
 config WIFI_RMT_ESPNOW_MAX_ENCRYPT_NUM
     int "Maximum espnow encrypt peers number"
@@ -945,15 +855,8 @@ endif
 if WIFI_RMT_ENABLE_SAE_PK
     config ESP_WIFI_ENABLE_SAE_PK # ignore: multiple-definition
         bool
-        depends on (WIFI_RMT_ENABLE_WPA3_SAE && WIFI_RMT_ENABLE_SAE_H2E)
-        default WIFI_RMT_ENABLE_SAE_PK
-endif
-
-if WIFI_RMT_ENABLE_SAE_H2E
-    config ESP_WIFI_ENABLE_SAE_H2E # ignore: multiple-definition
-        bool
         depends on WIFI_RMT_ENABLE_WPA3_SAE
-        default WIFI_RMT_ENABLE_SAE_H2E
+        default WIFI_RMT_ENABLE_SAE_PK
 endif
 
 if WIFI_RMT_SOFTAP_SAE_SUPPORT
@@ -978,12 +881,6 @@ endif
     config ESP_WIFI_SLP_DEFAULT_MIN_ACTIVE_TIME # ignore: multiple-definition
         int
         default WIFI_RMT_SLP_DEFAULT_MIN_ACTIVE_TIME
-
-if WIFI_RMT_BSS_MAX_IDLE_SUPPORT
-    config ESP_WIFI_BSS_MAX_IDLE_SUPPORT # ignore: multiple-definition
-        bool
-        default WIFI_RMT_BSS_MAX_IDLE_SUPPORT
-endif
 
     config ESP_WIFI_SLP_DEFAULT_MAX_ACTIVE_TIME # ignore: multiple-definition
         int
@@ -1071,33 +968,6 @@ endif
         int
         depends on WIFI_RMT_SLP_BEACON_LOST_OPT && SLAVE_SOC_WIFI_SUPPORT_VARIABLE_BEACON_WINDOW
         default WIFI_RMT_SLP_PHY_OFF_DELTA_TIMEOUT_TIME
-
-if WIFI_RMT_SLP_SAMPLE_BEACON_FEATURE
-    config ESP_WIFI_SLP_SAMPLE_BEACON_FEATURE # ignore: multiple-definition
-        bool
-        depends on WIFI_RMT_SLP_BEACON_LOST_OPT && !WIFI_RMT_ENHANCED_LIGHT_SLEEP
-        default WIFI_RMT_SLP_SAMPLE_BEACON_FEATURE
-endif
-
-    config ESP_WIFI_SLP_SAMPLE_BEACON_COUNT # ignore: multiple-definition
-        int
-        depends on WIFI_RMT_SLP_SAMPLE_BEACON_FEATURE
-        default WIFI_RMT_SLP_SAMPLE_BEACON_COUNT
-
-    config ESP_WIFI_SLP_SAMPLE_BEACON_DIFFERENCE_PERCENT # ignore: multiple-definition
-        int
-        depends on WIFI_RMT_SLP_SAMPLE_BEACON_FEATURE
-        default WIFI_RMT_SLP_SAMPLE_BEACON_DIFFERENCE_PERCENT
-
-    config ESP_WIFI_SLP_SAMPLE_BEACON_STANDARD_PERCENT # ignore: multiple-definition
-        int
-        depends on WIFI_RMT_SLP_SAMPLE_BEACON_FEATURE
-        default WIFI_RMT_SLP_SAMPLE_BEACON_STANDARD_PERCENT
-
-    config ESP_WIFI_SLP_SAMPLE_BEACON_RESAMPLE_PERIOD # ignore: multiple-definition
-        int
-        depends on WIFI_RMT_SLP_SAMPLE_BEACON_FEATURE
-        default WIFI_RMT_SLP_SAMPLE_BEACON_RESAMPLE_PERIOD
 
     config ESP_WIFI_ESPNOW_MAX_ENCRYPT_NUM # ignore: multiple-definition
         int

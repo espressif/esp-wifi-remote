@@ -17,6 +17,8 @@
 extern "C" {
 #endif
 
+#define WIFI_AP_DEFAULT_MAX_IDLE_PERIOD  292 /**< Default timeout for SoftAP BSS Max Idle. Unit: 1000TUs >**/
+
 /**
   * @brief Wi-Fi mode type
   */
@@ -508,6 +510,14 @@ typedef enum {
 } wifi_sae_pk_mode_t;
 
 /**
+  * @brief Configuration structure for BSS max idle
+  */
+typedef struct {
+    uint16_t period;                /**< Sets BSS Max idle period (1 Unit = 1000TUs OR 1.024 Seconds). If there are no frames for this period from a STA, SoftAP will disassociate due to inactivity. Setting it to 0 disables the feature */
+    bool protected_keep_alive;      /**< Requires clients to use protected keep alive frames for BSS Max Idle period */
+} wifi_bss_max_idle_config_t;
+
+/**
   * @brief Soft-AP configuration settings for the device
   */
 typedef struct {
@@ -527,6 +537,7 @@ typedef struct {
     wifi_sae_pwe_method_t sae_pwe_h2e;        /**< Configuration for SAE PWE derivation method */
     uint8_t transition_disable;               /**< Whether to enable transition disable feature */
     uint8_t sae_ext;                          /**< Enable SAE EXT feature. SOC_GCMP_SUPPORT is required for this feature. */
+    wifi_bss_max_idle_config_t bss_max_idle_cfg;  /**< Configuration for bss max idle, effective if CONFIG_WIFI_BSS_MAX_IDLE_SUPPORT is enabled */
 } wifi_ap_config_t;
 
 #define SAE_H2E_IDENTIFIER_LEN 32    /**< Length of the password identifier for H2E */
@@ -1099,6 +1110,7 @@ typedef enum {
 
     WIFI_EVENT_AP_WRONG_PASSWORD,        /**< a station tried to connect with wrong password */
 
+    WIFI_EVENT_STA_BEACON_OFFSET_UNSTABLE,  /**< Station sampled beacon offset unstable */
     WIFI_EVENT_MAX,                      /**< Invalid Wi-Fi event ID */
 } wifi_event_t;
 
@@ -1445,6 +1457,63 @@ typedef struct {
                                                   ERSU is always used in long distance transmission, and its frame has lower rate compared with SU mode */
     bool dcm;                                /**< Using dcm rate to send frame */
 } wifi_tx_rate_config_t;
+
+#define WIFI_MAX_SUPPORT_COUNTRY_NUM 175 /**< max number of supported countries */
+#ifdef CONFIG_SLAVE_SOC_WIFI_SUPPORT_5G
+#define WIFI_MAX_REGULATORY_RULE_NUM  7 /**< max number of regulatory rules */
+#else
+#define WIFI_MAX_REGULATORY_RULE_NUM  2 /**< max number of regulatory rules */
+#endif
+
+/** Argument structure for regulatory rule */
+typedef struct {
+    uint8_t start_channel;      /**< start channel of regulatory rule */
+    uint8_t end_channel;        /**< end channel of regulatory rule */
+    uint16_t max_bandwidth : 3; /**< max bandwidth(MHz) of regulatory rule, 1:20M, 2:40M, 3:80M, 4:160M */
+    uint16_t max_eirp : 6;      /**< indicates the maximum Equivalent Isotropically Radiated Power (EIRP), typically measured in dBm */
+    uint16_t is_dfs : 1;        /**< flag to identify dfs channel */
+    uint16_t reserved : 6;      /**< reserved */
+} wifi_reg_rule_t;
+
+/** Argument structure for regdomain */
+typedef struct {
+    uint8_t n_reg_rules;                                     /**< number of regulatory rules */
+    wifi_reg_rule_t reg_rules[WIFI_MAX_REGULATORY_RULE_NUM]; /**< array of regulatory rules*/
+} wifi_regulatory_t;
+
+/** Argument structure for regdomain */
+typedef struct {
+    char cn[2];              /**< country code string */
+    uint8_t regulatory_type; /**< regulatory type of country */
+} wifi_regdomain_t;
+
+/**
+  * @brief Status of wifi sending data
+  */
+typedef enum {
+    WIFI_SEND_SUCCESS = 0,    /**< Sending Wi-Fi data successfully */
+    WIFI_SEND_FAIL,           /**< Sending Wi-Fi data fail */
+} wifi_tx_status_t;
+
+/**
+  * @brief Information of wifi sending data
+  */
+typedef struct {
+    uint8_t *des_addr;           /**< The address of the receive device */
+    uint8_t *src_addr;           /**< The address of the sending device */
+    wifi_interface_t ifidx;      /**< Interface of sending 80211 tx data */
+    uint8_t *data;               /**< The data for 80211 tx, start from the MAC header */
+    uint8_t data_len;            /**< The frame body length for 80211 tx, excluding the MAC header */
+    wifi_phy_rate_t rate;        /**< Data rate */
+    wifi_tx_status_t tx_status;  /**< Status of sending 80211 tx data */
+} wifi_tx_info_t;
+
+typedef wifi_tx_info_t esp_80211_tx_info_t;
+
+/** Argument structure for WIFI_EVENT_STA_BEACON_OFFSET_UNSTABLE event */
+typedef struct {
+    float beacon_success_rate;                  /**< Received beacon success rate */
+} wifi_event_sta_beacon_offset_unstable_t;
 
 #ifdef __cplusplus
 }

@@ -275,6 +275,11 @@ void run_all_wifi_apis(void)
     }
 
     {
+        esp_wifi_80211_tx_done_cb_t cb = 0;
+        esp_wifi_register_80211_tx_cb(cb);
+    }
+
+    {
         wifi_csi_cb_t cb = 0;
         void *ctx = NULL;
         esp_wifi_set_csi_rx_cb(cb, ctx);
