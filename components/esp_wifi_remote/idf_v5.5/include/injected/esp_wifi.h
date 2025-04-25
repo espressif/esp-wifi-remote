@@ -278,6 +278,12 @@ extern wifi_osi_funcs_t g_wifi_osi_funcs;
 #define WIFI_TX_HETB_QUEUE_NUM 1
 #endif
 
+#if CONFIG_WIFI_RMT_BSS_MAX_IDLE_SUPPORT
+#define WIFI_ENABLE_BSS_MAX_IDLE (1<<8)
+#else
+#define WIFI_ENABLE_BSS_MAX_IDLE 0
+#endif
+
 #define CONFIG_FEATURE_WPA3_SAE_BIT     (1<<0)
 #define CONFIG_FEATURE_CACHE_TX_BUF_BIT (1<<1)
 #define CONFIG_FEATURE_FTM_INITIATOR_BIT (1<<2)
@@ -286,6 +292,7 @@ extern wifi_osi_funcs_t g_wifi_osi_funcs;
 #define CONFIG_FEATURE_GMAC_BIT (1<<5)
 #define CONFIG_FEATURE_11R_BIT (1<<6)
 #define CONFIG_FEATURE_WIFI_ENT_BIT (1<<7)
+#define CONFIG_FEATURE_BSS_MAX_IDLE_BIT (1<<8)
 
 /* Set additional WiFi features and capabilities */
 #define WIFI_FEATURE_CAPS (WIFI_ENABLE_WPA3_SAE | \
@@ -295,7 +302,8 @@ extern wifi_osi_funcs_t g_wifi_osi_funcs;
                            WIFI_ENABLE_GCMP | \
                            WIFI_ENABLE_GMAC | \
                            WIFI_ENABLE_11R  | \
-                           WIFI_ENABLE_ENTERPRISE)
+                           WIFI_ENABLE_ENTERPRISE | \
+                           WIFI_ENABLE_BSS_MAX_IDLE)
 
 #define WIFI_INIT_CONFIG_DEFAULT() { \
     .osi_funcs = &g_wifi_osi_funcs, \
@@ -1191,6 +1199,27 @@ esp_err_t esp_wifi_get_event_mask(uint32_t *mask);
 esp_err_t esp_wifi_80211_tx(wifi_interface_t ifx, const void *buffer, int len, bool en_sys_seq);
 
 /**
+  * @brief Callback function of 80211 tx data
+  *
+  * @param tx_info TX information of 80211 tx. The information can only be used in the callback context.
+  */
+typedef void (*esp_wifi_80211_tx_done_cb_t)(const esp_80211_tx_info_t *tx_info);
+
+/**
+  * @brief Register the TX callback function of 80211 tx data.
+  *
+  * @attention This callback will be executed in WiFi task, so avoid doing any time consuming activity in the callback.
+  *            Doing heavy work here can affect the WiFi performance.
+  *
+  * @param cb callback function. If the cb is NULL, then unregister the tx cb.
+  *
+  * @return
+  *    - ESP_OK: succeed
+  *    - ESP_ERR_WIFI_NOT_INIT: WiFi is not initialized by esp_wifi_init
+  */
+esp_err_t esp_wifi_register_80211_tx_cb(esp_wifi_80211_tx_done_cb_t cb);
+
+/**
   * @brief The RX callback function of Channel State Information(CSI)  data.
   *
   *        Each time a CSI data is received, the callback function will be called.
@@ -1811,6 +1840,21 @@ esp_err_t esp_wifi_action_tx_req(wifi_action_tx_req_t *req);
   *    - ESP_FAIL: failed to perform roc operation
   */
 esp_err_t esp_wifi_remain_on_channel(wifi_roc_req_t * req);
+
+#if CONFIG_WIFI_RMT_SLP_SAMPLE_BEACON_FEATURE
+/**
+  * @brief      Sample numbers of beacons to calculate beacon parameters
+  *
+  * @attention  This API should be called after station connected to AP.
+  *
+  * @return
+  *    - ESP_OK: succeed
+  *    - ESP_ERR_WIFI_NOT_INIT: WiFi is not initialized by esp_wifi_init
+  *    - ESP_ERR_WIFI_NOT_STARTED: WiFi is not started by esp_wifi_start
+  */
+esp_err_t esp_wifi_beacon_offset_sample_beacon(void);
+#endif
+
 #ifdef __cplusplus
 }
 #endif

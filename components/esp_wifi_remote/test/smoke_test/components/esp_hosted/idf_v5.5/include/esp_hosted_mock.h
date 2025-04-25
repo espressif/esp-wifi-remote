@@ -56,6 +56,7 @@ esp_err_t esp_wifi_remote_get_max_tx_power(int8_t *power);
 esp_err_t esp_wifi_remote_set_event_mask(uint32_t mask);
 esp_err_t esp_wifi_remote_get_event_mask(uint32_t *mask);
 esp_err_t esp_wifi_remote_80211_tx(wifi_interface_t ifx, const void *buffer, int len, _Bool en_sys_seq);
+esp_err_t esp_wifi_remote_register_80211_tx_cb(esp_wifi_80211_tx_done_cb_t cb);
 esp_err_t esp_wifi_remote_set_csi_rx_cb(wifi_csi_cb_t cb, void *ctx);
 esp_err_t esp_wifi_remote_set_csi_config(const wifi_csi_config_t *config);
 esp_err_t esp_wifi_remote_get_csi_config(wifi_csi_config_t *config);
