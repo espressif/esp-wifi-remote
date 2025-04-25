@@ -14,7 +14,7 @@ jobs:
     name: Check API compatibility of WiFi Remote
     strategy:
       matrix:
-        idf_ver: ["latest", "release-v5.4", "release-v5.3", "v5.4", "v5.3.2", "v5.3.1"]
+        idf_ver: ["latest", "release-v5.4", "release-v5.3", "v5.4", "v5.3.3", "v5.3.2", "v5.3.1"]
     runs-on: ubuntu-latest
     container: espressif/idf:${{ matrix.idf_ver }}
     steps:
@@ -33,7 +33,7 @@ jobs:
     name: Build IDF examples with WiFi Remote
     strategy:
       matrix:
-        idf_ver: ["latest", "release-v5.4", "release-v5.3", "v5.4", "v5.3.2", "v5.3.1"]
+        idf_ver: ["latest", "release-v5.4", "release-v5.3", "v5.4", "v5.3.3", "v5.3.2", "v5.3.1"]
         idf_target: ["esp32p4", "esp32h2", "esp32s3"]
         test: [ { app: idf_mqtt_example, path: "examples/protocols/mqtt/tcp" }]
     runs-on: ubuntu-latest
