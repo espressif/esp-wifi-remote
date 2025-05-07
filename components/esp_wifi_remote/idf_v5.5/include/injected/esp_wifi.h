@@ -613,7 +613,7 @@ esp_err_t esp_wifi_scan_get_ap_records(uint16_t *number, wifi_ap_record_t *ap_re
  *
  * @attention  Different from esp_wifi_scan_get_ap_records(), this API only gets one AP record
  *             from the scanned AP list each time. This API will free the memory of one AP record,
- *             if the user doesn't get all records in the scannned AP list, then needs to call esp_wifi_clear_ap_list()
+ *             if the user doesn't get all records in the scanned AP list, then needs to call esp_wifi_clear_ap_list()
  *             to free the remaining memory.
  *
  * @param[out] ap_record  pointer to one AP record
@@ -774,6 +774,8 @@ esp_err_t esp_wifi_get_bandwidth(wifi_interface_t ifx, wifi_bandwidth_t *bw);
   * @attention 4. When device is in STA+softAP mode, this API should not be called when in the scenarios described above
   * @attention 5. The channel info set by this API will not be stored in NVS. So If you want to remember the channel used before WiFi stop,
   *               you need to call this API again after WiFi start, or you can call `esp_wifi_set_config()` to store the channel info in NVS.
+  * @attention 6. When operating in 5 GHz band, the second channel is automatically determined by the primary channel according to the 802.11 standard.
+  *               Any manually configured second channel will be ignored.
   *
   * @param     primary  for HT20, primary is the channel number, for HT40, primary is the primary channel
   * @param     second   for HT20, second is ignored, for HT40, second is the second channel
