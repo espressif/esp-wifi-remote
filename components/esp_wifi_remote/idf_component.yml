@@ -1,4 +1,4 @@
-version: 0.10.0
+version: 0.10.1
 url: https://github.com/espressif/esp-wifi-remote
 description: Utility wrapper for esp_wifi functionality on remote targets
 dependencies:

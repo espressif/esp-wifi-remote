@@ -51,9 +51,11 @@ target_sources(${COMPONENT_LIB}             ${TARGET_SOURCE_TYPE}  ${src_wifi_re
                                                                    ${src_wifi_with_remote}
                                                                    ${wifi_sources})
 
-# Update wifi include directories to prepend the injected dir with modified headers supporting SLAVE capability
-get_target_property(original_wifi_dirs ${wifi} INTERFACE_INCLUDE_DIRECTORIES)
-set(updated_wifi_dirs "${IDF_VER_DIR}/include/injected" ${original_wifi_dirs})
-set_target_properties(${wifi} PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${updated_wifi_dirs}")
+if(NOT CONFIG_ESP_WIFI_ENABLED AND NOT CONFIG_ESP_HOST_WIFI_ENABLED)
+    # Update wifi include directories to prepend the injected dir with modified headers supporting SLAVE capability
+    get_target_property(original_wifi_dirs ${wifi} INTERFACE_INCLUDE_DIRECTORIES)
+    set(updated_wifi_dirs "${IDF_VER_DIR}/include/injected" ${original_wifi_dirs})
+    set_target_properties(${wifi} PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${updated_wifi_dirs}")
+endif()
 
 target_link_libraries(${wifi} PUBLIC ${COMPONENT_LIB})
