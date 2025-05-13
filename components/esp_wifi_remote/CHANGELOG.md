@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.10.1](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v0.10.1)
+
+### Bug Fixes
+
+- Inject wifi headers only if no wifi/wifi-host ([f13a99a](https://github.com/espressif/esp-wifi-remote/commit/f13a99a))
+
 ## [0.10.0](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v0.10.0)
 
 ### Features
