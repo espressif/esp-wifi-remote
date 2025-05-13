@@ -17,6 +17,8 @@
 extern "C" {
 #endif
 
+#define WIFI_AP_DEFAULT_MAX_IDLE_PERIOD  292 /**< Default timeout for SoftAP BSS Max Idle. Unit: 1000TUs >**/
+
 /**
   * @brief Wi-Fi mode type
   */
@@ -41,12 +43,15 @@ typedef enum {
     WIFI_IF_MAX                       /**< Maximum number of interfaces */
 } wifi_interface_t;
 
-#define WIFI_OFFCHAN_TX_REQ      1    /**< Request off-channel transmission */
-#define WIFI_OFFCHAN_TX_CANCEL   0    /**< Cancel off-channel transmission */
+typedef enum {
+    WIFI_OFFCHAN_TX_CANCEL,   /**< Cancel off-channel transmission */
+    WIFI_OFFCHAN_TX_REQ,      /**< Request off-channel transmission */
+} wifi_action_tx_t;
 
-#define WIFI_ROC_REQ     1    /**< Request remain on channel */
-#define WIFI_ROC_CANCEL  0    /**< Cancel remain on channel */
-
+typedef enum {
+    WIFI_ROC_CANCEL,    /**< Cancel remain on channel */
+    WIFI_ROC_REQ,       /**< Request remain on channel */
+} wifi_roc_t;
 /**
   * @brief Wi-Fi country policy
   */
@@ -64,13 +69,19 @@ typedef struct {
     uint8_t               nchan;   /**< Total channel number of the allowed 2.4GHz Wi-Fi channels */
     int8_t                max_tx_power;   /**< This field is used for getting Wi-Fi maximum transmitting power, call esp_wifi_set_max_tx_power to set the maximum transmitting power. */
     wifi_country_policy_t policy;  /**< Country policy */
+#if CONFIG_SLAVE_SOC_WIFI_SUPPORT_5G
+    uint32_t              wifi_5g_channel_mask;  /**< A bitmask representing the allowed 5GHz Wi-Fi channels.
+                                                      Each bit in the mask corresponds to a specific channel as wifi_5g_channel_bit_t shown.
+                                                      Bitmask set to 0 indicates 5GHz channels are allowed according to local regulatory rules.
+                                                      Please note that configured bitmask takes effect only when policy is manual. */
+#endif
 } wifi_country_t;
 
 /**
   * @brief Wi-Fi authmode type
   * Strength of authmodes
   * Personal Networks   : OPEN < WEP < WPA_PSK < OWE < WPA2_PSK = WPA_WPA2_PSK < WAPI_PSK < WPA3_PSK = WPA2_WPA3_PSK = DPP
-  * Enterprise Networks : WIFI_AUTH_WPA2_ENTERPRISE < WIFI_AUTH_WPA3_ENT_192
+  * Enterprise Networks : WIFI_AUTH_WPA2_ENTERPRISE < WIFI_AUTH_WPA3_ENTERPRISE = WIFI_AUTH_WPA2_WPA3_ENTERPRISE < WIFI_AUTH_WPA3_ENT_192
   */
 typedef enum {
     WIFI_AUTH_OPEN = 0,         /**< Authenticate mode : open */
@@ -88,6 +99,8 @@ typedef enum {
     WIFI_AUTH_WPA3_EXT_PSK,     /**< This authentication mode will yield same result as WIFI_AUTH_WPA3_PSK and not recommended to be used. It will be deprecated in future, please use WIFI_AUTH_WPA3_PSK instead. */
     WIFI_AUTH_WPA3_EXT_PSK_MIXED_MODE, /**< This authentication mode will yield same result as WIFI_AUTH_WPA3_PSK and not recommended to be used. It will be deprecated in future, please use WIFI_AUTH_WPA3_PSK instead.*/
     WIFI_AUTH_DPP,              /**< Authenticate mode : DPP */
+    WIFI_AUTH_WPA3_ENTERPRISE,  /**< Authenticate mode : WPA3-Enterprise Only Mode */
+    WIFI_AUTH_WPA2_WPA3_ENTERPRISE, /**< Authenticate mode : WPA3-Enterprise Transition Mode */
     WIFI_AUTH_MAX
 } wifi_auth_mode_t;
 
@@ -100,13 +113,13 @@ typedef enum {
     WIFI_REASON_UNSPECIFIED                        = 1,     /**< Unspecified reason */
     WIFI_REASON_AUTH_EXPIRE                        = 2,     /**< Authentication expired */
     WIFI_REASON_AUTH_LEAVE                         = 3,     /**< Deauthentication due to leaving */
-    WIFI_REASON_ASSOC_EXPIRE                       = 4,     /**< Association expired. Deprecated, will be removed in next IDF major release */
-    WIFI_REASON_DISASSOC_DUE_TO_INACTIVITY         = 4,
+    WIFI_REASON_ASSOC_EXPIRE                       = 4,     /**< Deprecated, will be removed in next IDF major release */
+    WIFI_REASON_DISASSOC_DUE_TO_INACTIVITY         = 4,     /**< Disassociated due to inactivity */
     WIFI_REASON_ASSOC_TOOMANY                      = 5,     /**< Too many associated stations */
-    WIFI_REASON_NOT_AUTHED                         = 6,     /**< Not authenticated. Deprecated, will be removed in next IDF major release */
-    WIFI_REASON_CLASS2_FRAME_FROM_NONAUTH_STA      = 6,
-    WIFI_REASON_NOT_ASSOCED                        = 7,     /**< Not associated. Deprecated, will be removed in next IDF major release */
-    WIFI_REASON_CLASS3_FRAME_FROM_NONASSOC_STA     = 7,
+    WIFI_REASON_NOT_AUTHED                         = 6,     /**< Deprecated, will be removed in next IDF major release */
+    WIFI_REASON_CLASS2_FRAME_FROM_NONAUTH_STA      = 6,     /**< Class 2 frame received from nonauthenticated STA */
+    WIFI_REASON_NOT_ASSOCED                        = 7,     /**< Deprecated, will be removed in next IDF major release */
+    WIFI_REASON_CLASS3_FRAME_FROM_NONASSOC_STA     = 7,     /**< Class 3 frame received from nonassociated STA */
     WIFI_REASON_ASSOC_LEAVE                        = 8,     /**< Deassociated due to leaving */
     WIFI_REASON_ASSOC_NOT_AUTHED                   = 9,     /**< Association but not authenticated */
     WIFI_REASON_DISASSOC_PWRCAP_BAD                = 10,    /**< Disassociated due to poor power capability */
@@ -147,6 +160,7 @@ typedef enum {
     WIFI_REASON_INVALID_FTE                        = 51,    /**< Invalid FTE */
     WIFI_REASON_TRANSMISSION_LINK_ESTABLISH_FAILED = 67,    /**< Transmission link establishment failed */
     WIFI_REASON_ALTERATIVE_CHANNEL_OCCUPIED        = 68,    /**< Alternative channel occupied */
+
     WIFI_REASON_BEACON_TIMEOUT                     = 200,    /**< Beacon timeout */
     WIFI_REASON_NO_AP_FOUND                        = 201,    /**< No AP found */
     WIFI_REASON_AUTH_FAIL                          = 202,    /**< Authentication failed */
@@ -213,8 +227,8 @@ typedef struct {
   * @brief Channel bitmap for setting specific channels to be scanned
   */
 typedef struct {
-    uint16_t ghz_2_channels;     /**< Represents 2.4 GHz channels */
-    uint32_t ghz_5_channels;     /**< Represents 5 GHz channels */
+    uint16_t ghz_2_channels;     /**< Represents 2.4 GHz channels, that bits can be set as wifi_2g_channel_bit_t shown. */
+    uint32_t ghz_5_channels;     /**< Represents 5 GHz channels, that bits can be set as wifi_5g_channel_bit_t shown. */
 } wifi_scan_channel_bitmap_t;
 
 /**
@@ -228,7 +242,9 @@ typedef struct {
     wifi_scan_type_t scan_type;                        /**< Scan type, active or passive */
     wifi_scan_time_t scan_time;                        /**< Scan time per channel */
     uint8_t home_chan_dwell_time;                      /**< Time spent at home channel between scanning consecutive channels. */
-    wifi_scan_channel_bitmap_t channel_bitmap;         /**< Channel bitmap for setting specific channels to be scanned. For 2.4ghz channels set ghz_2_channels from BIT(1) to BIT(14) from LSB to MSB order to indicate channels to be scanned. Currently scanning in 5ghz channels is not supported. Please note that the 'channel' parameter above needs to be set to 0 to allow scanning by bitmap. */
+    wifi_scan_channel_bitmap_t channel_bitmap;         /**< Channel bitmap for setting specific channels to be scanned.
+                                                            Please note that the 'channel' parameter above needs to be set to 0 to allow scanning by bitmap.
+                                                            Also, note that only allowed channels configured by wifi_country_t can be scanned. */
 } wifi_scan_config_t;
 
 /**
@@ -257,6 +273,19 @@ typedef enum {
     WIFI_CIPHER_TYPE_AES_GMAC256,/**< The cipher type is AES-GMAC-256 */
     WIFI_CIPHER_TYPE_UNKNOWN,    /**< The cipher type is unknown */
 } wifi_cipher_type_t;
+
+/**
+  * @brief Wi-Fi bandwidth type
+  */
+typedef enum {
+    WIFI_BW_HT20   = 1,       /**< Bandwidth is HT20      */
+    WIFI_BW20 = WIFI_BW_HT20, /**< Bandwidth is 20 MHz    */
+    WIFI_BW_HT40   = 2,       /**< Bandwidth is HT40      */
+    WIFI_BW40 = WIFI_BW_HT40, /**< Bandwidth is 40 MHz    */
+    WIFI_BW80      = 3,       /**< Bandwidth is 80 MHz    */
+    WIFI_BW160     = 4,       /**< Bandwidth is 160 MHz   */
+    WIFI_BW80_BW80 = 5,       /**< Bandwidth is 80 + 80 MHz */
+} wifi_bandwidth_t;
 
 /**
   * @brief Wi-Fi antenna
@@ -303,13 +332,11 @@ typedef struct {
     uint32_t reserved: 22;                /**< Bit: 10..31 reserved */
     wifi_country_t country;               /**< Country information of AP */
     wifi_he_ap_info_t he_ap;              /**< HE AP info */
-    uint8_t bandwidth;                    /**< For AP 20 MHz this value is set to 1. For AP 40 MHz this value is set to 2.
-                                               For AP 80 MHz this value is set to 3. For AP 160MHz this value is set to 4.
-                                               For AP 80+80MHz this value is set to 5*/
+    wifi_bandwidth_t bandwidth;           /**< Bandwidth of AP */
     uint8_t vht_ch_freq1;                 /**< This fields are used only AP bandwidth is 80 and 160 MHz, to transmit the center channel
                                                frequency of the BSS. For AP bandwidth is 80 + 80 MHz, it is the center channel frequency
                                                of the lower frequency segment.*/
-    uint8_t vht_ch_freq2;                 /**< This fields are used only AP bandwidth is 80 + 80 MHz, and is used to transmit the center
+    uint8_t vht_ch_freq2;                 /**< this fields are used only AP bandwidth is 80 + 80 MHz, and is used to transmit the center
                                                channel frequency of the second segment. */
 } wifi_ap_record_t;
 
@@ -336,6 +363,7 @@ typedef struct {
     int8_t              rssi;             /**< The minimum rssi to accept in the fast scan mode. Defaults to -127 if set to >= 0 */
     wifi_auth_mode_t    authmode;         /**< The weakest auth mode to accept in the fast scan mode
                                                Note: In case this value is not set and password is set as per WPA2 standards(password len >= 8), it will be defaulted to WPA2 and device won't connect to deprecated WEP/WPA networks. Please set auth mode threshold as WIFI_AUTH_WEP/WIFI_AUTH_WPA_PSK to connect to WEP/WPA networks */
+    uint8_t             rssi_5g_adjustment; /**< The RSSI value of the 5G AP is within the rssi_5g_adjustment range compared to the 2G AP, the 5G AP will be given priority for connection. */
 } wifi_scan_threshold_t;
 
 /**
@@ -347,6 +375,89 @@ typedef enum {
     WIFI_PS_MAX_MODEM,   /**< Maximum modem power saving. In this mode, interval to receive beacons is determined by the listen_interval parameter in wifi_sta_config_t */
 } wifi_ps_type_t;
 
+/**
+  * @brief Argument structure for Wi-Fi band
+  */
+typedef enum {
+    WIFI_BAND_2G = 1,                   /**< Band is 2.4 GHz */
+    WIFI_BAND_5G = 2,                   /**< Band is 5 GHz */
+} wifi_band_t;
+
+/**
+  * @brief Argument structure for Wi-Fi band mode
+  */
+typedef enum {
+    WIFI_BAND_MODE_2G_ONLY = 1,         /**< Wi-Fi band mode is 2.4 GHz only */
+    WIFI_BAND_MODE_5G_ONLY = 2,         /**< Wi-Fi band mode is 5 GHz only */
+    WIFI_BAND_MODE_AUTO = 3,            /**< Wi-Fi band mode is 2.4 GHz + 5 GHz */
+} wifi_band_mode_t;
+
+#ifndef BIT
+#define BIT(nr)  (1 << (nr))
+#endif
+
+#define CHANNEL_TO_BIT_NUMBER(channel) ((channel >= 1 && channel <= 14) ? (channel) : \
+    ((channel >= 36 && channel <= 64 && (channel - 36) % 4 == 0) ? ((channel - 36) / 4 + 1) : \
+    ((channel >= 100 && channel <= 144 && (channel - 100) % 4 == 0) ? ((channel - 100) / 4 + 9) : \
+    ((channel >= 149 && channel <= 177 && (channel - 149) % 4 == 0) ? ((channel - 149) / 4 + 21) : 0))))
+
+#define BIT_NUMBER_TO_CHANNEL(bit_number, band) ((band == WIFI_BAND_2G) ? (bit_number) : \
+    ((bit_number >= 1 && bit_number <= 8) ? ((bit_number - 1) * 4 + 36) : \
+    ((bit_number >= 9 && bit_number <= 20) ? ((bit_number - 9) * 4 + 100) : \
+    ((bit_number >= 21 && bit_number <= 28) ? ((bit_number - 21) * 4 + 149) : 0))))
+
+#define CHANNEL_TO_BIT(channel) (BIT(CHANNEL_TO_BIT_NUMBER(channel)))
+
+/** Argument structure for 2.4G channels */
+typedef enum {
+    WIFI_CHANNEL_1 = BIT(1),   /**< Wi-Fi channel 1 */
+    WIFI_CHANNEL_2 = BIT(2),   /**< Wi-Fi channel 2 */
+    WIFI_CHANNEL_3 = BIT(3),   /**< Wi-Fi channel 3 */
+    WIFI_CHANNEL_4 = BIT(4),   /**< Wi-Fi channel 4 */
+    WIFI_CHANNEL_5 = BIT(5),   /**< Wi-Fi channel 5 */
+    WIFI_CHANNEL_6 = BIT(6),   /**< Wi-Fi channel 6 */
+    WIFI_CHANNEL_7 = BIT(7),   /**< Wi-Fi channel 7 */
+    WIFI_CHANNEL_8 = BIT(8),   /**< Wi-Fi channel 8 */
+    WIFI_CHANNEL_9 = BIT(9),   /**< Wi-Fi channel 9 */
+    WIFI_CHANNEL_10 = BIT(10), /**< Wi-Fi channel 10 */
+    WIFI_CHANNEL_11 = BIT(11), /**< Wi-Fi channel 11 */
+    WIFI_CHANNEL_12 = BIT(12), /**< Wi-Fi channel 12 */
+    WIFI_CHANNEL_13 = BIT(13), /**< Wi-Fi channel 13 */
+    WIFI_CHANNEL_14 = BIT(14), /**< Wi-Fi channel 14 */
+} wifi_2g_channel_bit_t;
+
+/** Argument structure for 5G channels */
+typedef enum {
+    WIFI_CHANNEL_36 = BIT(1),   /**< Wi-Fi channel 36 */
+    WIFI_CHANNEL_40 = BIT(2),   /**< Wi-Fi channel 40 */
+    WIFI_CHANNEL_44 = BIT(3),   /**< Wi-Fi channel 44 */
+    WIFI_CHANNEL_48 = BIT(4),   /**< Wi-Fi channel 48 */
+    WIFI_CHANNEL_52 = BIT(5),   /**< Wi-Fi channel 52 */
+    WIFI_CHANNEL_56 = BIT(6),   /**< Wi-Fi channel 56 */
+    WIFI_CHANNEL_60 = BIT(7),   /**< Wi-Fi channel 60 */
+    WIFI_CHANNEL_64 = BIT(8),   /**< Wi-Fi channel 64 */
+    WIFI_CHANNEL_100 = BIT(9),  /**< Wi-Fi channel 100 */
+    WIFI_CHANNEL_104 = BIT(10), /**< Wi-Fi channel 104 */
+    WIFI_CHANNEL_108 = BIT(11), /**< Wi-Fi channel 108 */
+    WIFI_CHANNEL_112 = BIT(12), /**< Wi-Fi channel 112 */
+    WIFI_CHANNEL_116 = BIT(13), /**< Wi-Fi channel 116 */
+    WIFI_CHANNEL_120 = BIT(14), /**< Wi-Fi channel 120 */
+    WIFI_CHANNEL_124 = BIT(15), /**< Wi-Fi channel 124 */
+    WIFI_CHANNEL_128 = BIT(16), /**< Wi-Fi channel 128 */
+    WIFI_CHANNEL_132 = BIT(17), /**< Wi-Fi channel 132 */
+    WIFI_CHANNEL_136 = BIT(18), /**< Wi-Fi channel 136 */
+    WIFI_CHANNEL_140 = BIT(19), /**< Wi-Fi channel 140 */
+    WIFI_CHANNEL_144 = BIT(20), /**< Wi-Fi channel 144 */
+    WIFI_CHANNEL_149 = BIT(21), /**< Wi-Fi channel 149 */
+    WIFI_CHANNEL_153 = BIT(22), /**< Wi-Fi channel 153 */
+    WIFI_CHANNEL_157 = BIT(23), /**< Wi-Fi channel 157 */
+    WIFI_CHANNEL_161 = BIT(24), /**< Wi-Fi channel 161 */
+    WIFI_CHANNEL_165 = BIT(25), /**< Wi-Fi channel 165 */
+    WIFI_CHANNEL_169 = BIT(26), /**< Wi-Fi channel 169 */
+    WIFI_CHANNEL_173 = BIT(27), /**< Wi-Fi channel 173 */
+    WIFI_CHANNEL_177 = BIT(28), /**< Wi-Fi channel 177 */
+} wifi_5g_channel_bit_t;
+
 #define WIFI_PROTOCOL_11B         0x1     /**< 802.11b protocol */
 #define WIFI_PROTOCOL_11G         0x2     /**< 802.11g protocol */
 #define WIFI_PROTOCOL_11N         0x4     /**< 802.11n protocol */
@@ -356,17 +467,20 @@ typedef enum {
 #define WIFI_PROTOCOL_11AX        0x40    /**< 802.11ax protocol */
 
 /**
-  * @brief Wi-Fi bandwidth type
+  * @brief Description of a Wi-Fi protocols
   */
-typedef enum {
-    WIFI_BW_HT20   = 1,       /**< Bandwidth is HT20      */
-    WIFI_BW20 = WIFI_BW_HT20, /**< Bandwidth is 20 MHz    */
-    WIFI_BW_HT40   = 2,       /**< Bandwidth is HT40      */
-    WIFI_BW40 = WIFI_BW_HT40, /**< Bandwidth is 40 MHz    */
-    WIFI_BW80      = 3,       /**< Bandwidth is 80 MHz    */
-    WIFI_BW160     = 4,       /**< Bandwidth is 160 MHz   */
-    WIFI_BW80_BW80 = 5,       /**< Bandwidth is 80 + 80 MHz */
-} wifi_bandwidth_t;
+typedef struct {
+    uint16_t ghz_2g;            /**< Represents 2.4 GHz protocol, support 802.11b or 802.11g or 802.11n or 802.11ax or LR mode */
+    uint16_t ghz_5g;            /**< Represents 5 GHz protocol, support 802.11a or 802.11n or 802.11ac or 802.11ax */
+} wifi_protocols_t;
+
+/**
+  * @brief Description of a Wi-Fi band bandwidths
+  */
+typedef struct {
+    wifi_bandwidth_t ghz_2g;       /**< Represents 2.4 GHz bandwidth */
+    wifi_bandwidth_t ghz_5g;       /**< Represents 5 GHz bandwidth */
+} wifi_bandwidths_t;
 
 /**
   * @brief Configuration structure for Protected Management Frame
@@ -396,6 +510,14 @@ typedef enum {
 } wifi_sae_pk_mode_t;
 
 /**
+  * @brief Configuration structure for BSS max idle
+  */
+typedef struct {
+    uint16_t period;                /**< Sets BSS Max idle period (1 Unit = 1000TUs OR 1.024 Seconds). If there are no frames for this period from a STA, SoftAP will disassociate due to inactivity. Setting it to 0 disables the feature */
+    bool protected_keep_alive;      /**< Requires clients to use protected keep alive frames for BSS Max Idle period */
+} wifi_bss_max_idle_config_t;
+
+/**
   * @brief Soft-AP configuration settings for the device
   */
 typedef struct {
@@ -414,6 +536,8 @@ typedef struct {
     wifi_pmf_config_t pmf_cfg;                /**< Configuration for Protected Management Frame */
     wifi_sae_pwe_method_t sae_pwe_h2e;        /**< Configuration for SAE PWE derivation method */
     uint8_t transition_disable;               /**< Whether to enable transition disable feature */
+    uint8_t sae_ext;                          /**< Enable SAE EXT feature. SOC_GCMP_SUPPORT is required for this feature. */
+    wifi_bss_max_idle_config_t bss_max_idle_cfg;  /**< Configuration for bss max idle, effective if CONFIG_WIFI_BSS_MAX_IDLE_SUPPORT is enabled */
 } wifi_ap_config_t;
 
 #define SAE_H2E_IDENTIFIER_LEN 32    /**< Length of the password identifier for H2E */
@@ -427,7 +551,7 @@ typedef struct {
     wifi_scan_method_t scan_method;           /**< Do all channel scan or fast scan */
     bool bssid_set;                           /**< Whether set MAC address of target AP or not. Generally, station_config.bssid_set needs to be 0; and it needs to be 1 only when users need to check the MAC address of the AP.*/
     uint8_t bssid[6];                         /**< MAC address of target AP*/
-    uint8_t channel;                          /**< Channel hint for target AP. Set to 1~13 to scan starting from the specified channel before connecting to AP. Set to 0 for no preference */
+    uint8_t channel;                          /**< Channel hint for target AP. For 2.4G AP, set to 1~13 to scan starting from the specified channel before connecting to AP. For 5G AP, set to 36~177 (36, 40, 44 ... 177) to scan starting from the specified channel before connecting to AP. Set to 0 for no preference */
     uint16_t listen_interval;                 /**< Listen interval for ESP32 station to receive beacon when WIFI_PS_MAX_MODEM is set. Units: AP beacon intervals. Defaults to 3 if set to 0. */
     wifi_sort_method_t sort_method;           /**< Sort the connect AP in the list by rssi or security mode */
     wifi_scan_threshold_t  threshold;         /**< When scan_threshold is set, only APs which have an auth mode that is more secure than the selected auth mode and a signal stronger than the minimum RSSI will be used. */
@@ -438,7 +562,7 @@ typedef struct {
     uint32_t ft_enabled: 1;                   /**< Whether FT is enabled for the connection */
     uint32_t owe_enabled: 1;                  /**< Whether OWE is enabled for the connection */
     uint32_t transition_disable: 1;           /**< Whether to enable transition disable feature */
-    uint32_t reserved: 26;                    /**< Reserved for future feature set */
+    uint32_t reserved1: 26;                   /**< Reserved for future feature set */
     wifi_sae_pwe_method_t sae_pwe_h2e;        /**< Configuration for SAE PWE derivation method */
     wifi_sae_pk_mode_t sae_pk_mode;           /**< Configuration for SAE-PK (Public Key) Authentication method */
     uint8_t failure_retry_cnt;                /**< Number of connection retries station will do before moving to next AP. scan_method should be set as WIFI_ALL_CHANNEL_SCAN to use this config.
@@ -446,13 +570,16 @@ typedef struct {
     uint32_t he_dcm_set: 1;                                       /**< Whether DCM max.constellation for transmission and reception is set. */
     uint32_t he_dcm_max_constellation_tx: 2;                      /**< Indicate the max.constellation for DCM in TB PPDU the STA supported. 0: not supported. 1: BPSK, 2: QPSK, 3: 16-QAM. The default value is 3. */
     uint32_t he_dcm_max_constellation_rx: 2;                      /**< Indicate the max.constellation for DCM in both Data field and HE-SIG-B field the STA supported. 0: not supported. 1: BPSK, 2: QPSK, 3: 16-QAM. The default value is 3. */
-    uint32_t he_mcs9_enabled: 1;                                  /**< Whether to support HE-MCS 0 to 9. The default value is 0. */
+    uint32_t he_mcs9_enabled: 1;                                  /**< Whether to support HE-MCS8 and HE-MCS9. The default value is 0. */
     uint32_t he_su_beamformee_disabled: 1;                        /**< Whether to disable support for operation as an SU beamformee. */
     uint32_t he_trig_su_bmforming_feedback_disabled: 1;           /**< Whether to disable support the transmission of SU feedback in an HE TB sounding sequence. */
     uint32_t he_trig_mu_bmforming_partial_feedback_disabled: 1;   /**< Whether to disable support the transmission of partial-bandwidth MU feedback in an HE TB sounding sequence. */
     uint32_t he_trig_cqi_feedback_disabled: 1;                    /**< Whether to disable support the transmission of CQI feedback in an HE TB sounding sequence. */
-    uint32_t he_reserved: 22;                                     /**< Reserved for future feature set */
-    uint8_t sae_h2e_identifier[SAE_H2E_IDENTIFIER_LEN];           /**< Password identifier for H2E. this needs to be null terminated string */
+    uint32_t vht_su_beamformee_disabled: 1;                       /**< Whether to disable support for operation as an VHT SU beamformee. */
+    uint32_t vht_mu_beamformee_disabled: 1;                       /**< Whether to disable support for operation as an VHT MU beamformee. */
+    uint32_t vht_mcs8_enabled: 1;                                 /**< Whether to support VHT-MCS8. The default value is 0. */
+    uint32_t reserved2: 19;                                       /**< Reserved for future feature set */
+    uint8_t sae_h2e_identifier[SAE_H2E_IDENTIFIER_LEN];/**< Password identifier for H2E. this needs to be null terminated string */
 } wifi_sta_config_t;
 
 /**
@@ -662,11 +789,48 @@ typedef int (* wifi_action_rx_cb_t)(uint8_t *hdr, uint8_t *payload,
 typedef struct {
     wifi_interface_t ifx;       /**< Wi-Fi interface to send request to */
     uint8_t dest_mac[6];        /**< Destination MAC address */
+    wifi_action_tx_t type;      /**< ACTION TX operation type */
+    uint8_t channel;            /**< Channel on which to perform ACTION TX Operation */
+    uint32_t wait_time_ms;      /**< Duration to wait for on target channel */
     bool no_ack;                /**< Indicates no ack required */
-    wifi_action_rx_cb_t rx_cb;  /**< Rx Callback to receive any response */
+    wifi_action_rx_cb_t rx_cb;  /**< Rx Callback to receive action frames */
+    uint8_t op_id;              /**< Unique Identifier for operation provided by wifi driver */
     uint32_t data_len;          /**< Length of the appended Data */
     uint8_t data[0];            /**< Appended Data payload */
 } wifi_action_tx_req_t;
+
+/** Status codes for WIFI_EVENT_ROC_DONE evt */
+typedef enum {
+    WIFI_ROC_DONE = 0,         /**< ROC operation was completed successfully */
+    WIFI_ROC_FAIL,             /**< ROC operation was cancelled */
+} wifi_roc_done_status_t;
+
+/**
+  * @brief     The callback function executed when ROC operation has ended
+  *
+  * @param     context rxcb registered for the corresponding ROC operation
+  * @param     op_id  ID of the corresponding ROC operation
+  * @param     status status code of the ROC operation denoted
+  *
+  */
+typedef void (* wifi_action_roc_done_cb_t)(uint32_t context, uint8_t op_id,
+                                           wifi_roc_done_status_t status);
+
+/**
+ * @brief Remain on Channel request
+ *
+ *
+ */
+typedef struct {
+    wifi_interface_t ifx;              /**< WiFi interface to send request to */
+    wifi_roc_t type;                   /**< ROC operation type */
+    uint8_t channel;                   /**< Channel on which to perform ROC Operation */
+    wifi_second_chan_t sec_channel;    /**< Secondary channel */
+    uint32_t wait_time_ms;             /**< Duration to wait for on target channel */
+    wifi_action_rx_cb_t rx_cb;         /**< Rx Callback to receive any response */
+    uint8_t op_id;                     /**< ID of this specific ROC operation provided by wifi driver */
+    wifi_action_roc_done_cb_t done_cb; /**< Callback to function that will be called upon ROC done. If assigned, WIFI_EVENT_ROC_DONE event will not be posted */
+} wifi_roc_req_t;
 
 /**
   * @brief FTM Initiator configuration
@@ -949,6 +1113,7 @@ typedef enum {
 
     WIFI_EVENT_AP_WRONG_PASSWORD,        /**< a station tried to connect with wrong password */
 
+    WIFI_EVENT_STA_BEACON_OFFSET_UNSTABLE,  /**< Station sampled beacon offset unstable */
     WIFI_EVENT_MAX,                      /**< Invalid Wi-Fi event ID */
 } wifi_event_t;
 
@@ -1118,28 +1283,39 @@ typedef struct {
     uint8_t ftm_report_num_entries;             /**< Number of entries in the FTM Report data */
 } wifi_event_ftm_report_t;
 
-#define WIFI_STATIS_BUFFER    (1<<0)    /**< Buffer statistic */
-#define WIFI_STATIS_RXTX      (1<<1)    /**< RX/TX statistic */
-#define WIFI_STATIS_HW        (1<<2)    /**< Hardware statistic */
-#define WIFI_STATIS_DIAG      (1<<3)    /**< Diagnostic statistic */
-#define WIFI_STATIS_PS        (1<<4)    /**< Power save statistic */
-#define WIFI_STATIS_ALL       (-1)      /**< All statistic */
+#define WIFI_STATIS_BUFFER    (1<<0)    /**< Buffer status */
+#define WIFI_STATIS_RXTX      (1<<1)    /**< RX/TX status */
+#define WIFI_STATIS_HW        (1<<2)    /**< Hardware status */
+#define WIFI_STATIS_DIAG      (1<<3)    /**< Diagnostic status */
+#define WIFI_STATIS_PS        (1<<4)    /**< Power save status */
+#define WIFI_STATIS_ALL       (-1)      /**< All status */
 
-/**
-  * @brief Argument structure for WIFI_EVENT_ACTION_TX_STATUS event
-  */
+/** Status codes for WIFI_EVENT_ACTION_TX_STATUS evt */
+/** There will be back to back events in success case TX_DONE and TX_DURATION_COMPLETED */
+typedef enum {
+    WIFI_ACTION_TX_DONE = 0,           /**< ACTION_TX operation was completed successfully */
+    WIFI_ACTION_TX_FAILED,             /**< ACTION_TX operation failed during tx */
+    WIFI_ACTION_TX_DURATION_COMPLETED, /**< ACTION_TX operation completed it's wait duration */
+    WIFI_ACTION_TX_OP_CANCELLED,       /**< ACTION_TX operation was cancelled by application or higher priority operation */
+} wifi_action_tx_status_type_t;
+
+/** Argument structure for WIFI_EVENT_ACTION_TX_STATUS event */
 typedef struct {
-    wifi_interface_t ifx;     /**< Wi-Fi interface to send request to */
-    uint32_t context;         /**< Context to identify the request */
-    uint8_t da[6];            /**< Destination MAC address */
-    uint8_t status;           /**< Status of the operation */
+    wifi_interface_t ifx;                   /**< WiFi interface to send request to */
+    uint32_t context;                       /**< Context to identify the request */
+    wifi_action_tx_status_type_t status;    /**< Status of the operation */
+    uint8_t op_id;                          /**< ID of the corresponding operation that was provided during action tx request */
+    uint8_t channel;                        /**< Channel provided in tx request */
 } wifi_event_action_tx_status_t;
 
 /**
   * @brief Argument structure for WIFI_EVENT_ROC_DONE event
   */
 typedef struct {
-    uint32_t context;         /**< Context to identify the request */
+    uint32_t context;               /**< Context to identify the initiator of the request */
+    wifi_roc_done_status_t status;  /**< ROC status */
+    uint8_t op_id;                  /**< ID of the corresponding ROC operation */
+    uint8_t channel;                /**< Channel provided in tx request */
 } wifi_event_roc_done_t;
 
 /**
@@ -1269,13 +1445,6 @@ typedef struct {
     uint8_t n_report[];                             /**< Neighbor Report received from the AP*/
 } wifi_event_neighbor_report_t;
 
-/** Argument structure for wifi band */
-typedef enum {
-    WIFI_BAND_2G = 1,                   /* Band is 2.4G */
-    WIFI_BAND_5G = 2,                   /* Band is 5G */
-    WIFI_BAND_2G_5G = 3,                /* Band is 2,4G + 5G */
-} wifi_band_t;
-
 /** Argument structure for WIFI_EVENT_AP_WRONG_PASSWORD event */
 typedef struct {
     uint8_t mac[6];           /**< MAC address of the station trying to connect to Soft-AP */
@@ -1291,6 +1460,63 @@ typedef struct {
                                                   ERSU is always used in long distance transmission, and its frame has lower rate compared with SU mode */
     bool dcm;                                /**< Using dcm rate to send frame */
 } wifi_tx_rate_config_t;
+
+#define WIFI_MAX_SUPPORT_COUNTRY_NUM 175 /**< max number of supported countries */
+#ifdef CONFIG_SLAVE_SOC_WIFI_SUPPORT_5G
+#define WIFI_MAX_REGULATORY_RULE_NUM  7 /**< max number of regulatory rules */
+#else
+#define WIFI_MAX_REGULATORY_RULE_NUM  2 /**< max number of regulatory rules */
+#endif
+
+/** Argument structure for regulatory rule */
+typedef struct {
+    uint8_t start_channel;      /**< start channel of regulatory rule */
+    uint8_t end_channel;        /**< end channel of regulatory rule */
+    uint16_t max_bandwidth : 3; /**< max bandwidth(MHz) of regulatory rule, 1:20M, 2:40M, 3:80M, 4:160M */
+    uint16_t max_eirp : 6;      /**< indicates the maximum Equivalent Isotropically Radiated Power (EIRP), typically measured in dBm */
+    uint16_t is_dfs : 1;        /**< flag to identify dfs channel */
+    uint16_t reserved : 6;      /**< reserved */
+} wifi_reg_rule_t;
+
+/** Argument structure for regdomain */
+typedef struct {
+    uint8_t n_reg_rules;                                     /**< number of regulatory rules */
+    wifi_reg_rule_t reg_rules[WIFI_MAX_REGULATORY_RULE_NUM]; /**< array of regulatory rules*/
+} wifi_regulatory_t;
+
+/** Argument structure for regdomain */
+typedef struct {
+    char cn[2];              /**< country code string */
+    uint8_t regulatory_type; /**< regulatory type of country */
+} wifi_regdomain_t;
+
+/**
+  * @brief Status of wifi sending data
+  */
+typedef enum {
+    WIFI_SEND_SUCCESS = 0,    /**< Sending Wi-Fi data successfully */
+    WIFI_SEND_FAIL,           /**< Sending Wi-Fi data fail */
+} wifi_tx_status_t;
+
+/**
+  * @brief Information of wifi sending data
+  */
+typedef struct {
+    uint8_t *des_addr;           /**< The address of the receive device */
+    uint8_t *src_addr;           /**< The address of the sending device */
+    wifi_interface_t ifidx;      /**< Interface of sending 80211 tx data */
+    uint8_t *data;               /**< The data for 80211 tx, start from the MAC header */
+    uint8_t data_len;            /**< The frame body length for 80211 tx, excluding the MAC header */
+    wifi_phy_rate_t rate;        /**< Data rate */
+    wifi_tx_status_t tx_status;  /**< Status of sending 80211 tx data */
+} wifi_tx_info_t;
+
+typedef wifi_tx_info_t esp_80211_tx_info_t;
+
+/** Argument structure for WIFI_EVENT_STA_BEACON_OFFSET_UNSTABLE event */
+typedef struct {
+    float beacon_success_rate;                  /**< Received beacon success rate */
+} wifi_event_sta_beacon_offset_unstable_t;
 
 #ifdef __cplusplus
 }

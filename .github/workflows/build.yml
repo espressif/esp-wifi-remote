@@ -34,6 +34,8 @@ jobs:
         with:
             key: ${{ matrix.idf_ver }}
       - name: Build ${{ matrix.test.app }} with IDF-${{ matrix.idf_ver }}
+        env:
+          EXPECTED_WARNING: "DeprecationWarning: 'MultiCommand' is deprecated and will be removed\ndependencies ESP_PHY_ENABLED with value n"
         shell: bash
         run: |
           . ${IDF_PATH}/export.sh
