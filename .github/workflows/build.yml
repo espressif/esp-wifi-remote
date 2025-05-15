@@ -51,8 +51,7 @@ jobs:
         example: [ { app: host, path: "examples/mqtt", bin: "build_esp32p4_p4" }, { app: slave, path: "examples/server", bin: "build_esp32c6_c6" }]
         include:
           - idf_ver: "latest"
-            example: { app: slave, path: "examples/server" }
-            warning: "Warning: The smallest app partition is nearly full"
+            warning: "DeprecationWarning: 'MultiCommand' is deprecated and will be removed\nWarning: The smallest app partition is nearly full"
 
     runs-on: ubuntu-latest
     container: espressif/idf:${{ matrix.idf_ver }}
