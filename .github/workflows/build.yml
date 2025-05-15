@@ -12,7 +12,7 @@ jobs:
     name: Build WiFi Remote Test
     strategy:
       matrix:
-        idf_ver: ["latest", "release-v5.4", "release-v5.3"]
+        idf_ver: ["latest", "release-v5.5", "release-v5.4", "release-v5.3"]
         test: [ { app: smoke_test, path: "test/smoke_test" }]
     runs-on: ubuntu-latest
     container: espressif/idf:${{ matrix.idf_ver }}
