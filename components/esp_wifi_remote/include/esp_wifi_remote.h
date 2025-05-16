@@ -7,6 +7,10 @@
 #include "esp_wifi.h"
 #include "esp_wifi_remote_api.h"
 
+#if defined(CONFIG_ESP_WIFI_ENABLED)
+ESP_EVENT_DECLARE_BASE(WIFI_REMOTE_EVENT);
+#endif
+
 /**
  * @brief Remote channel Rx function pointer
  */
