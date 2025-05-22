@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.11.0](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v0.11.0)
+
+### Features
+
+- Make C6 slave default for P4 targets ([d3eefe0](https://github.com/espressif/esp-wifi-remote/commit/d3eefe0))
+
+### Bug Fixes
+
+- Update per v5.0 espressif/esp-idf@269f1d110d3e ([53721af](https://github.com/espressif/esp-wifi-remote/commit/53721af))
+- Update per v6.0 espressif/esp-idf@4fae51e3c16d ([71aeaee](https://github.com/espressif/esp-wifi-remote/commit/71aeaee))
+
 ## [0.10.2](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v0.10.2)
 
 ### Bug Fixes
