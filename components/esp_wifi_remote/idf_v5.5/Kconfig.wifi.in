@@ -323,6 +323,7 @@ config WIFI_RMT_SLP_IRAM_OPT
     select PM_SLP_DEFAULT_PARAMS_OPT
     select PM_SLEEP_FUNC_IN_IRAM
     select ESP_PERIPH_CTRL_FUNC_IN_IRAM
+    select ESP_PHY_IRAM_OPT
     default y if SLAVE_SOC_WIFI_HE_SUPPORT
     help
         Select this option to place called Wi-Fi library TBTT process and receive beacon functions in IRAM.
