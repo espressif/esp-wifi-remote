@@ -35,7 +35,7 @@ jobs:
             key: ${{ matrix.idf_ver }}
       - name: Build ${{ matrix.test.app }} with IDF-${{ matrix.idf_ver }}
         env:
-          EXPECTED_WARNING: "DeprecationWarning: 'MultiCommand' is deprecated and will be removed\ndependencies ESP_PHY_ENABLED with value n"
+          EXPECTED_WARNING: "DeprecationWarning: 'MultiCommand' is deprecated and will be removed\ndependencies ESP_PHY_ENABLED with value n\nCryptographyDeprecationWarning: Parsed a serial number which wasn't positive"
         shell: bash
         run: |
           . ${IDF_PATH}/export.sh
@@ -49,9 +49,6 @@ jobs:
       matrix:
         idf_ver: ["latest"]
         example: [ { app: host, path: "examples/mqtt", bin: "build_esp32p4_p4" }, { app: slave, path: "examples/server", bin: "build_esp32c6_c6" }]
-        include:
-          - idf_ver: "latest"
-            warning: "DeprecationWarning: 'MultiCommand' is deprecated and will be removed\nWarning: The smallest app partition is nearly full"
 
     runs-on: ubuntu-latest
     container: espressif/idf:${{ matrix.idf_ver }}
@@ -71,7 +68,7 @@ jobs:
           path: protocols
       - name: Build ${{ matrix.example.app }} with IDF-${{ matrix.idf_ver }}
         env:
-          EXPECTED_WARNING: ${{ matrix.warning }}
+          EXPECTED_WARNING: "DeprecationWarning: 'MultiCommand' is deprecated and will be removed\nWarning: The smallest app partition is nearly full\ndependencies ESP_PHY_ENABLED with value n\nCryptographyDeprecationWarning: Parsed a serial number which wasn't positive"
         shell: bash
         run: |
           . ${IDF_PATH}/export.sh

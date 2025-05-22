@@ -185,7 +185,9 @@ def generate_kconfig_wifi_caps(idf_path, idf_ver_dir, component_path):
         slave.write(f'# {AUTO_GENERATED}\n')
         slave.write('    choice SLAVE_IDF_TARGET\n')
         slave.write('    prompt "choose slave target"\n')
-        slave.write('    default SLAVE_IDF_TARGET_ESP32\n')
+        slave.write('    default SLAVE_IDF_TARGET_ESP32C6 if IDF_TARGET_ESP32P4  # To support common use-cases\n')
+        slave.write('    default SLAVE_IDF_TARGET_ESP32\n\n')
+
         for slave_target in SUPPORTED_TARGETS + PREVIEW_TARGETS:
             add_slave = False
             kconfig_content = []
