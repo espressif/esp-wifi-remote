@@ -11,6 +11,7 @@
 #include "esp_check.h"
 #include "esp_tls.h"
 #include "esp_wifi.h"
+#include "esp_private/wifi.h"
 #include "wifi_remote_rpc_impl.hpp"
 #include "eppp_link.h"
 #include "wifi_remote_rpc_params.h"
@@ -29,6 +30,8 @@ const unsigned char ca_crt[] = "-----BEGIN CERTIFICATE-----\n" CONFIG_ESP_WIFI_R
 const unsigned char crt[] = "-----BEGIN CERTIFICATE-----\n" CONFIG_ESP_WIFI_REMOTE_EPPP_SERVER_CRT "\n-----END CERTIFICATE-----";
 const unsigned char key[] = "-----BEGIN PRIVATE KEY-----\n" CONFIG_ESP_WIFI_REMOTE_EPPP_SERVER_KEY "\n-----END PRIVATE KEY-----";
 // TODO: Add option to supply keys and certs via a global symbol (file)
+
+RpcInstance* get_instance();
 
 }
 
@@ -109,6 +112,8 @@ public:
     esp_err_t init()
     {
         ESP_RETURN_ON_FALSE(netif = wifi_remote_eppp_init(EPPP_SERVER), ESP_FAIL, TAG, "Failed to init EPPP connection");
+        eppp_add_channels(netif, 1, &channel_tx, channel_rx);
+
         ESP_RETURN_ON_ERROR(start_server(), TAG, "Failed to start RPC server");
         ESP_RETURN_ON_ERROR(rpc.init(), TAG, "Failed to init RPC engine");
         ESP_RETURN_ON_ERROR(esp_netif_napt_enable(netif), TAG, "Failed to enable NAPT");
@@ -119,7 +124,25 @@ public:
     }
     Sync sync;
 private:
+    bool started{false};
     esp_netif_t *netif{nullptr};
+    eppp_channel_fn_t channel_tx{nullptr};
+    static esp_err_t channel_rx(esp_netif_t *netif, int nr, void *buffer, size_t len)
+    {
+        if (get_instance()->started) {
+            return esp_wifi_internal_tx(WIFI_IF_STA, buffer, len);
+        }
+        return ESP_OK;
+    }
+    static esp_err_t wifi_receive(void *buffer, uint16_t len, void *eb)
+    {
+        if (get_instance()->channel_tx) {
+            auto ret = get_instance()->channel_tx(get_instance()->netif, 1, buffer, len);
+            esp_wifi_internal_free_rx_buffer(eb);
+            return ret;
+        }
+        return ESP_OK;
+    }
     static void task(void *ctx)
     {
         auto instance = static_cast<RpcInstance *>(ctx);
@@ -289,11 +312,14 @@ private:
             if (header.size != 0) {
                 return ESP_FAIL;
             }
+            esp_wifi_internal_reg_rxcb(WIFI_IF_STA, wifi_receive);
+            esp_wifi_internal_reg_netstack_buf_cb(esp_netif_netstack_buf_ref, esp_netif_netstack_buf_free);
 
             auto ret = esp_wifi_start();
             if (rpc.send(api_id::START, &ret) != ESP_OK) {
                 return ESP_FAIL;
             }
+
             break;
         }
         case api_id::CONNECT: {
@@ -356,7 +382,12 @@ private:
 
 namespace server {
 constinit RpcInstance instance;
+RpcInstance* get_instance()
+{
+    return &server::instance;
 }
+}
+
 
 RpcInstance *RpcEngine::init_server()
 {

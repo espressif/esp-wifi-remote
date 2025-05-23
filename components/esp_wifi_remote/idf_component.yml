@@ -4,6 +4,7 @@ description: Utility wrapper for esp_wifi functionality on remote targets
 dependencies:
   espressif/eppp_link:
     version: '>=0.1'
+    override_path: '/home/david/repos/esp-protocols/components/eppp_link'
   idf:
     version: '>=5.3'
   espressif/esp_hosted:
