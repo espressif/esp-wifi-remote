@@ -13,6 +13,7 @@ __attribute__((weak)) esp_netif_t *wifi_remote_eppp_init(eppp_type_t role)
     uint32_t their_ip = role == EPPP_SERVER ? EPPP_DEFAULT_CLIENT_IP() : EPPP_DEFAULT_SERVER_IP();
     eppp_config_t config = EPPP_DEFAULT_CONFIG(our_ip, their_ip);
     // We currently support only UART transport
+#ifdef CONFIG_EPPP_LINK_DEVICE_UART
     config.transport = EPPP_TRANSPORT_UART;
     config.uart.tx_io = CONFIG_ESP_WIFI_REMOTE_EPPP_UART_TX_PIN;
     config.uart.rx_io = CONFIG_ESP_WIFI_REMOTE_EPPP_UART_RX_PIN;
@@ -20,4 +21,16 @@ __attribute__((weak)) esp_netif_t *wifi_remote_eppp_init(eppp_type_t role)
     config.ppp.netif_description = CONFIG_ESP_WIFI_REMOTE_EPPP_NETIF_DESCRIPTION;
     config.ppp.netif_prio = CONFIG_ESP_WIFI_REMOTE_EPPP_NETIF_PRIORITY;
     return eppp_open(role, &config, portMAX_DELAY);
+#elif CONFIG_EPPP_LINK_DEVICE_SPI
+    config.transport = EPPP_TRANSPORT_SPI;
+    config.spi.is_master = role == EPPP_CLIENT;
+    config.spi.host = 1;
+    config.spi.mosi = 23;
+    config.spi.miso = 19;
+    config.spi.sclk = 18;
+    config.spi.cs = 5;
+    config.spi.intr = 17;
+    config.spi.freq = 4000000;
+    return eppp_open(role, &config, portMAX_DELAY);
+#endif
 }
