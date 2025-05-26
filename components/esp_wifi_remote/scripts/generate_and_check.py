@@ -444,6 +444,9 @@ def generate_kconfig(idf_path, idf_ver_dir, component_path):
                     modified_line = re.compile(r'\b' + config + r'\b').sub('SLAVE_' + config, modified_line)
                 # Replace the primary prefix ESP_WIFI_ with WIFI_RMT_
                 modified_line = re.compile(r'\bESP_WIFI_').sub('WIFI_RMT_', modified_line)
+                # TODO: Capture all host dependencies and replace them with WIFI_RMT_ prefix
+                # keep track and check integrity with slave settings
+                modified_line = re.compile(r'\bESP_PHY_IRAM_OPT').sub('WIFI_RMT_PHY_IRAM_OPT', modified_line)
 
                 # If a current config block is active, check for changes in indentation
                 if current_config is not None:
