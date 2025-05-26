@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.11.1](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v0.11.1)
+
+### Bug Fixes
+
+- Prefix slave deps with WIFI_RMT_ ([e92e946](https://github.com/espressif/esp-wifi-remote/commit/e92e946))
+
 ## [0.11.0](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v0.11.0)
 
 ### Features
