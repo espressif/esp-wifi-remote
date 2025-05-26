@@ -35,7 +35,7 @@ jobs:
             key: ${{ matrix.idf_ver }}
       - name: Build ${{ matrix.test.app }} with IDF-${{ matrix.idf_ver }}
         env:
-          EXPECTED_WARNING: "DeprecationWarning: 'MultiCommand' is deprecated and will be removed\ndependencies ESP_PHY_ENABLED with value n\nCryptographyDeprecationWarning: Parsed a serial number which wasn't positive"
+          EXPECTED_WARNING: "DeprecationWarning: 'MultiCommand' is deprecated and will be removed\nCryptographyDeprecationWarning: Parsed a serial number which wasn't positive"
         shell: bash
         run: |
           . ${IDF_PATH}/export.sh
@@ -68,7 +68,7 @@ jobs:
           path: protocols
       - name: Build ${{ matrix.example.app }} with IDF-${{ matrix.idf_ver }}
         env:
-          EXPECTED_WARNING: "DeprecationWarning: 'MultiCommand' is deprecated and will be removed\nWarning: The smallest app partition is nearly full\ndependencies ESP_PHY_ENABLED with value n\nCryptographyDeprecationWarning: Parsed a serial number which wasn't positive"
+          EXPECTED_WARNING: "DeprecationWarning: 'MultiCommand' is deprecated and will be removed\nWarning: The smallest app partition is nearly full\nCryptographyDeprecationWarning: Parsed a serial number which wasn't positive"
         shell: bash
         run: |
           . ${IDF_PATH}/export.sh
