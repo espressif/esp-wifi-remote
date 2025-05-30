@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2024 Espressif Systems (Shanghai) CO LTD
+# SPDX-FileCopyrightText: 2024-2025 Espressif Systems (Shanghai) CO LTD
 # SPDX-License-Identifier: Apache-2.0
 import argparse
 import glob
@@ -88,6 +88,14 @@ def exec_cmd(what, out_file=None):
 def preprocess(idf_path, header):
     project_dir = os.path.join(idf_path, 'examples', 'wifi', 'getting_started', 'station')
     build_dir = os.path.join(project_dir, 'build')
+
+    # Clean up build artifacts
+    if os.path.exists(build_dir):
+        shutil.rmtree(build_dir)
+    sdkconfig = os.path.join(project_dir, 'sdkconfig')
+    if os.path.exists(sdkconfig):
+        os.remove(sdkconfig)
+
     subprocess.check_call(['idf.py', '-B', build_dir, 'reconfigure'], cwd=project_dir)
     build_commands_json = os.path.join(build_dir, 'compile_commands.json')
     with open(build_commands_json, 'r', encoding='utf-8') as f:
