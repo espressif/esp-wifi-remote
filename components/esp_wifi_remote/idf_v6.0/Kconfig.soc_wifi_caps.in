@@ -326,10 +326,6 @@ if SLAVE_IDF_TARGET_ESP32C5
         bool
         default y
 
-    config SLAVE_IDF_ENV_BRINGUP # ignore: multiple-definition
-        bool
-        default y
-
 endif # ESP32C5
 
 if SLAVE_IDF_TARGET_ESP32C61

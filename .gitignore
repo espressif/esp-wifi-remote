@@ -55,3 +55,7 @@ dkms.conf
 components/**/build
 components/**/sdkconfig
 components/**/sdkconfig.old
+
+# generation script temp files
+esp_wifi_preprocessed.h
+default.esp32*
