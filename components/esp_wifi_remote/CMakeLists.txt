@@ -31,6 +31,9 @@ set(TARGET_INCLUDE_TYPE "INTERFACE")
 set(TARGET_SOURCE_TYPE "INTERFACE")
 if(NOT CONFIG_ESP_WIFI_ENABLED AND NOT CONFIG_ESP_HOST_WIFI_ENABLED)
     set(src_wifi_with_remote ${IDF_VER_DIR}/esp_wifi_with_remote.c)
+    if(CONFIG_ESP_WIFI_REMOTE_EAP_ENABLED)
+        list(APPEND src_wifi_with_remote ${IDF_VER_DIR}/esp_eap_client_with_remote.c)
+    endif()
     # We need to build wifi sources with wifi-remote properties, so the injected wifi headers are used
     get_target_property(wifi_sources ${wifi} SOURCES)
     set_target_properties(${wifi} PROPERTIES SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/dummy_src.c")
@@ -43,6 +46,9 @@ if(CONFIG_ESP_WIFI_REMOTE_LIBRARY_EPPP)
     set(TARGET_SOURCE_TYPE "PRIVATE")
 else()
     set(src_wifi_remote_weak ${IDF_VER_DIR}/esp_wifi_remote_weak.c)
+    if(CONFIG_ESP_WIFI_REMOTE_EAP_ENABLED)
+        list(APPEND src_wifi_remote_weak ${IDF_VER_DIR}/esp_eap_client_remote_weak.c)
+    endif()
 endif()
 
 
@@ -59,3 +65,7 @@ if(NOT CONFIG_ESP_WIFI_ENABLED AND NOT CONFIG_ESP_HOST_WIFI_ENABLED)
 endif()
 
 target_link_libraries(${wifi} PUBLIC ${COMPONENT_LIB})
+
+if(CONFIG_ESP_WIFI_REMOTE_EAP_ENABLED)
+    idf_component_optional_requires(${TARGET_INCLUDE_TYPE} wpa_supplicant)
+endif()

@@ -9,6 +9,14 @@ menu "Wi-Fi Remote"
         orsource "./idf_v$ESP_IDF_VERSION/Kconfig.soc_wifi_caps.in"
         orsource "./Kconfig.rpc.in"
 
+        config ESP_WIFI_REMOTE_EAP_ENABLED
+            bool "Enable EAP client remote API"
+            default y
+            depends on WIFI_RMT_ENTERPRISE_SUPPORT
+            help
+                When enabled, the EAP client remote API will be available.
+                This allows remote control of EAP authentication functions.
+
         menu "Wi-Fi configuration"
             orsource "./idf_v$ESP_IDF_VERSION/Kconfig.wifi.in"
         endmenu
