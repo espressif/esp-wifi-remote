@@ -48,7 +48,7 @@ jobs:
     strategy:
       matrix:
         idf_ver: ["latest"]
-        example: [ { app: host, path: "examples/mqtt", bin: "build_esp32p4_p4" }, { app: slave, path: "examples/server", bin: "build_esp32c6_c6" }]
+        example: [ { app: host, path: "examples/mqtt", bin: "build_esp32p4_p4" } , { app: 2sta, path: "examples/two_stations", bin: "build_esp32s3_s3" }, { app: slave, path: "examples/server", bin: "build_esp32c6_c6" }]
 
     runs-on: ubuntu-latest
     container: espressif/idf:${{ matrix.idf_ver }}
