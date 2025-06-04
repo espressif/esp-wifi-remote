@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.11.3](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v0.11.3)
+
+### Bug Fixes
+
+- Update per v6.0 removal of C61 ([4478fdf](https://github.com/espressif/esp-wifi-remote/commit/4478fdf))
+
 ## [0.11.2](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v0.11.2)
 
 ### Bug Fixes
