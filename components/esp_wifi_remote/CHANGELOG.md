@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.12.0](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v0.12.0)
+
+### Features
+
+- Add initial support for native + remote coexistence ([049c832](https://github.com/espressif/esp-wifi-remote/commit/049c832))
+
 ## [0.11.3](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v0.11.3)
 
 ### Bug Fixes
