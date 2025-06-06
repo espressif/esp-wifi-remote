@@ -16,6 +16,8 @@ endchoice
 
     if ESP_WIFI_REMOTE_LIBRARY_EPPP
 
+        if EPPP_LINK_DEVICE_UART
+
         config ESP_WIFI_REMOTE_EPPP_UART_PORT
             int "UART port number"
             default 1
@@ -36,6 +38,60 @@ endchoice
             range 0 54
             help
                 Pin number of UART RX.
+
+        endif
+        if EPPP_LINK_DEVICE_SPI
+
+        config ESP_WIFI_REMOTE_EPPP_SPI_HOST
+            int "SPI host number"
+            default 1
+            range 0 3
+            help
+                SPI host number.
+
+        config ESP_WIFI_REMOTE_EPPP_SPI_MOSI_PIN
+            int "MOSI Pin Number"
+            default 23
+            range 0 54
+            help
+                Pin number of SPI MOSI.
+
+        config ESP_WIFI_REMOTE_EPPP_SPI_MISO_PIN
+            int "MISO Pin Number"
+            default 19
+            range 0 54
+            help
+                Pin number of SPI MISO.
+
+        config ESP_WIFI_REMOTE_EPPP_SPI_SCLK_PIN
+            int "SCLK Pin Number"
+            default 18
+            range 0 54
+            help
+                Pin number of SPI SCLK.
+
+        config ESP_WIFI_REMOTE_EPPP_SPI_CS_PIN
+            int "CS Pin Number"
+            default 5
+            range 0 54
+            help
+                Pin number of SPI CS.
+
+        config ESP_WIFI_REMOTE_EPPP_SPI_INTR_PIN
+            int "Interrupt Pin Number"
+            default 17
+            range 0 54
+            help
+                Pin number of SPI interrupt.
+
+        config ESP_WIFI_REMOTE_EPPP_SPI_FREQ
+            int "SPI frequency"
+            default 4000000
+            range 1000000 20000000
+            help
+                SPI frequency in Hz.
+
+        endif
 
         config ESP_WIFI_REMOTE_EPPP_NETIF_PRIORITY
             int "Routing priority of eppp netif"

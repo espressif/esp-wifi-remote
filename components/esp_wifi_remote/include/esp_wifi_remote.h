@@ -1,11 +1,17 @@
 /*
- * SPDX-FileCopyrightText: 2023-2024 Espressif Systems (Shanghai) CO LTD
+ * SPDX-FileCopyrightText: 2023-2025 Espressif Systems (Shanghai) CO LTD
  *
  * SPDX-License-Identifier: Apache-2.0
  */
 #pragma once
 #include "esp_wifi.h"
 #include "esp_wifi_remote_api.h"
+
+#if defined(CONFIG_ESP_WIFI_ENABLED)
+ESP_EVENT_DECLARE_BASE(WIFI_REMOTE_EVENT);
+#else
+#define WIFI_REMOTE_EVENT WIFI_EVENT
+#endif
 
 /**
  * @brief Remote channel Rx function pointer
