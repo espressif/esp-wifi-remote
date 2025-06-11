@@ -552,6 +552,7 @@ config WIFI_RMT_NAN_ENABLE
     bool "WiFi Aware"
     default n
     depends on SLAVE_SOC_WIFI_NAN_SUPPORT
+    select LWIP_IPV6
     help
         Enable WiFi Aware (NAN) feature.
 

@@ -11,7 +11,7 @@ menu "Wi-Fi Remote"
 
         config ESP_WIFI_REMOTE_EAP_ENABLED
             bool "Enable EAP client remote API"
-            default n
+            default y
             depends on WIFI_RMT_ENTERPRISE_SUPPORT
             help
                 When enabled, the EAP client remote API will be available.

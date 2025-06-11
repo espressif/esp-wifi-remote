@@ -67,6 +67,5 @@ endif()
 target_link_libraries(${wifi} PUBLIC ${COMPONENT_LIB})
 
 if(CONFIG_ESP_WIFI_REMOTE_EAP_ENABLED)
-    idf_component_optional_requires(PUBLIC wpa_supplicant)
-    # target_link_libraries(${COMPONENT_LIB} PUBLIC wpa_supplicant)
+    idf_component_optional_requires(${TARGET_INCLUDE_TYPE} wpa_supplicant)
 endif()
