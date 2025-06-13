@@ -5,4 +5,7 @@ dependencies:
     version: '>=5.3'
   espressif/wifi_remote_over_eppp:
     version: '*'
-    override_path: '../../../'
+    override_path: ../../../
+  espressif/esp_wifi_remote:
+    version: '*'
+    override_path: ../../../../esp_wifi_remote
