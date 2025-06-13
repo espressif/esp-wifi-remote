@@ -1,0 +1,119 @@
+menu "Wi-Fi Remote over EPPP"
+
+    if EPPP_LINK_DEVICE_UART
+        config WIFI_RMT_OVER_EPPP_UART_PORT
+            int "UART port number"
+            default 1
+            range 0 3
+            help
+                UART Port number.
+
+        config WIFI_RMT_OVER_EPPP_UART_TX_PIN
+            int "TXD Pin Number"
+            default 10
+            range 0 54
+            help
+                Pin number of UART TX.
+
+        config WIFI_RMT_OVER_EPPP_UART_RX_PIN
+            int "RXD Pin Number"
+            default 11
+            range 0 54
+            help
+                Pin number of UART RX.
+    endif
+
+    if EPPP_LINK_DEVICE_SPI
+        config WIFI_RMT_OVER_EPPP_SPI_HOST
+            int "SPI host number"
+            default 1
+            range 0 3
+            help
+                SPI host number.
+
+        config WIFI_RMT_OVER_EPPP_SPI_MOSI_PIN
+            int "MOSI Pin Number"
+            default 23
+            range 0 54
+            help
+                Pin number of SPI MOSI.
+
+        config WIFI_RMT_OVER_EPPP_SPI_MISO_PIN
+            int "MISO Pin Number"
+            default 19
+            range 0 54
+            help
+                Pin number of SPI MISO.
+
+        config WIFI_RMT_OVER_EPPP_SPI_SCLK_PIN
+            int "SCLK Pin Number"
+            default 18
+            range 0 54
+            help
+                Pin number of SPI SCLK.
+
+        config WIFI_RMT_OVER_EPPP_SPI_CS_PIN
+            int "CS Pin Number"
+            default 5
+            range 0 54
+            help
+                Pin number of SPI CS.
+
+        config WIFI_RMT_OVER_EPPP_SPI_INTR_PIN
+            int "Interrupt Pin Number"
+            default 17
+            range 0 54
+            help
+                Pin number of SPI interrupt.
+
+        config WIFI_RMT_OVER_EPPP_SPI_FREQ
+            int "SPI frequency"
+            default 4000000
+            range 1000000 20000000
+            help
+                SPI frequency in Hz.
+    endif
+
+    config WIFI_RMT_OVER_EPPP_NETIF_PRIORITY
+        int "Routing priority of eppp netif"
+        default 100
+        range 0 256
+        help
+            Set the priority of the wifi-remote netif.
+            The bigger the number the higher the priority.
+            The interface which is up and with the highest priority will act as a default GW.
+
+    config WIFI_RMT_OVER_EPPP_NETIF_DESCRIPTION
+        string "eppp network interface description"
+        default "example_netif_sta"
+        help
+            Textual description of the wifi remote network interface.
+            By default it is set to "example_netif_sta" to be used in IDF protocol example
+            as default wifi station substitution.
+
+    config WIFI_RMT_OVER_EPPP_SERVER_CA
+        string "Servers CA certificate"
+        default "--- Please copy content of the CA certificate ---"
+
+    config WIFI_RMT_OVER_EPPP_CLIENT_CRT
+        string "Client certificate"
+        default "--- Please copy content of the Client certificate ---"
+
+    config WIFI_RMT_OVER_EPPP_CLIENT_KEY
+        string "Client key"
+        default "--- Please copy content of the Client key ---"
+
+    config WIFI_RMT_OVER_EPPP_CLIENT_CA
+        string "Clients CA certificate"
+        default "--- Please copy content of the CA certificate ---"
+
+    config WIFI_RMT_OVER_EPPP_SERVER_CRT
+        string "Server certificate"
+        default "--- Please copy content of the Client certificate ---"
+
+    config WIFI_RMT_OVER_EPPP_SERVER_KEY
+        string "Server key"
+        default "--- Please copy content of the Client key ---"
+
+
+endmenu # Wi-Fi Remote over EPPP

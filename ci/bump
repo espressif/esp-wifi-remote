@@ -1,12 +1,15 @@
 #!/usr/bin/env bash
 
-comp="esp_wifi_remote";
+# Use first argument as component name, or default to 'esp_wifi_remote'
+comp="${1:-esp_wifi_remote}"
 
 cd components/${comp}
 if ! cz bump --dry-run; then
     echo "Commitizen bump commad failed!"
     exit 1;
 fi
+
+shift
 
 cz_bump_out=`cz bump --files-only "$@"`
 commit_title=`echo "${cz_bump_out}" | grep "bump(" | head -1`
