@@ -23,7 +23,7 @@ extern "C" esp_netif_t *wifi_remote_eppp_init(eppp_type_t role);
 namespace eppp_rpc {
 
 namespace server {
-const char *TAG = "rpc_server";
+const char *TAG = "EPPP_rpc_server";
 
 const unsigned char ca_crt[] = "-----BEGIN CERTIFICATE-----\n" CONFIG_WIFI_RMT_OVER_EPPP_CLIENT_CA "\n-----END CERTIFICATE-----";
 const unsigned char crt[] = "-----BEGIN CERTIFICATE-----\n" CONFIG_WIFI_RMT_OVER_EPPP_SERVER_CRT "\n-----END CERTIFICATE-----";
