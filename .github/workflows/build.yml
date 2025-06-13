@@ -9,6 +9,7 @@ on:
 
 jobs:
   build_wifi_remote:
+    if: contains(github.event.pull_request.labels.*.name, 'wifi_remote') || github.event_name == 'push'
     name: Build WiFi Remote Test
     strategy:
       matrix:
