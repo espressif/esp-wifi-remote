@@ -1,0 +1,50 @@
+name: "Build"
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, synchronize, reopened, labeled]
+
+jobs:
+  build_remote_over_eppp:
+    if: contains(github.event.pull_request.labels.*.name, 'eppp') || github.event_name == 'push'
+    name: Build WiFi Remote over EPPP Test
+    strategy:
+      matrix:
+        idf_ver: ["latest", "release-v5.5", "release-v5.4", "release-v5.3"]
+        test: [ { app: sample_app, path: "tests/sample" }]
+    runs-on: ubuntu-latest
+    container: espressif/idf:${{ matrix.idf_ver }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Checkout protocols
+        uses: actions/checkout@v3
+        with:
+          repository: espressif/esp-protocols
+          ref: wifi_remote-v0.4.0
+          sparse-checkout: |
+            ci/build_apps.py
+            ci/ignore_build_warnings.txt
+          sparse-checkout-cone-mode: false
+          path: protocols
+      - name: ccache
+        uses: hendrikmuhs/ccache-action@v1.2
+        with:
+            key: ${{ matrix.idf_ver }}
+      - name: Build ${{ matrix.test.app }} with IDF-${{ matrix.idf_ver }}
+        env:
+          EXPECTED_WARNING: "DeprecationWarning: 'MultiCommand' is deprecated and will be removed\nCryptographyDeprecationWarning: Parsed a serial number which wasn't positive"
+        shell: bash
+        run: |
+          . ${IDF_PATH}/export.sh
+          pip install idf-component-manager idf-build-apps --upgrade
+          python $GITHUB_WORKSPACE/protocols/ci/build_apps.py ./components/wifi_remote_over_eppp/${{matrix.test.path}} -vv --preserve-all
+          cd ./components/wifi_remote_over_eppp/${{matrix.test.path}}
+          for dir in `ls -d build*/`; do
+            echo -e "\nChecking build directory: $dir"
+            grep esp_wifi_remote_init ${dir}sample.map | grep libwifi_remote_over_eppp.a || exit 1
+            echo -e "esp_wifi_remote_init linked from libwifi_remote_over_eppp"
+          done
