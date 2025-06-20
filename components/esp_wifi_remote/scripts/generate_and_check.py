@@ -23,11 +23,12 @@ wifi_configs = []
 
 
 class FunctionVisitor(c_ast.NodeVisitor):
-    def __init__(self, header):
+    def __init__(self, header, prefixes):
         self.function_prototypes = {}
         self.ptr = 0
         self.array = 0
         self.content = open(header, 'r').read()
+        self.prefixes = prefixes if isinstance(prefixes, (list, tuple)) else [prefixes]
 
     def get_type(self, node, suffix='param'):
         if suffix == 'param':
@@ -40,7 +41,7 @@ class FunctionVisitor(c_ast.NodeVisitor):
             if node.type.quals:
                 quals = ' '.join(node.type.quals)
             if node.type.type.names:
-                type = node.type.type.names[0]
+                type = ' '.join(node.type.type.names)
                 return quals, type, typename
         if isinstance(node.type, c_ast.PtrDecl):
             quals, type, name = self.get_type(node.type, 'ptr')
@@ -55,7 +56,7 @@ class FunctionVisitor(c_ast.NodeVisitor):
     def visit_FuncDecl(self, node):
         if isinstance(node.type, c_ast.TypeDecl):
             func_name = node.type.declname
-            if func_name.startswith('esp_wifi') and not func_name.endswith('_t') and func_name in self.content:
+            if any(func_name.startswith(prefix) for prefix in self.prefixes) and not func_name.endswith('_t') and func_name in self.content:
                 if func_name in DEPRECATED_API:
                     return
                 ret = node.type.type.names[0]
@@ -68,10 +69,10 @@ class FunctionVisitor(c_ast.NodeVisitor):
 
 
 # Parse the header file and extract function prototypes
-def extract_function_prototypes(header_code, header):
+def extract_function_prototypes(header_code, header, prefixes):
     parser = c_parser.CParser()  # Set debug parameter to False
     ast = parser.parse(header_code)
-    visitor = FunctionVisitor(header)
+    visitor = FunctionVisitor(header, prefixes)
     visitor.visit(ast)
     return visitor.function_prototypes
 
@@ -276,6 +277,60 @@ def generate_remote_wifi_api(function_prototypes, idf_ver_dir, component_path):
             remote.write(f'    LOG_UNSUPPORTED_AND_RETURN({ret_value});\n')
             remote.write('}\n')
     return [header, wifi_source, remote_source]
+
+
+def generate_remote_eap_api(function_prototypes, idf_ver_dir, component_path):
+    header = os.path.join(component_path, idf_ver_dir, 'include', 'esp_eap_client_remote_api.h')
+    eap_source = os.path.join(component_path, idf_ver_dir, 'esp_eap_client_with_remote.c')
+    remote_source = os.path.join(component_path, idf_ver_dir, 'esp_eap_client_remote_weak.c')
+    with open(header, 'w') as f:
+        f.write(COPYRIGHT_HEADER)
+        f.write('#pragma once\n')
+        f.write('#include "esp_eap_client.h"\n')
+        for func_name, args in function_prototypes.items():
+            params, _ = get_args(args[1])
+            # Handle esp_wifi functions differently - map them to esp_wifi_remote
+            if func_name.startswith('esp_wifi_'):
+                remote_func_name = NAMESPACE.sub('esp_wifi_remote', func_name)
+            else:
+                remote_func_name = func_name.replace('esp_eap_client', 'esp_eap_client_remote')
+            f.write(f'{args[0]} {remote_func_name}({params});\n')
+    with open(eap_source, 'w') as eap, open(remote_source, 'w') as remote:
+        eap.write(COPYRIGHT_HEADER)
+        eap.write('#include "esp_eap_client.h"\n')
+        eap.write('#include "esp_eap_client_remote_api.h"\n')
+        remote.write(COPYRIGHT_HEADER)
+        remote.write('#include "esp_eap_client_remote_api.h"\n')
+        remote.write('#include "esp_log.h"\n\n')
+        remote.write('#define WEAK __attribute__((weak))\n')
+        remote.write('#define LOG_UNSUPPORTED_AND_RETURN(ret) ESP_LOGW("esp_eap_client_remote_weak", "%s unsupported", __func__); \\\n         return ret;\n')
+        remote.write('#define LOG_UNSUPPORTED_VOID() ESP_LOGW("esp_eap_client_remote_weak", "%s unsupported", __func__);\n')
+        for func_name, args in function_prototypes.items():
+            # Handle esp_wifi functions differently - map them to esp_wifi_remote
+            if func_name.startswith('esp_wifi_'):
+                remote_func_name = NAMESPACE.sub('esp_wifi_remote', func_name)
+            else:
+                remote_func_name = func_name.replace('esp_eap_client', 'esp_eap_client_remote')
+            params, names = get_args(args[1])
+            ret_type = args[0]
+            ret_value = '-1'     # default return value indicating error
+            if (ret_type == 'esp_err_t'):
+                ret_value = 'ESP_ERR_NOT_SUPPORTED'
+            eap.write(f'\n{args[0]} {func_name}({params})\n')
+            eap.write('{\n')
+            if ret_type == 'void':
+                eap.write(f'    {remote_func_name}({names});\n')
+            else:
+                eap.write(f'    return {remote_func_name}({names});\n')
+            eap.write('}\n')
+            remote.write(f'\nWEAK {args[0]} {remote_func_name}({params})\n')
+            remote.write('{\n')
+            if ret_type == 'void':
+                remote.write(f'    LOG_UNSUPPORTED_VOID();\n')
+            else:
+                remote.write(f'    LOG_UNSUPPORTED_AND_RETURN({ret_value});\n')
+            remote.write('}\n')
+    return [header, eap_source, remote_source]
 
 
 def generate_hosted_mocks(function_prototypes, idf_ver_dir, component_path):
@@ -612,22 +667,19 @@ making changes you might need to modify 'copyright_header.h' in the script direc
     idf_ver_dir = get_idf_ver_dir(idf_path, component_path)
 
     header = os.path.join(idf_path, 'components', 'esp_wifi', 'include', 'esp_wifi.h')
-    function_prototypes = extract_function_prototypes(preprocess(idf_path, header), header)
+    eap_header = os.path.join(idf_path, 'components', 'wpa_supplicant', 'esp_supplicant', 'include', 'esp_eap_client.h')
+    function_prototypes = extract_function_prototypes(preprocess(idf_path, header), header, ['esp_wifi_'])
+    eap_function_prototypes = extract_function_prototypes(preprocess(idf_path, eap_header), eap_header, ['esp_eap_client_', 'esp_wifi_'])
 
     files_to_check = []
 
     files_to_check += generate_kconfig_wifi_caps(idf_path, idf_ver_dir, component_path)
-
     files_to_check += generate_remote_wifi_api(function_prototypes, idf_ver_dir, component_path)
-
+    files_to_check += generate_remote_eap_api(eap_function_prototypes, idf_ver_dir, component_path)
     files_to_check += generate_hosted_mocks(function_prototypes, idf_ver_dir, component_path)
-
     files_to_check += generate_test_cases(function_prototypes, idf_ver_dir, component_path)
-
     files_to_check += generate_wifi_native(idf_path, idf_ver_dir, component_path)
-
     files_to_check += generate_kconfig(idf_path, idf_ver_dir, component_path)
-
     files_to_check += generate_wifi_static(idf_ver_dir, component_path)
 
     for f in files_to_check:
