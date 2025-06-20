@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.13.0](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v0.13.0)
+
+### Features
+
+- Add support for EAP client API ([ffe2af7](https://github.com/espressif/esp-wifi-remote/commit/ffe2af7))
+
+### Bug Fixes
+
+- Regenerate all files with EAP client support ([1d39117](https://github.com/espressif/esp-wifi-remote/commit/1d39117))
+
 ## [0.12.2](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v0.12.2)
 
 ### Bug Fixes
