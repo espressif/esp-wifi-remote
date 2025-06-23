@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.14.0](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v0.14.0)
+
+### Features
+
+- Add support for custom wifi-remote impl ([9bf662f](https://github.com/espressif/esp-wifi-remote/commit/9bf662f))
+
 ## [0.13.0](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v0.13.0)
 
 ### Features
