@@ -1,4 +1,4 @@
-name: Publish esp-wifi-remote
+name: Publish WiFi Remote components
 
 on:
   workflow_run:
@@ -53,6 +53,6 @@ jobs:
         uses: espressif/upload-components-ci-action@v1
         with:
           directories: >
-            components/esp_wifi_remote;
+            components/esp_wifi_remote;components/wifi_remote_over_eppp
           namespace: "espressif"
           api_token: ${{ secrets.IDF_COMPONENT_API_TOKEN }}
