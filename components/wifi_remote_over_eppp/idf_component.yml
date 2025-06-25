@@ -1,4 +1,4 @@
-version: 0.0.0
+version: 0.1.0
 url: https://github.com/espressif/esp-wifi-remote/components/wifi_remote_over_eppp
 description: EPPP based implementation of wifi_remote APIs
 dependencies:
