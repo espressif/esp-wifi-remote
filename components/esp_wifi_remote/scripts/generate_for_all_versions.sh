@@ -96,6 +96,7 @@ process_version() {
         echo "Installing ESP-IDF..."
         ./install.sh
         source export.sh
+        pip install idf_build_apps
 
         # Generate and check
         echo "Generating files..."

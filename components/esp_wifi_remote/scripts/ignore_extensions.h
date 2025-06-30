@@ -11,3 +11,5 @@ typedef void *__builtin_va_list;
 #define __inline__ inline
 #define __inline inline
 #define __extension__
+#define __typeof__(x) void*
+#define bool _Bool
