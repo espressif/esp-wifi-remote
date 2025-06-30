@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.14.2](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v0.14.2)
+
+### Bug Fixes
+
+- Update per v6.0 changes ([e623a28](https://github.com/espressif/esp-wifi-remote/commit/e623a28))
+- Fixed generation scripts to handle xtensa-esp-elf-15.1 ([8d8c01a](https://github.com/espressif/esp-wifi-remote/commit/8d8c01a))
+
 ## [0.14.1](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v0.14.1)
 
 ### Bug Fixes
