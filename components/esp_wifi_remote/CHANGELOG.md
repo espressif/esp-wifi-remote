@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.14.4](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v0.14.4)
+
+### Bug Fixes
+
+- Update per IDFv6.0 - support C61 ([7bc0bea](https://github.com/espressif/esp-wifi-remote/commit/7bc0bea))
+
 ## [0.14.3](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v0.14.3)
 
 ### Bug Fixes
