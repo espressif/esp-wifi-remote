@@ -116,3 +116,8 @@ esp_err_t esp_eap_client_set_domain_name(const char *domain_name)
 {
     return esp_eap_client_remote_set_domain_name(domain_name);
 }
+
+esp_err_t esp_eap_client_set_eap_methods(esp_eap_method_t methods)
+{
+    return esp_eap_client_remote_set_eap_methods(methods);
+}
