@@ -2,15 +2,10 @@ if(NOT CONFIG_ESP_WIFI_ENABLED AND NOT CONFIG_ESP_HOST_WIFI_ENABLED)
     set(src_wifi_is_remote esp_wifi_remote.c esp_wifi_remote_net.c)
 endif()
 
-if(CONFIG_ESP_WIFI_REMOTE_LIBRARY_EPPP)
-    set(src_wifi_remote_eppp eppp/wifi_remote_rpc_client.cpp eppp/wifi_remote_rpc_server.cpp eppp/eppp_init.c)
-endif()
-
 idf_component_register(INCLUDE_DIRS include
                     SRCS ${src_wifi_is_remote}
                          ${src_wifi_remote_eppp}
                          dummy_src.c    # Prevents making this component potentially INTERFACE only
-                    PRIV_INCLUDE_DIRS eppp
                     REQUIRES esp_event esp_netif
                     PRIV_REQUIRES esp_wifi esp-tls vfs)
 
