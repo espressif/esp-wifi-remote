@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.15.0](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v0.15.0)
+
+### Bug Fixes
+
+- Add support for v5.4.2 IDF release tag ([4809209](https://github.com/espressif/esp-wifi-remote/commit/4809209))
+
 ## [0.14.5](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v0.14.5)
 
 ### Bug Fixes
