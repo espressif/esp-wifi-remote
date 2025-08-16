@@ -36,7 +36,7 @@ jobs:
             key: ${{ matrix.idf_ver }}
       - name: Build ${{ matrix.test.app }} with IDF-${{ matrix.idf_ver }}
         env:
-          EXPECTED_WARNING: "DeprecationWarning: 'MultiCommand' is deprecated and will be removed\nCryptographyDeprecationWarning: Parsed a serial number which wasn't positive"
+          EXPECTED_WARNING: 'WARNING: The following Kconfig variables were used in "if" clauses'
         shell: bash
         run: |
           . ${IDF_PATH}/export.sh
@@ -69,7 +69,7 @@ jobs:
           path: protocols
       - name: Build ${{ matrix.example.app }} with IDF-${{ matrix.idf_ver }}
         env:
-          EXPECTED_WARNING: "DeprecationWarning: 'MultiCommand' is deprecated and will be removed\nWarning: The smallest app partition is nearly full\nCryptographyDeprecationWarning: Parsed a serial number which wasn't positive"
+          EXPECTED_WARNING: "WARNING: The following Kconfig variables were used in \"if\" clauses\nWarning: The smallest app partition is nearly full"
         shell: bash
         run: |
           . ${IDF_PATH}/export.sh
