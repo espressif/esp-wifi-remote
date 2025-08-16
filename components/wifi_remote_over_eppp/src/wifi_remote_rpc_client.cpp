@@ -27,7 +27,7 @@ extern "C" ESP_EVENT_DEFINE_BASE(WIFI_REMOTE_EVENT);
 namespace eppp_rpc {
 
 namespace client {
-const char *TAG = "rpc_client";
+const char *TAG = "EPPP_rpc_client";
 
 const unsigned char ca_crt[] = "-----BEGIN CERTIFICATE-----\n" CONFIG_WIFI_RMT_OVER_EPPP_SERVER_CA "\n-----END CERTIFICATE-----";
 const unsigned char crt[] = "-----BEGIN CERTIFICATE-----\n" CONFIG_WIFI_RMT_OVER_EPPP_CLIENT_CRT "\n-----END CERTIFICATE-----";
