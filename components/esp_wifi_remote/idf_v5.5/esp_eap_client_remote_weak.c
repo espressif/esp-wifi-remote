@@ -126,3 +126,8 @@ WEAK esp_err_t esp_eap_client_remote_set_domain_name(const char *domain_name)
 {
     LOG_UNSUPPORTED_AND_RETURN(ESP_ERR_NOT_SUPPORTED);
 }
+
+WEAK esp_err_t esp_eap_client_remote_set_eap_methods(esp_eap_method_t methods)
+{
+    LOG_UNSUPPORTED_AND_RETURN(ESP_ERR_NOT_SUPPORTED);
+}
