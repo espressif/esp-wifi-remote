@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.3](https://github.com/espressif/esp-wifi-remote/commits/wifi_rmt_eppp-v0.1.3)
+
+### Bug Fixes
+
+- Remove reverse dependency to wifi-remote ([dac7432](https://github.com/espressif/esp-wifi-remote/commit/dac7432))
+
 ## [0.1.2](https://github.com/espressif/esp-wifi-remote/commits/wifi_rmt_eppp-v0.1.2)
 
 ### Bug Fixes
