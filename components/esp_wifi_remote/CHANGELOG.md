@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.16.0](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v0.16.0)
+
+### Features
+
+- Decouple EPPP RPC into a sub-component ([96cba4a](https://github.com/espressif/esp-wifi-remote/commit/96cba4a))
+
 ## [0.15.3](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v0.15.3)
 
 ### Bug Fixes
