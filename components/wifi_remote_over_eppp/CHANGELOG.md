@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.4](https://github.com/espressif/esp-wifi-remote/commits/wifi_rmt_eppp-v0.1.4)
+
+### Bug Fixes
+
+- Make wrmt over eppp available only if selected ([a7c3b9c](https://github.com/espressif/esp-wifi-remote/commit/a7c3b9c))
+
 ## [0.1.3](https://github.com/espressif/esp-wifi-remote/commits/wifi_rmt_eppp-v0.1.3)
 
 ### Bug Fixes
