@@ -1,5 +1,7 @@
 menu "Wi-Fi Remote over EPPP"
 
+if ESP_WIFI_REMOTE_LIBRARY_EPPP
+
     if EPPP_LINK_DEVICE_UART
         config WIFI_RMT_OVER_EPPP_UART_PORT
             int "UART port number"
@@ -115,5 +117,6 @@ menu "Wi-Fi Remote over EPPP"
         string "Server key"
         default "--- Please copy content of the Client key ---"
 
+endif # ESP_WIFI_REMOTE_LIBRARY_EPPP
 
 endmenu # Wi-Fi Remote over EPPP
