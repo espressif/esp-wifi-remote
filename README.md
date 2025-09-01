@@ -15,3 +15,9 @@ This repository contains components and utilities related to esp-wifi-remote.
 [![Component Registry](https://components.espressif.com/components/espressif/wifi_remote_over_eppp/badge.svg)](https://components.espressif.com/components/espressif/wifi_remote_over_eppp)
 
 [wifi_remote_over_eppp](https://github.com/espressif/esp-wifi-remote/tree/main/components/wifi_remote_over_eppp/README.md)
+
+## wifi-remote-over-at
+
+[![Component Registry](https://components.espressif.com/components/espressif/wifi_remote_over_at/badge.svg)](https://components.espressif.com/components/espressif/wifi_remote_over_at)
+
+[wifi_remote_over_at](https://github.com/espressif/esp-wifi-remote/tree/main/components/wifi_remote_over_at/README.md)

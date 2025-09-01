@@ -1,0 +1,91 @@
+menu "Wi-Fi Remote over AT"
+
+    menu "UART Configuration"
+
+        choice WIFI_RMT_AT_FLOW_CONTROL
+            bool "Set preferred modem control flow"
+            default WIFI_RMT_AT_FLOW_CONTROL_NONE
+            help
+                Set the preferred control flow
+
+            config WIFI_RMT_AT_FLOW_CONTROL_NONE
+                bool "No control flow"
+            config WIFI_RMT_AT_FLOW_CONTROL_SW
+                bool "SW control flow"
+            config WIFI_RMT_AT_FLOW_CONTROL_HW
+                bool "HW control flow"
+        endchoice
+
+        config WIFI_RMT_AT_UART_TX_PIN
+            int "TXD Pin Number"
+            default 25
+            range 0 56
+            help
+                Pin number of UART TX.
+
+        config WIFI_RMT_AT_UART_RX_PIN
+            int "RXD Pin Number"
+            default 26
+            range 0 56
+            help
+                Pin number of UART RX.
+
+        config WIFI_RMT_AT_UART_RTS_PIN
+            int "RTS Pin Number"
+            default 27
+            range 0 56
+            help
+                Pin number of UART RTS.
+
+        config WIFI_RMT_AT_UART_CTS_PIN
+            int "CTS Pin Number"
+            default 23
+            range 0 56
+            help
+                Pin number of UART CTS.
+
+        config WIFI_RMT_AT_UART_EVENT_TASK_STACK_SIZE
+            int "UART Event Task Stack Size"
+            range 2000 6000
+            default 4096
+            help
+                Stack size of UART event task.
+
+        config WIFI_RMT_AT_UART_EVENT_TASK_PRIORITY
+            int "UART Event Task Priority"
+            range 3 22
+            default 5
+            help
+                Priority of UART event task.
+
+        config WIFI_RMT_AT_UART_EVENT_QUEUE_SIZE
+            int "UART Event Queue Size"
+            range 10 40
+            default 30
+            help
+                Length of UART event queue.
+
+        config WIFI_RMT_AT_UART_PATTERN_QUEUE_SIZE
+            int "UART Pattern Queue Size"
+            range 10 40
+            default 20
+            help
+                Length of UART pattern queue.
+
+        config WIFI_RMT_AT_UART_TX_BUFFER_SIZE
+            int "UART TX Buffer Size"
+            range 256 2048
+            default 512
+            help
+                Buffer size of UART TX buffer.
+
+        config WIFI_RMT_AT_UART_RX_BUFFER_SIZE
+            int "UART RX Buffer Size"
+            range 256 2048
+            default 1024
+            help
+                Buffer size of UART RX buffer.
+    endmenu
+
+
+endmenu # Wi-Fi Remote over EPPP
