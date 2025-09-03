@@ -4,6 +4,12 @@ Enables Espressif WiFi capabilities on remote targets (without native WiFi suppo
 
 This repository contains components and utilities related to esp-wifi-remote.
 
+## Overview
+
+esp-wifi-remote provides transparent WiFi connectivity for ESP chipsets through external hardware, maintaining full compatibility with the standard `esp_wifi` API. This enables WiFi functionality on ESP32-P4, ESP32-H2, and other WiFi-less chipsets by routing API calls to a connected WiFi-capable device.
+
+The solution supports multiple backend communication protocols and can also provide additional WiFi interfaces on WiFi-capable ESP32 chips for applications requiring dual wireless connectivity.
+
 ## esp-wifi-remote
 
 [![Component Registry](https://components.espressif.com/components/espressif/esp_wifi_remote/badge.svg)](https://components.espressif.com/components/espressif/esp_wifi_remote)
@@ -21,3 +27,7 @@ This repository contains components and utilities related to esp-wifi-remote.
 [![Component Registry](https://components.espressif.com/components/espressif/wifi_remote_over_at/badge.svg)](https://components.espressif.com/components/espressif/wifi_remote_over_at)
 
 [wifi_remote_over_at](https://github.com/espressif/esp-wifi-remote/tree/main/components/wifi_remote_over_at/README.md)
+
+## esp-hosted
+
+The recommended backend solution for esp-wifi-remote is [esp-hosted](https://github.com/espressif/esp-hosted), providing optimal performance (up to 50Mbps TCP throughput), mature integration, and comprehensive support for ESP32-based host-slave communication.
