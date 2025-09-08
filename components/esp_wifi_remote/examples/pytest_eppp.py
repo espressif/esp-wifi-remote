@@ -18,5 +18,5 @@ def test_wifi_remote_eppp(dut: Tuple[IdfDut, IdfDut]) -> None:
     client = dut[0]
     server = dut[1]
 
-    server.expect('rpc_server: Received IP event', timeout=100)
+    server.expect('rpc_server: Received WIFI event 4', timeout=100)     # wifi station connected
     client.expect('MQTT_EVENT_CONNECTED', timeout=100)

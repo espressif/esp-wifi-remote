@@ -58,6 +58,18 @@ esp_err_t esp_wifi_remote_channel_rx(void *h, void *buffer, void *buff_to_free, 
  */
 esp_err_t esp_wifi_remote_channel_set(wifi_interface_t ifx, void *h, esp_remote_channel_tx_fn_t tx_cb);
 
+/**
+ * @brief Create default STA interface
+ * @return ESP_OK on success
+ */
+esp_netif_t* esp_wifi_remote_create_default_sta(void);
+
+/**
+ * @brief Create default AP interface
+ * @return ESP_OK on success
+ */
+esp_netif_t* esp_wifi_remote_create_default_ap(void);
+
 #ifdef __cplusplus
 }
 #endif

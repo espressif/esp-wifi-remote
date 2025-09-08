@@ -20,16 +20,8 @@
 #include "esp_log.h"
 #include "nvs_flash.h"
 #include "esp_wifi_remote.h"
-
-/* The examples use WiFi configuration that you can set via project configuration menu
-
-   If you'd rather not, just change the below entries to strings with
-   the config you want - ie #define EXAMPLE_WIFI_SSID "mywifissid"
-*/
-#define EXAMPLE_ESP_MAXIMUM_RETRY  CONFIG_ESP_MAXIMUM_RETRY
-
-/* FreeRTOS event group to signal when we are connected*/
-static EventGroupHandle_t s_wifi_event_group;
+#include "console_ping.h"
+#include "iperf_cmd.h"
 
 /* The event group allows multiple bits for each event, but we only care about two events:
  * - we are connected to the AP with an IP
@@ -40,8 +32,10 @@ static EventGroupHandle_t s_wifi_event_group;
 #define WIFI_REMOTE_CONNECTED_BIT BIT2
 #define WIFI_REMOTE_FAIL_BIT      BIT3
 #define WIFI_REMOTE_BITS (WIFI_REMOTE_CONNECTED_BIT | WIFI_REMOTE_FAIL_BIT)
+#define EXAMPLE_ESP_MAXIMUM_RETRY  CONFIG_ESP_MAXIMUM_RETRY
 
 static int s_retry_num = 0;
+static EventGroupHandle_t s_wifi_event_group;
 
 #if CONFIG_ESP_WIFI_LOCAL_ENABLE
 static const char *TAG_local = "two_stations_local";
@@ -146,6 +140,8 @@ static void wifi_init_sta(void)
 #if CONFIG_ESP_WIFI_REMOTE_ENABLE
 static void wifi_init_remote_sta(void)
 {
+    esp_wifi_remote_create_default_sta();
+
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
     ESP_ERROR_CHECK(esp_wifi_remote_init(&cfg));
 
@@ -179,7 +175,7 @@ static void wifi_init_remote_sta(void)
 
 void app_main(void)
 {
-    //Initialize NVS
+    esp_log_level_set("*", ESP_LOG_INFO);
     esp_err_t ret = nvs_flash_init();
     if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
       ESP_ERROR_CHECK(nvs_flash_erase());
@@ -196,4 +192,13 @@ void app_main(void)
 #if CONFIG_ESP_WIFI_REMOTE_ENABLE
     wifi_init_remote_sta();
 #endif
+
+    // at this point, we should be connected (via at least one station)
+    ESP_ERROR_CHECK(console_cmd_init());
+    // now let's register ping and iperf utilities to the console
+    app_register_iperf_commands();
+
+    ESP_ERROR_CHECK(console_cmd_ping_register());
+    ESP_ERROR_CHECK(console_cmd_start());
+
 }

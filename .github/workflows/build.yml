@@ -47,7 +47,12 @@ jobs:
     strategy:
       matrix:
         idf_ver: ["latest"]
-        example: [ { app: host, path: "examples/mqtt", bin: "build_esp32p4_p4" } , { app: 2sta, path: "examples/two_stations", bin: "build_esp32s3_s3" }, { app: slave, path: "examples/server", bin: "build_esp32c6_c6" }]
+        example:
+          - { app: host, path: "examples/mqtt", bin: "build_esp32p4_p4" }
+          - { app: host_1, path: "examples/mqtt", bin: "build_esp32p4_p4_1" }
+          - { app: 2sta, path: "examples/two_stations", bin: "build_esp32s3_s3" }
+          - { app: slave, path: "examples/server", bin: "build_esp32c6_c6" }
+          - { app: slave_1, path: "examples/server", bin: "build_esp32c6_c6_1" }
 
     runs-on: ubuntu-latest
     container: espressif/idf:${{ matrix.idf_ver }}
@@ -90,6 +95,9 @@ jobs:
     strategy:
       matrix:
         idf_ver: ["latest"]
+        test_pair:
+          - { p4: "build_esp32p4_p4", c6: "build_esp32c6_c6" }
+          - { p4: "build_esp32p4_p4_1", c6: "build_esp32c6_c6_1" }
     runs-on: [self-hosted, wifi-remote]
     container:
       image: python:3.7-buster
@@ -100,18 +108,18 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with:
-          name: eppp_${{ matrix.idf_ver }}_build_esp32p4_p4
+          name: eppp_${{ matrix.idf_ver }}_${{ matrix.test_pair.p4 }}
           path: ${{ env.TEST_DIR }}/mqtt/
       - uses: actions/download-artifact@v4
         with:
-          name: eppp_${{ matrix.idf_ver }}_build_esp32c6_c6
+          name: eppp_${{ matrix.idf_ver }}_${{ matrix.test_pair.c6 }}
           path: ${{ env.TEST_DIR }}/server/
       - name: Run Test
         working-directory: ${{ env.TEST_DIR }}
         run: |
           python -m pip install pytest-embedded-serial-esp pytest-embedded-idf pytest-rerunfailures pytest-timeout pytest-ignore-test-results
           unzip server/artifacts.zip -d server/
-          mv server/build_esp32c6_c6/ server/build/
+          mv server/${{ matrix.test_pair.c6 }}/ server/build/
           unzip mqtt/artifacts.zip -d mqtt/
-          mv mqtt/build_esp32p4_p4/ mqtt/build/
+          mv mqtt/${{ matrix.test_pair.p4 }}/ mqtt/build/
           python -m pytest --log-cli-level DEBUG --target esp32p4,esp32c6

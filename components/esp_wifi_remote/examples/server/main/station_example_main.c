@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: 2023-2024 Espressif Systems (Shanghai) CO LTD
+ * SPDX-FileCopyrightText: 2023-2025 Espressif Systems (Shanghai) CO LTD
  *
  * SPDX-License-Identifier: Unlicense OR CC0-1.0
  */
@@ -20,6 +20,7 @@ esp_err_t server_init(void);
 
 void app_main(void)
 {
+    esp_log_level_set("*", ESP_LOG_INFO);
     //Initialize NVS
     esp_err_t ret = nvs_flash_init();
     if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
@@ -30,7 +31,10 @@ void app_main(void)
 
     ESP_ERROR_CHECK(esp_netif_init());
     ESP_ERROR_CHECK(esp_event_loop_create_default());
+#ifndef CONFIG_WIFI_RMT_OVER_EPPP_HOST_SIDE_NETIF
+    // if host-side networking enabled, the wifi-station netif will be created on host
     esp_netif_create_default_wifi_sta();
+#endif
 
     server_init();
 }
