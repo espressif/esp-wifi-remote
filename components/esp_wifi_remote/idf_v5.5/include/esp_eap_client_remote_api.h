@@ -6,6 +6,11 @@
 // This file is auto-generated
 #pragma once
 #include "esp_eap_client.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 esp_err_t esp_wifi_remote_sta_enterprise_enable(void);
 esp_err_t esp_wifi_remote_sta_enterprise_disable(void);
 esp_err_t esp_eap_client_remote_set_identity(const unsigned char *identity, int len);
@@ -30,3 +35,7 @@ esp_err_t esp_eap_client_remote_use_default_cert_bundle(_Bool use_default_bundle
 void esp_wifi_remote_set_okc_support(_Bool enable);
 esp_err_t esp_eap_client_remote_set_domain_name(const char *domain_name);
 esp_err_t esp_eap_client_remote_set_eap_methods(esp_eap_method_t methods);
+
+#ifdef __cplusplus
+}
+#endif
