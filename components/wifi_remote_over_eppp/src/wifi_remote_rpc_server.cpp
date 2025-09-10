@@ -1,11 +1,10 @@
 /*
- * SPDX-FileCopyrightText: 2024 Espressif Systems (Shanghai) CO LTD
+ * SPDX-FileCopyrightText: 2024-2025 Espressif Systems (Shanghai) CO LTD
  *
  * SPDX-License-Identifier: Apache-2.0
  */
 #include <netdb.h>
 #include <memory>
-#include <cerrno>
 #include <sys/socket.h>
 #include "esp_log.h"
 #include "esp_check.h"
@@ -17,6 +16,9 @@
 #include "lwip/apps/snmp.h"
 #include "esp_vfs.h"
 #include "esp_vfs_eventfd.h"
+#ifdef CONFIG_WIFI_RMT_OVER_EPPP_HOST_SIDE_NETIF
+#include "esp_private/wifi.h"
+#endif
 
 extern "C" esp_netif_t *wifi_remote_eppp_init(eppp_type_t role);
 
@@ -29,6 +31,10 @@ const unsigned char ca_crt[] = "-----BEGIN CERTIFICATE-----\n" CONFIG_WIFI_RMT_O
 const unsigned char crt[] = "-----BEGIN CERTIFICATE-----\n" CONFIG_WIFI_RMT_OVER_EPPP_SERVER_CRT "\n-----END CERTIFICATE-----";
 const unsigned char key[] = "-----BEGIN PRIVATE KEY-----\n" CONFIG_WIFI_RMT_OVER_EPPP_SERVER_KEY "\n-----END PRIVATE KEY-----";
 // TODO: Add option to supply keys and certs via a global symbol (file)
+
+#ifdef CONFIG_WIFI_RMT_OVER_EPPP_HOST_SIDE_NETIF
+RpcInstance* get_instance();
+#endif
 
 }
 
@@ -109,9 +115,16 @@ public:
     esp_err_t init()
     {
         ESP_RETURN_ON_FALSE(netif = wifi_remote_eppp_init(EPPP_SERVER), ESP_FAIL, TAG, "Failed to init EPPP connection");
+#ifdef CONFIG_WIFI_RMT_OVER_EPPP_HOST_SIDE_NETIF
+        ESP_RETURN_ON_ERROR(eppp_add_channels(netif, &channel_tx, channel_rx, this), TAG, "Failed to add EPPP channel");
+#endif
+
         ESP_RETURN_ON_ERROR(start_server(), TAG, "Failed to start RPC server");
         ESP_RETURN_ON_ERROR(rpc.init(), TAG, "Failed to init RPC engine");
+#ifndef CONFIG_WIFI_RMT_OVER_EPPP_HOST_SIDE_NETIF
+        // No need to NAPT for client (host) side networking
         ESP_RETURN_ON_ERROR(esp_netif_napt_enable(netif), TAG, "Failed to enable NAPT");
+#endif
         ESP_RETURN_ON_ERROR(sync.init(), TAG, "Failed to init event queue");
         ESP_RETURN_ON_ERROR(esp_event_handler_register(WIFI_EVENT, ESP_EVENT_ANY_ID, handler, this), TAG, "Failed to register event");
         ESP_RETURN_ON_ERROR(esp_event_handler_register(IP_EVENT, ESP_EVENT_ANY_ID, handler, this), TAG, "Failed to register event");
@@ -120,6 +133,26 @@ public:
     Sync sync;
 private:
     esp_netif_t *netif{nullptr};
+#ifdef CONFIG_WIFI_RMT_OVER_EPPP_HOST_SIDE_NETIF
+    bool started{false};
+    eppp_channel_fn_t channel_tx{nullptr};
+    static esp_err_t channel_rx(esp_netif_t *netif, int nr, void *buffer, size_t len)
+    {
+        if (get_instance()->started) {
+            return esp_wifi_internal_tx(WIFI_IF_STA, buffer, len);
+        }
+        return ESP_OK;
+    }
+    static esp_err_t wifi_receive(void *buffer, uint16_t len, void *eb)
+    {
+        if (get_instance()->channel_tx) {
+            auto ret = get_instance()->channel_tx(get_instance()->netif, 1, buffer, len);
+            esp_wifi_internal_free_rx_buffer(eb);
+            return ret;
+        }
+        return ESP_OK;
+    }
+#endif
     static void task(void *ctx)
     {
         auto instance = static_cast<RpcInstance *>(ctx);
@@ -289,7 +322,11 @@ private:
             if (header.size != 0) {
                 return ESP_FAIL;
             }
-
+#ifdef CONFIG_WIFI_RMT_OVER_EPPP_HOST_SIDE_NETIF
+            esp_wifi_internal_reg_rxcb(WIFI_IF_STA, wifi_receive);
+            esp_wifi_internal_reg_netstack_buf_cb(esp_netif_netstack_buf_ref, esp_netif_netstack_buf_free);
+            started = true;
+#endif
             auto ret = esp_wifi_start();
             if (rpc.send(api_id::START, &ret) != ESP_OK) {
                 return ESP_FAIL;
@@ -356,6 +393,14 @@ private:
 
 namespace server {
 constinit RpcInstance instance;
+
+#ifdef CONFIG_WIFI_RMT_OVER_EPPP_HOST_SIDE_NETIF
+// This is needed in wifi-callbacks which lack context param
+RpcInstance* get_instance()
+{
+    return &server::instance;
+}
+#endif
 }
 
 RpcInstance *RpcEngine::init_server()

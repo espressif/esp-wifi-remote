@@ -76,9 +76,20 @@ if ESP_WIFI_REMOTE_LIBRARY_EPPP
                 SPI frequency in Hz.
     endif
 
+    config WIFI_RMT_OVER_EPPP_HOST_SIDE_NETIF
+        bool "Enable host side netif"
+        default n
+        select EPPP_LINK_CHANNELS_SUPPORT
+        help
+            Enable host side netifwork interface (Remote WiFi station) that uses EPPP channels
+            for sending and receiving 802.3 frames over EPPP.
+            Enable this if host behind NAT would cause issues.
+            Downside is that the slave side does not have a direct access to the internet.
+
     config WIFI_RMT_OVER_EPPP_NETIF_PRIORITY
         int "Routing priority of eppp netif"
         default 100
+        default 50 if WIFI_RMT_OVER_EPPP_HOST_SIDE_NETIF
         range 0 256
         help
             Set the priority of the wifi-remote netif.
