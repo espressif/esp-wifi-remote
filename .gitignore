@@ -55,6 +55,12 @@ dkms.conf
 components/**/build
 components/**/sdkconfig
 components/**/sdkconfig.old
+components/**/managed_components
+components/**/dependencies.lock
+.idea/
+.cache/
+cmake-build-*/
+release_notes.txt
 
 # generation script temp files
 esp_wifi_preprocessed.h
