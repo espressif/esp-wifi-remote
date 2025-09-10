@@ -15,6 +15,9 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/event_groups.h"
 #include "wifi_remote_rpc_params.h"
+#ifdef CONFIG_WIFI_RMT_OVER_EPPP_HOST_SIDE_NETIF
+#include "esp_wifi_remote.h"
+#endif
 
 extern "C" esp_netif_t *wifi_remote_eppp_init(eppp_type_t role);
 
@@ -118,6 +121,12 @@ public:
     esp_err_t init()
     {
         ESP_RETURN_ON_FALSE(netif = wifi_remote_eppp_init(EPPP_CLIENT), ESP_FAIL, TAG, "Failed to connect to EPPP server");
+
+#ifdef CONFIG_WIFI_RMT_OVER_EPPP_HOST_SIDE_NETIF
+        ESP_RETURN_ON_ERROR(eppp_add_channels(netif, &channel_tx, channel_rx, this), TAG, "Failed to add EPPP channel");
+        ESP_RETURN_ON_ERROR(esp_wifi_remote_channel_set(WIFI_IF_STA, (void*)this, wifi_remote_tx), TAG, "Failed to configure WiFi remote channel");
+#endif
+
         ESP_RETURN_ON_ERROR(esp_event_handler_register(IP_EVENT, IP_EVENT_PPP_GOT_IP, got_ip, this), TAG, "Failed to register event");
         ESP_RETURN_ON_ERROR(sync.init(), TAG, "Failed to init sync primitives");
         ESP_RETURN_ON_ERROR(rpc.init(), TAG, "Failed to init RPC engine");
@@ -151,6 +160,7 @@ private:
     esp_err_t process_wifi_event(RpcHeader &header)
     {
         auto event_id = rpc.get_payload<int32_t>(api_id::WIFI_EVENT, header);
+        ESP_LOGI(TAG, "Processing WiFi event with id %" PRIi32, event_id);
         ESP_RETURN_ON_ERROR(esp_event_post(WIFI_REMOTE_EVENT, event_id, nullptr, 0, 0), TAG, "Failed to post WiFi event");
         return ESP_OK;
     }
@@ -200,6 +210,22 @@ private:
         auto instance = static_cast<RpcInstance *>(ctx);
         instance->sync.notify(instance->sync.restart);
     }
+#ifdef CONFIG_WIFI_RMT_OVER_EPPP_HOST_SIDE_NETIF
+    static esp_err_t channel_rx(esp_netif_t *netif, int nr, void *buffer, size_t len)
+    {
+        auto instance = static_cast<RpcInstance *>(eppp_get_context(netif));
+        return esp_wifi_remote_channel_rx(instance, buffer, nullptr, len);
+    }
+    static esp_err_t wifi_remote_tx(void *h, void *buffer, size_t len)
+    {
+        auto instance = static_cast<RpcInstance *>(h);
+        if (instance->channel_tx) {
+            return instance->channel_tx(instance->netif, 1, buffer, len);
+        }
+        return ESP_FAIL;
+    }
+    eppp_channel_fn_t channel_tx{nullptr};
+#endif // CONFIG_WIFI_RMT_OVER_EPPP_HOST_SIDE_NETIF
     esp_netif_t *netif{nullptr};
 };
 
