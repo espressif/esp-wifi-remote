@@ -11,15 +11,24 @@ function sign_with_ca { # Params: [KEY_FILE] [CN] [CRT_FILE]
 
 function export_config { # Params: [FILE/CONFIG_NAME]
     content=`cat $1 | sed '/---/d' | tr -d '\n'`
-    echo "CONFIG_ESP_WIFI_REMOTE_EPPP_$1=\"${content}\""
+    echo "CONFIG_WIFI_RMT_OVER_EPPP_$1=\"${content}\""
 }
 
-if [ -z "$1" ]; then
-    echo "Usage $0 <SERVER_CN> [CLIENT_CN]"
-    exit 1;
+# Check for help flag or too many arguments
+if [ "$1" = "--help" ] || [ $# -gt 2 ]; then
+    echo "Usage: $0 [SERVER_CN] [CLIENT_CN]"
+    echo "  SERVER_CN: Server certificate common name (default: espressif.local)"
+    echo "  CLIENT_CN: Client certificate common name (default: client_cn)"
+    echo ""
+    echo "Examples:"
+    echo "  $0                                    # Uses defaults: espressif.local, client_cn"
+    echo "  $0 myserver.local                    # Uses: myserver.local, client_cn"
+    echo "  $0 myserver.local myclient.local     # Uses: myserver.local, myclient.local"
+    exit 0
 fi
 
-SERVER_CN=$1
+# Set defaults and handle arguments
+SERVER_CN="${1-espressif.local}"
 CLIENT_CN="${2-client_cn}"
 
 echo "Server's CN: $SERVER_CN"
