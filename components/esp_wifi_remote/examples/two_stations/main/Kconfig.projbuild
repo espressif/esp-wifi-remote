@@ -1,26 +1,42 @@
 menu "Example Configuration"
 
+    config ESP_WIFI_LOCAL_ENABLE
+        bool "Enable Local WiFi"
+        default y
+        help
+            Enable local WiFi station connection.
+
+    config ESP_WIFI_REMOTE_ENABLE
+        bool "Enable Remote WiFi"
+        default y
+        help
+            Enable remote WiFi station connection.
+
     config ESP_WIFI_LOCAL_SSID
         string "Local WiFi SSID"
         default "myssid"
+        depends on ESP_WIFI_LOCAL_ENABLE
         help
             SSID (network name) for the example to connect to.
 
     config ESP_WIFI_LOCAL_PASSWORD
         string "Local WiFi Password"
         default "mypassword"
+        depends on ESP_WIFI_LOCAL_ENABLE
         help
             WiFi password (WPA or WPA2) for the example to use.
 
     config ESP_WIFI_REMOTE_SSID
         string "Remote WiFi SSID"
         default "myssid"
+        depends on ESP_WIFI_REMOTE_ENABLE
         help
             SSID (network name) for the example to connect to.
 
     config ESP_WIFI_REMOTE_PASSWORD
         string "Remote WiFi Password"
         default "mypassword"
+        depends on ESP_WIFI_REMOTE_ENABLE
         help
             WiFi password (WPA or WPA2) for the example to use.
 
