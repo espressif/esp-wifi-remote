@@ -248,10 +248,12 @@ def generate_remote_wifi_api(function_prototypes, idf_ver_dir, component_path):
     with open(header, 'w') as f:
         f.write(COPYRIGHT_HEADER)
         f.write('#pragma once\n')
+        f.write('\n#ifdef __cplusplus\nextern "C" {\n#endif\n\n')
         for func_name, args in function_prototypes.items():
             params, _ = get_args(args[1])
             remote_func_name = NAMESPACE.sub('esp_wifi_remote', func_name)
             f.write(f'{args[0]} {remote_func_name}({params});\n')
+        f.write('\n#ifdef __cplusplus\n}\n#endif\n')
     with open(wifi_source, 'w') as wifi, open(remote_source, 'w') as remote:
         wifi.write(COPYRIGHT_HEADER)
         wifi.write('#include "esp_wifi.h"\n')
@@ -287,6 +289,7 @@ def generate_remote_eap_api(function_prototypes, idf_ver_dir, component_path):
         f.write(COPYRIGHT_HEADER)
         f.write('#pragma once\n')
         f.write('#include "esp_eap_client.h"\n')
+        f.write('\n#ifdef __cplusplus\nextern "C" {\n#endif\n\n')
         for func_name, args in function_prototypes.items():
             params, _ = get_args(args[1])
             # Handle esp_wifi functions differently - map them to esp_wifi_remote
@@ -295,6 +298,7 @@ def generate_remote_eap_api(function_prototypes, idf_ver_dir, component_path):
             else:
                 remote_func_name = func_name.replace('esp_eap_client', 'esp_eap_client_remote')
             f.write(f'{args[0]} {remote_func_name}({params});\n')
+        f.write('\n#ifdef __cplusplus\n}\n#endif\n')
     with open(eap_source, 'w') as eap, open(remote_source, 'w') as remote:
         eap.write(COPYRIGHT_HEADER)
         eap.write('#include "esp_eap_client.h"\n')

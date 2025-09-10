@@ -6,6 +6,11 @@
 // This file is auto-generated
 #pragma once
 #include "esp_eap_client.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 esp_err_t esp_wifi_remote_sta_enterprise_enable(void);
 esp_err_t esp_wifi_remote_sta_enterprise_disable(void);
 esp_err_t esp_eap_client_remote_set_identity(const unsigned char *identity, int len);
@@ -28,3 +33,7 @@ esp_err_t esp_eap_client_remote_set_pac_file(const unsigned char *pac_file, int 
 esp_err_t esp_eap_client_remote_set_fast_params(esp_eap_fast_config config);
 esp_err_t esp_eap_client_remote_use_default_cert_bundle(_Bool use_default_bundle);
 esp_err_t esp_eap_client_remote_set_domain_name(const char *domain_name);
+
+#ifdef __cplusplus
+}
+#endif

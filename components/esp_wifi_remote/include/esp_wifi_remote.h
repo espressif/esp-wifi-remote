@@ -7,6 +7,10 @@
 #include "esp_wifi.h"
 #include "esp_wifi_remote_api.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #if defined(CONFIG_ESP_WIFI_ENABLED)
 ESP_EVENT_DECLARE_BASE(WIFI_REMOTE_EVENT);
 #else
@@ -53,3 +57,7 @@ esp_err_t esp_wifi_remote_channel_rx(void *h, void *buffer, void *buff_to_free, 
  * @return ESP_OK on success
  */
 esp_err_t esp_wifi_remote_channel_set(wifi_interface_t ifx, void *h, esp_remote_channel_tx_fn_t tx_cb);
+
+#ifdef __cplusplus
+}
+#endif

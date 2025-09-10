@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.16.3](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v0.16.3)
+
+### Bug Fixes
+
+- Add C++ guards to all generated headers ([13f3d09](https://github.com/espressif/esp-wifi-remote/commit/13f3d09))
+- Generate headers with C++ guards ([0677e0c](https://github.com/espressif/esp-wifi-remote/commit/0677e0c))
+
 ## [0.16.2](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v0.16.2)
 
 ### Bug Fixes

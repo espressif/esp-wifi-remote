@@ -5,6 +5,11 @@
  */
 // This file is auto-generated
 #pragma once
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 esp_err_t esp_wifi_remote_init(const wifi_init_config_t *config);
 esp_err_t esp_wifi_remote_deinit(void);
 esp_err_t esp_wifi_remote_set_mode(wifi_mode_t mode);
@@ -81,3 +86,7 @@ esp_err_t esp_wifi_remote_sta_get_aid(uint16_t *aid);
 esp_err_t esp_wifi_remote_sta_get_negotiated_phymode(wifi_phy_mode_t *phymode);
 esp_err_t esp_wifi_remote_set_dynamic_cs(_Bool enabled);
 esp_err_t esp_wifi_remote_sta_get_rssi(int *rssi);
+
+#ifdef __cplusplus
+}
+#endif
