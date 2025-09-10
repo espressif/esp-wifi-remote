@@ -223,7 +223,7 @@ RpcInstance *RpcEngine::init_client()
     cfg.clientcert_bytes = sizeof(client::crt);
     cfg.clientkey_buf = client::key;
     cfg.clientkey_bytes = sizeof(client::key);
-    cfg.common_name = "espressif.local";
+    cfg.common_name = CONFIG_WIFI_RMT_OVER_EPPP_SERVER_CN;
 
     ESP_RETURN_ON_FALSE(tls_ = esp_tls_init(), nullptr, TAG, "Failed to create ESP-TLS instance");
     int retries = 0;

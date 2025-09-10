@@ -117,6 +117,15 @@ if ESP_WIFI_REMOTE_LIBRARY_EPPP
         string "Server key"
         default "--- Please copy content of the Client key ---"
 
+    config WIFI_RMT_OVER_EPPP_SERVER_CN
+        string "Server common name"
+        default "espressif.local"
+        help
+            Common name of the EPPP server.
+            This is checked when establishing a TLS connection
+            between the EPPP client and server. This CN should
+            match the CN in your server certificate.
+
 endif # ESP_WIFI_REMOTE_LIBRARY_EPPP
 
 endmenu # Wi-Fi Remote over EPPP

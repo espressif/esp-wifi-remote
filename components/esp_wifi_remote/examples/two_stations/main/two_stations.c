@@ -41,11 +41,10 @@ static EventGroupHandle_t s_wifi_event_group;
 #define WIFI_REMOTE_FAIL_BIT      BIT3
 #define WIFI_REMOTE_BITS (WIFI_REMOTE_CONNECTED_BIT | WIFI_REMOTE_FAIL_BIT)
 
-static const char *TAG_local = "two_stations_local";
-static const char *TAG_remote = "two_stations_remote";
-
 static int s_retry_num = 0;
 
+#if CONFIG_ESP_WIFI_LOCAL_ENABLE
+static const char *TAG_local = "two_stations_local";
 
 static void event_handler(void* arg, esp_event_base_t event_base,
                                 int32_t event_id, void* event_data)
@@ -72,6 +71,10 @@ static void event_handler(void* arg, esp_event_base_t event_base,
         xEventGroupSetBits(s_wifi_event_group, WIFI_CONNECTED_BIT);
     }
 }
+#endif
+
+#if CONFIG_ESP_WIFI_REMOTE_ENABLE
+static const char *TAG_remote = "two_stations_remote";
 
 static void event_handler_remote(void* arg, esp_event_base_t event_base,
                                 int32_t event_id, void* event_data)
@@ -94,6 +97,7 @@ static void event_handler_remote(void* arg, esp_event_base_t event_base,
         xEventGroupSetBits(s_wifi_event_group, WIFI_REMOTE_CONNECTED_BIT);
     }
 }
+#endif
 
 static void init_system_components(void)
 {
@@ -102,6 +106,7 @@ static void init_system_components(void)
     ESP_ERROR_CHECK(esp_event_loop_create_default());
 }
 
+#if CONFIG_ESP_WIFI_LOCAL_ENABLE
 static void wifi_init_sta(void)
 {
     esp_netif_create_default_wifi_sta();
@@ -136,7 +141,9 @@ static void wifi_init_sta(void)
         ESP_LOGE(TAG_local, "UNEXPECTED EVENT");
     }
 }
+#endif
 
+#if CONFIG_ESP_WIFI_REMOTE_ENABLE
 static void wifi_init_remote_sta(void)
 {
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
@@ -168,6 +175,7 @@ static void wifi_init_remote_sta(void)
         ESP_LOGE(TAG_remote, "UNEXPECTED EVENT");
     }
 }
+#endif
 
 void app_main(void)
 {
@@ -180,6 +188,12 @@ void app_main(void)
     ESP_ERROR_CHECK(ret);
 
     init_system_components();
+
+#if CONFIG_ESP_WIFI_LOCAL_ENABLE
     wifi_init_sta();
+#endif
+
+#if CONFIG_ESP_WIFI_REMOTE_ENABLE
     wifi_init_remote_sta();
+#endif
 }
