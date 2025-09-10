@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.2.0](https://github.com/espressif/esp-wifi-remote/commits/wifi_rmt_eppp-v0.2.0)
+
+### Features
+
+- Support host networking with EPPP channels ([f62ca01](https://github.com/espressif/esp-wifi-remote/commit/f62ca01))
+
+### Bug Fixes
+
+- Make server CN configurable ([e5d3fb2](https://github.com/espressif/esp-wifi-remote/commit/e5d3fb2))
+- Update READMEs with latest description ([798e6f0](https://github.com/espressif/esp-wifi-remote/commit/798e6f0))
+
 ## [0.1.4](https://github.com/espressif/esp-wifi-remote/commits/wifi_rmt_eppp-v0.1.4)
 
 ### Bug Fixes
