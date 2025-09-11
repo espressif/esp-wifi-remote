@@ -41,6 +41,9 @@ if(CONFIG_ESP_WIFI_REMOTE_LIBRARY_HOSTED)
     endif()
 endif()
 
+if(CONFIG_ESP_WIFI_ENABLED OR CONFIG_ESP_HOST_WIFI_ENABLED)
+    list(APPEND wifi_sources "esp_wifi_remote_net2.c")
+endif()
 
 target_include_directories(${COMPONENT_LIB} PUBLIC   ${IDF_VER_DIR}/include)
 target_sources(${COMPONENT_LIB}             PRIVATE  ${src_wifi_remote_weak}
@@ -55,6 +58,7 @@ if(NOT CONFIG_ESP_WIFI_ENABLED AND NOT CONFIG_ESP_HOST_WIFI_ENABLED)
 endif()
 
 target_link_libraries(${wifi} PUBLIC ${COMPONENT_LIB})
+
 
 if(CONFIG_ESP_WIFI_REMOTE_EAP_ENABLED)
     idf_component_optional_requires(PRIVATE wpa_supplicant)
