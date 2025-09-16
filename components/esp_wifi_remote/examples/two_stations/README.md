@@ -3,15 +3,48 @@
 ## How to use this example
 
 * Run `server` example as the slave project (communication coprocessor)
-* Configure both the server and the client with mutual keys/certs as described in [mqtt example](../mqtt/README.md)
+* Select the backend solution
+  - (in case of EPPP configure both the server and the client with mutual keys/certs as described in [mqtt example](../mqtt/README.md))
 * Configure SSID and Password for two access points
   - one for local Wi-Fi (using the Wi-Fi library on the chip itself)
   - the second one for remote Wi-Fi (using the network offloading -- communication coprocessor)
 * Build and run the example
 
-## Note
+## Wi-Fi types limitation
 
-This example supports EPPP RPC library with both UART and SPI transport options. Configure the transport method and pins using `idf.py menuconfig` under "WiFi Remote" settings.
+The `esp_wifi_remote` component faces type name conflicts when used alongside local Wi-Fi functionality. Both APIs use identical type names (e.g., `wifi_config_t`) but with different definitions for different hardware targets.
+
+### The Solution: Separate Compilation Units
+
+The component requires **separate compilation units** for local and remote Wi-Fi code:
+
+```c
+// two_stations.c - Local Wi-Fi only
+#include "esp_wifi.h"
+
+// remote_station.c - Remote Wi-Fi only
+#include "injected/esp_wifi.h"  // SLAVE_ prefixed types
+#include "esp_wifi_remote.h"
+```
+
+### How It Works
+
+Wi-Fi remote provides generated "injected" headers with slave-specific types by transforming SOC capabilities:
+
+```python
+# generate_and_check.py transforms:
+SOC_WIFI_ → SLAVE_SOC_WIFI_
+IDF_TARGET_ → SLAVE_IDF_TARGET_
+```
+
+This allows the same Wi-Fi types to coexist with different definitions based on the target hardware.
+
+### Best Practices
+
+- Include injected headers before `esp_wifi_remote.h` in remote Wi-Fi files
+- Keep local and remote Wi-Fi code in separate `.c` files
+- Use function declarations to call between compilation units
+
 
 ## Example output
 
@@ -57,3 +90,4 @@ I (7381) rpc_client: WIFI GW:192.168.32.3
 I (7381) rpc_client: WIFI mask:255.255.254.0
 I (7381) two wifi stations: connected to ap SSID:EspressifSystems
 I (7391) main_task: Returned from app_main()
+```
