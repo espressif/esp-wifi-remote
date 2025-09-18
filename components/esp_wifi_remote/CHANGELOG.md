@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.0.1](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v1.0.1)
+
+### Features
+
+- Add target test with esp_hosted ([6c67584](https://github.com/espressif/esp-wifi-remote/commit/6c67584))
+
+### Bug Fixes
+
+- Update types/comments on v5.4 ([502e937](https://github.com/espressif/esp-wifi-remote/commit/502e937))
+- Split two station example into local/remote sources ([79ef9d6](https://github.com/espressif/esp-wifi-remote/commit/79ef9d6))
+
 ## [1.0.0](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v1.0.0)
 
 ### Features
