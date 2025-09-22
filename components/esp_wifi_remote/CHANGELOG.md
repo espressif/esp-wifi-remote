@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.1.0](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v1.1.0)
+
+### Features
+
+- Support for IDF v5.3-tag ([6d16d44](https://github.com/espressif/esp-wifi-remote/commit/6d16d44))
+
+### Bug Fixes
+
+- Update per Kconfig changes on v6.0 ([74a6aa8](https://github.com/espressif/esp-wifi-remote/commit/74a6aa8))
+
 ## [1.0.1](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v1.0.1)
 
 ### Features

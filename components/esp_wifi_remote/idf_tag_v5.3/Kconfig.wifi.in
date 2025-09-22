@@ -5,8 +5,8 @@ config WIFI_RMT_STATIC_RX_BUFFER_NUM
     int "Max number of WiFi static RX buffers"
     range 2 25 if !SLAVE_SOC_WIFI_HE_SUPPORT
     range 2 128 if SLAVE_SOC_WIFI_HE_SUPPORT
-    default 10 if !(SPIRAM_TRY_ALLOCATE_WIFI_LWIP && !SPIRAM_IGNORE_NOTFOUND)
-    default 16 if (SPIRAM_TRY_ALLOCATE_WIFI_LWIP && !SPIRAM_IGNORE_NOTFOUND)
+    default 10 if !SPIRAM_TRY_ALLOCATE_WIFI_LWIP
+    default 16 if SPIRAM_TRY_ALLOCATE_WIFI_LWIP
     help
         Set the number of WiFi static RX buffers. Each buffer takes approximately 1.6KB of RAM.
         The static rx buffers are allocated when esp_wifi_init is called, they are not freed
@@ -57,7 +57,7 @@ choice WIFI_RMT_TX_BUFFER
         bool "Static"
     config WIFI_RMT_DYNAMIC_TX_BUFFER
         bool "Dynamic"
-        depends on !(SPIRAM_TRY_ALLOCATE_WIFI_LWIP && !SPIRAM_IGNORE_NOTFOUND)
+        depends on !SPIRAM_USE_MALLOC
 endchoice
 
 config WIFI_RMT_TX_BUFFER_TYPE
@@ -82,8 +82,8 @@ config WIFI_RMT_STATIC_TX_BUFFER_NUM
 
 config WIFI_RMT_CACHE_TX_BUFFER_NUM
     int "Max number of WiFi cache TX buffers"
-    depends on (SPIRAM_TRY_ALLOCATE_WIFI_LWIP && !SPIRAM_IGNORE_NOTFOUND)
-    range 0 128
+    depends on SPIRAM
+    range 16 128
     default 32
     help
         Set the number of WiFi cache TX buffer number.
@@ -180,8 +180,8 @@ config WIFI_RMT_RX_BA_WIN
     depends on WIFI_RMT_AMPDU_RX_ENABLED
     range 2 32 if !SLAVE_SOC_WIFI_HE_SUPPORT
     range 2 64 if SLAVE_SOC_WIFI_HE_SUPPORT
-    default 6 if !(SPIRAM_TRY_ALLOCATE_WIFI_LWIP && !SPIRAM_IGNORE_NOTFOUND)
-    default 16 if (SPIRAM_TRY_ALLOCATE_WIFI_LWIP && !SPIRAM_IGNORE_NOTFOUND)
+    default 6 if !SPIRAM_TRY_ALLOCATE_WIFI_LWIP
+    default 16 if SPIRAM_TRY_ALLOCATE_WIFI_LWIP
     help
         Set the size of WiFi Block Ack RX window. Generally a bigger value means higher throughput and better
         compatibility but more memory. Most of time we should NOT change the default value unless special
@@ -192,7 +192,7 @@ config WIFI_RMT_RX_BA_WIN
 
 config WIFI_RMT_AMSDU_TX_ENABLED
     bool "WiFi AMSDU TX"
-    depends on (WIFI_RMT_CACHE_TX_BUFFER_NUM >= 2)
+    depends on SPIRAM
     default n
     help
         Select this option to enable AMSDU TX feature
@@ -244,10 +244,7 @@ config WIFI_RMT_MGMT_SBUF_NUM
     range 6 32
     default 32
     help
-        Set the maximum number of Wi-Fi management short buffers. These buffers are dynamically allocated,
-        with their size determined by the length of the management packet to be sent. When a management
-        packet is less than 64 bytes, the Wi-Fi driver classifies it as a short management packet and
-        assigns it to one of these buffers.
+        Set the number of WiFi management short buffer.
 
 config WIFI_RMT_IRAM_OPT
     bool "WiFi IRAM speed optimization"
@@ -289,16 +286,9 @@ config WIFI_RMT_ENABLE_WPA3_SAE
 config WIFI_RMT_ENABLE_SAE_PK
     bool "Enable SAE-PK"
     default y
-    depends on (WIFI_RMT_ENABLE_WPA3_SAE && WIFI_RMT_ENABLE_SAE_H2E)
-    help
-        Select this option to enable SAE-PK
-
-config WIFI_RMT_ENABLE_SAE_H2E
-    bool "Enable SAE-H2E"
-    default y
     depends on WIFI_RMT_ENABLE_WPA3_SAE
     help
-        Select this option to enable SAE-H2E
+        Select this option to enable SAE-PK
 
 config WIFI_RMT_SOFTAP_SAE_SUPPORT
     bool "Enable WPA3 Personal(SAE) SoftAP"
@@ -321,9 +311,7 @@ config WIFI_RMT_ENABLE_WPA3_OWE_STA
 config WIFI_RMT_SLP_IRAM_OPT
     bool "WiFi SLP IRAM speed optimization"
     select PM_SLP_DEFAULT_PARAMS_OPT
-    select PM_SLEEP_FUNC_IN_IRAM
-    select ESP_PERIPH_CTRL_FUNC_IN_IRAM
-    select WIFI_RMT_PHY_IRAM_OPT
+    select PERIPH_CTRL_FUNC_IN_IRAM
     default y if SLAVE_SOC_WIFI_HE_SUPPORT
     help
         Select this option to place called Wi-Fi library TBTT process and receive beacon functions in IRAM.
@@ -343,24 +331,14 @@ config WIFI_RMT_SLP_DEFAULT_MIN_ACTIVE_TIME
         during this period, the time will be refreshed. If the time is up, but the station still has packets
         to receive or send, the time will also be refreshed. unit: milliseconds.
 
-config WIFI_RMT_BSS_MAX_IDLE_SUPPORT
-    bool "Enable bss max idle support"
-    default y if (SLAVE_SOC_WIFI_HE_SUPPORT || WIFI_RMT_WNM_SUPPORT)
-    help
-        Enables bss max idle support for Station and SoftAP. BSS max idle period enables an SoftAP to indicate
-        a time period during which the AP does not disassociate a STA due to nonreceipt of frames from the STA.
-        For station, max idle period is default 10 (1000TUs) and can be set through
-        WIFI_RMT_SLP_DEFAULT_MAX_ACTIVE_TIME. For softap, bss max idle parameters will be set through
-        bss_max_idle_cfg in wifi_ap_config_t.
-
 config WIFI_RMT_SLP_DEFAULT_MAX_ACTIVE_TIME
     int "Maximum keep alive time"
     range 10 60
     default 10
     help
-        Only for station. If no packet has been sent within WIFI_RMT_SLP_DEFAULT_MAX_ACTIVE_TIME, a null data
-        packet will be sent to maintain the connection with the AP. If WIFI_RMT_BSS_MAX_IDLE_SUPPORT is set,
-        it will be sent as bss max idle period in association request. unit: seconds.
+        Only for station in WIFI_PS_MIN_MODEM or WIFI_PS_MAX_MODEM. If no packet has been
+        sent within WIFI_RMT_SLP_DEFAULT_MAX_ACTIVE_TIME, a null data packet will be sent
+        to maintain the connection with the AP. unit: seconds.
 
 config WIFI_RMT_SLP_DEFAULT_WAIT_BROADCAST_DATA_TIME
     int "Minimum wait broadcast data time"
@@ -442,9 +420,8 @@ config WIFI_RMT_SLP_BEACON_LOST_THRESHOLD
     default 3
     depends on WIFI_RMT_SLP_BEACON_LOST_OPT
     help
-        Maximum number of consecutive lost beacons allowed, the WiFi Rx state behaviour
-        will be determined by WIFI_RMT_SLP_BEACON_LOST_OVER_THRESHOLD_POLICY
-        when the number of consecutive beacons lost is greater than the given threshold.
+        Maximum number of consecutive lost beacons allowed, WiFi keeps Rx state when
+        the number of consecutive beacons lost is greater than the given threshold.
 
 config WIFI_RMT_SLP_PHY_ON_DELTA_EARLY_TIME
     int "Delta early time for RF PHY on"
@@ -464,77 +441,6 @@ config WIFI_RMT_SLP_PHY_OFF_DELTA_TIMEOUT_TIME
         Delta timeout time for rf phy off, When the beacon is lost, the next rf phy off will
         be delayed for the time specified by the configuration item. Unit: 1024 microsecond.
 
-choice WIFI_RMT_SLP_BEACON_LOST_OVER_THRESHOLD_POLICY
-    prompt "Beacon strategy when beacon loss exceeds threshold"
-    depends on WIFI_RMT_SLP_BEACON_LOST_OPT
-    default WIFI_RMT_SLP_BEACON_LOST_OVER_THRESHOLD_AUTO
-    help
-        Select the strategy to apply when the number of lost beacons exceeds the threshold.
-
-        - "Receive beacon": Keep RF on until a beacon is successfully received.
-
-        - "Drop beacon": Turn off RF and skip beacon reception during this period.
-
-        - "Auto": Beacon will been dropped only if WIFI_RMT_SLP_SAMPLE_BEACON_FEATURE enabled
-                  and expected rx beacon probability stays below the standard.
-
-    config WIFI_RMT_SLP_BEACON_LOST_OVER_THRESHOLD_RECEIVE
-        bool "Receive beacon"
-    config WIFI_RMT_SLP_BEACON_LOST_OVER_THRESHOLD_DROP
-        bool "Drop beacon"
-    config WIFI_RMT_SLP_BEACON_LOST_OVER_THRESHOLD_AUTO
-        bool "Auto"
-endchoice
-
-config WIFI_RMT_SLP_SAMPLE_BEACON_FEATURE
-    bool "Sample beacon to calculate beacon offset"
-    default n
-    depends on WIFI_RMT_SLP_BEACON_LOST_OPT && !WIFI_RMT_ENHANCED_LIGHT_SLEEP
-    help
-        Select to enable feature sampling beacons to calculate beacon offset.
-
-menu "Beacon Sample Configuration Options"
-    visible if WIFI_RMT_SLP_SAMPLE_BEACON_FEATURE
-    config WIFI_RMT_SLP_SAMPLE_BEACON_COUNT
-        int "Sample beacons at wifi connected to adjust beacon parameters"
-        range 100 1200
-        default 300
-        depends on WIFI_RMT_SLP_SAMPLE_BEACON_FEATURE
-        help
-            Numble of sampled beacons at wifi connected to adjust beacon parameters.
-
-    config WIFI_RMT_SLP_SAMPLE_BEACON_DIFFERENCE_PERCENT
-        int "Difference percentage triggers unstable event"
-        range 0 100
-        default 20
-        depends on WIFI_RMT_SLP_SAMPLE_BEACON_FEATURE
-        help
-            Difference triggers event WIFI_EVENT_STA_BEACON_OFFSET_UNSTABLE
-            when the actual rx beacon probability continuously falls below
-            the expected probability by this value.
-            unit: percentage
-
-    config WIFI_RMT_SLP_SAMPLE_BEACON_STANDARD_PERCENT
-        int "Standard percentage triggers beacon drop"
-        range 0 100
-        default 55
-        depends on WIFI_RMT_SLP_SAMPLE_BEACON_FEATURE
-        help
-            Standard triggers beacon drop when the expected rx beacon probability
-            falls below this value under WIFI_RMT_SLP_BEACON_LOST_DROP_BEACON_AUTO mode.
-            unit: percentage
-
-    config WIFI_RMT_SLP_SAMPLE_BEACON_RESAMPLE_PERIOD
-        int "Resample period"
-        range 0 255
-        default 3
-        depends on WIFI_RMT_SLP_SAMPLE_BEACON_FEATURE
-        help
-            Resample period if beacon drop is active under WIFI_RMT_SLP_BEACON_LOST_DROP_BEACON_AUTO mode.
-            It means never resample if setting this value to 0.
-            unit: hours
-endmenu # "Beacon Sample Configuration Options"
-
 config WIFI_RMT_ESPNOW_MAX_ENCRYPT_NUM
     int "Maximum espnow encrypt peers number"
     range 0 4 if SLAVE_IDF_TARGET_ESP32C2
@@ -552,7 +458,6 @@ config WIFI_RMT_NAN_ENABLE
     bool "WiFi Aware"
     default n
     depends on SLAVE_SOC_WIFI_NAN_SUPPORT
-    select LWIP_IPV6
     help
         Enable WiFi Aware (NAN) feature.
 
@@ -613,7 +518,6 @@ config WIFI_RMT_WAPI_PSK
 config WIFI_RMT_SUITE_B_192
     bool "Enable NSA suite B support with 192 bit key"
     default n
-    depends on WIFI_RMT_ENTERPRISE_SUPPORT
     depends on SLAVE_SOC_WIFI_GCMP_SUPPORT
     select WIFI_RMT_GCMP_SUPPORT
     select WIFI_RMT_GMAC_SUPPORT
@@ -626,38 +530,20 @@ config WIFI_RMT_11KV_SUPPORT
     default n
     help
         Select this option to enable 802.11k 802.11v APIs(RRM and BTM support).
-
-config WIFI_RMT_RRM_SUPPORT
-    bool "Enable 802.11k APIs Support"
-    depends on WIFI_RMT_11KV_SUPPORT
-    default y
-    help
-        Select this option to enable 802.11k APIs(RRM support).
         Only APIs which are helpful for network assisted roaming
         are supported for now.
-        Enable this option with RRM enabled in sta config
+        Enable this option with BTM and RRM enabled in sta config
         to make device ready for network assisted roaming.
+        BTM: BSS transition management enables an AP to request a station to transition
+        to a specific AP, or to indicate to a station a set of preferred APs.
         RRM: Radio measurements enable STAs to understand the radio environment,
         it enables STAs to observe and gather data on radio link performance
         and on the radio environment. Current implementation adds beacon report,
         link measurement, neighbor report.
 
-config WIFI_RMT_WNM_SUPPORT
-    bool "Enable 802.11v APIs Support"
-    depends on WIFI_RMT_11KV_SUPPORT
-    default y
-    help
-        Select this option to enable 802.11v APIs(BTM support).
-        Only APIs which are helpful for network assisted roaming
-        are supported for now.
-        Enable this option with BTM enabled in sta config
-        to make device ready for network assisted roaming.
-        BTM: BSS transition management enables an AP to request a station to transition
-        to a specific AP, or to indicate to a station a set of preferred APs.
-
 config WIFI_RMT_SCAN_CACHE
     bool "Keep scan results in cache"
-    depends on WIFI_RMT_RRM_SUPPORT
+    depends on WIFI_RMT_11KV_SUPPORT
     default n
     help
         Keep scan results in cache, if not enabled, those
@@ -667,8 +553,6 @@ config WIFI_RMT_MBO_SUPPORT
     bool "Enable Multi Band Operation Certification Support"
     default n
     select WIFI_RMT_11KV_SUPPORT
-    select WIFI_RMT_RRM_SUPPORT
-    select WIFI_RMT_WNM_SUPPORT
     select WIFI_RMT_SCAN_CACHE
     help
         Select this option to enable WiFi Multiband operation certification support.
@@ -677,6 +561,7 @@ config WIFI_RMT_ENABLE_ROAMING_APP
     bool "Advanced support for Wi-Fi Roaming (Experimental)"
     depends on IDF_EXPERIMENTAL_FEATURES
     default n
+    select WIFI_RMT_SCAN_CACHE
     help
         Enable Espressif's roaming app to allow for efficient Wi-Fi roaming.
         This includes configurable periodic environment scans, maintaining a cache of the
@@ -746,28 +631,28 @@ config WIFI_RMT_TX_HETB_QUEUE_NUM
 
 config WIFI_RMT_ENABLE_DUMP_HESIGB
     bool "Enable Wi-Fi dump HE-SIGB which is contained in DL HE MU PPDUs"
-    depends on SLAVE_SOC_WIFI_SUPPORT_5G
+    depends on SLAVE_SOC_WIFI_HE_SUPPORT_5G
     default "n"
     help
         Enable Wi-Fi dump HE-SIGB which is contained in DL HE MU PPDUs.
 
 config WIFI_RMT_ENABLE_DUMP_MU_CFO
     bool "Enable Wi-Fi dump MU CFO"
-    depends on SLAVE_SOC_WIFI_SUPPORT_5G
+    depends on SLAVE_SOC_WIFI_HE_SUPPORT_5G
     default "n"
     help
         Enable Wi-Fi dump MU CFO.
 
 config WIFI_RMT_ENABLE_DUMP_CTRL_NDPA
     bool "Enable Wi-Fi dump NDPA frames"
-    depends on SLAVE_SOC_WIFI_SUPPORT_5G
+    depends on SLAVE_SOC_WIFI_HE_SUPPORT_5G
     default "n"
     help
         Enable Wi-Fi dump NDPA frames.
 
 config WIFI_RMT_ENABLE_DUMP_CTRL_BFRP
     bool "Enable Wi-Fi dump BFRP frames"
-    depends on SLAVE_SOC_WIFI_SUPPORT_5G
+    depends on SLAVE_SOC_WIFI_HE_SUPPORT_5G
     default "n"
     help
         Enable Wi-Fi dump BFRP frames.
@@ -805,6 +690,12 @@ config WIFI_RMT_DEBUG_PRINT
 
         Enabling this could increase the build size ~60kb
         depending on the project logging level.
+
+config WIFI_RMT_TESTING_OPTIONS
+    bool "Add DPP testing code"
+    default n
+    help
+        Select this to enable unity test for DPP.
 
 config WIFI_RMT_ENTERPRISE_SUPPORT
     bool "Enable enterprise option"
@@ -849,7 +740,7 @@ if !ESP_WIFI_ENABLED
 
     config ESP_WIFI_CACHE_TX_BUFFER_NUM # ignore: multiple-definition
         int
-        depends on (SPIRAM_TRY_ALLOCATE_WIFI_LWIP && !SPIRAM_IGNORE_NOTFOUND)
+        depends on SPIRAM
         default WIFI_RMT_CACHE_TX_BUFFER_NUM
 
     config ESP_WIFI_DYNAMIC_TX_BUFFER_NUM # ignore: multiple-definition
@@ -897,7 +788,7 @@ endif
 if WIFI_RMT_AMSDU_TX_ENABLED
     config ESP_WIFI_AMSDU_TX_ENABLED # ignore: multiple-definition
         bool
-        depends on (WIFI_RMT_CACHE_TX_BUFFER_NUM >= 2)
+        depends on SPIRAM
         default WIFI_RMT_AMSDU_TX_ENABLED
 endif
 
@@ -942,15 +833,8 @@ endif
 if WIFI_RMT_ENABLE_SAE_PK
     config ESP_WIFI_ENABLE_SAE_PK # ignore: multiple-definition
         bool
-        depends on (WIFI_RMT_ENABLE_WPA3_SAE && WIFI_RMT_ENABLE_SAE_H2E)
-        default WIFI_RMT_ENABLE_SAE_PK
-endif
-
-if WIFI_RMT_ENABLE_SAE_H2E
-    config ESP_WIFI_ENABLE_SAE_H2E # ignore: multiple-definition
-        bool
         depends on WIFI_RMT_ENABLE_WPA3_SAE
-        default WIFI_RMT_ENABLE_SAE_H2E
+        default WIFI_RMT_ENABLE_SAE_PK
 endif
 
 if WIFI_RMT_SOFTAP_SAE_SUPPORT
@@ -975,12 +859,6 @@ endif
     config ESP_WIFI_SLP_DEFAULT_MIN_ACTIVE_TIME # ignore: multiple-definition
         int
         default WIFI_RMT_SLP_DEFAULT_MIN_ACTIVE_TIME
-
-if WIFI_RMT_BSS_MAX_IDLE_SUPPORT
-    config ESP_WIFI_BSS_MAX_IDLE_SUPPORT # ignore: multiple-definition
-        bool
-        default WIFI_RMT_BSS_MAX_IDLE_SUPPORT
-endif
 
     config ESP_WIFI_SLP_DEFAULT_MAX_ACTIVE_TIME # ignore: multiple-definition
         int
@@ -1069,33 +947,6 @@ endif
         depends on WIFI_RMT_SLP_BEACON_LOST_OPT && SLAVE_SOC_WIFI_SUPPORT_VARIABLE_BEACON_WINDOW
         default WIFI_RMT_SLP_PHY_OFF_DELTA_TIMEOUT_TIME
 
-if WIFI_RMT_SLP_SAMPLE_BEACON_FEATURE
-    config ESP_WIFI_SLP_SAMPLE_BEACON_FEATURE # ignore: multiple-definition
-        bool
-        depends on WIFI_RMT_SLP_BEACON_LOST_OPT && !WIFI_RMT_ENHANCED_LIGHT_SLEEP
-        default WIFI_RMT_SLP_SAMPLE_BEACON_FEATURE
-endif
-
-    config ESP_WIFI_SLP_SAMPLE_BEACON_COUNT # ignore: multiple-definition
-        int
-        depends on WIFI_RMT_SLP_SAMPLE_BEACON_FEATURE
-        default WIFI_RMT_SLP_SAMPLE_BEACON_COUNT
-
-    config ESP_WIFI_SLP_SAMPLE_BEACON_DIFFERENCE_PERCENT # ignore: multiple-definition
-        int
-        depends on WIFI_RMT_SLP_SAMPLE_BEACON_FEATURE
-        default WIFI_RMT_SLP_SAMPLE_BEACON_DIFFERENCE_PERCENT
-
-    config ESP_WIFI_SLP_SAMPLE_BEACON_STANDARD_PERCENT # ignore: multiple-definition
-        int
-        depends on WIFI_RMT_SLP_SAMPLE_BEACON_FEATURE
-        default WIFI_RMT_SLP_SAMPLE_BEACON_STANDARD_PERCENT
-
-    config ESP_WIFI_SLP_SAMPLE_BEACON_RESAMPLE_PERIOD # ignore: multiple-definition
-        int
-        depends on WIFI_RMT_SLP_SAMPLE_BEACON_FEATURE
-        default WIFI_RMT_SLP_SAMPLE_BEACON_RESAMPLE_PERIOD
-
     config ESP_WIFI_ESPNOW_MAX_ENCRYPT_NUM # ignore: multiple-definition
         int
         default WIFI_RMT_ESPNOW_MAX_ENCRYPT_NUM
@@ -1147,24 +998,10 @@ if WIFI_RMT_11KV_SUPPORT
         default WIFI_RMT_11KV_SUPPORT
 endif
 
-if WIFI_RMT_RRM_SUPPORT
-    config ESP_WIFI_RRM_SUPPORT # ignore: multiple-definition
-        bool
-        depends on WIFI_RMT_11KV_SUPPORT
-        default WIFI_RMT_RRM_SUPPORT
-endif
-
-if WIFI_RMT_WNM_SUPPORT
-    config ESP_WIFI_WNM_SUPPORT # ignore: multiple-definition
-        bool
-        depends on WIFI_RMT_11KV_SUPPORT
-        default WIFI_RMT_WNM_SUPPORT
-endif
-
 if WIFI_RMT_SCAN_CACHE
     config ESP_WIFI_SCAN_CACHE # ignore: multiple-definition
         bool
-        depends on WIFI_RMT_RRM_SUPPORT
+        depends on WIFI_RMT_11KV_SUPPORT
         default WIFI_RMT_SCAN_CACHE
 endif
 
@@ -1229,28 +1066,28 @@ endif
 if WIFI_RMT_ENABLE_DUMP_HESIGB
     config ESP_WIFI_ENABLE_DUMP_HESIGB # ignore: multiple-definition
         bool
-        depends on SLAVE_SOC_WIFI_SUPPORT_5G
+        depends on SLAVE_SOC_WIFI_HE_SUPPORT_5G
         default WIFI_RMT_ENABLE_DUMP_HESIGB
 endif
 
 if WIFI_RMT_ENABLE_DUMP_MU_CFO
     config ESP_WIFI_ENABLE_DUMP_MU_CFO # ignore: multiple-definition
         bool
-        depends on SLAVE_SOC_WIFI_SUPPORT_5G
+        depends on SLAVE_SOC_WIFI_HE_SUPPORT_5G
         default WIFI_RMT_ENABLE_DUMP_MU_CFO
 endif
 
 if WIFI_RMT_ENABLE_DUMP_CTRL_NDPA
     config ESP_WIFI_ENABLE_DUMP_CTRL_NDPA # ignore: multiple-definition
         bool
-        depends on SLAVE_SOC_WIFI_SUPPORT_5G
+        depends on SLAVE_SOC_WIFI_HE_SUPPORT_5G
         default WIFI_RMT_ENABLE_DUMP_CTRL_NDPA
 endif
 
 if WIFI_RMT_ENABLE_DUMP_CTRL_BFRP
     config ESP_WIFI_ENABLE_DUMP_CTRL_BFRP # ignore: multiple-definition
         bool
-        depends on SLAVE_SOC_WIFI_SUPPORT_5G
+        depends on SLAVE_SOC_WIFI_HE_SUPPORT_5G
         default WIFI_RMT_ENABLE_DUMP_CTRL_BFRP
 endif
 
@@ -1270,6 +1107,12 @@ if WIFI_RMT_DEBUG_PRINT
     config ESP_WIFI_DEBUG_PRINT # ignore: multiple-definition
         bool
         default WIFI_RMT_DEBUG_PRINT
+endif
+
+if WIFI_RMT_TESTING_OPTIONS
+    config ESP_WIFI_TESTING_OPTIONS # ignore: multiple-definition
+        bool
+        default WIFI_RMT_TESTING_OPTIONS
 endif
 
 if WIFI_RMT_ENTERPRISE_SUPPORT
