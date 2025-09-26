@@ -74,7 +74,7 @@ jobs:
           path: protocols
       - name: Build ${{ matrix.example.app }} with IDF-${{ matrix.idf_ver }}
         env:
-          EXPECTED_WARNING: "Warning: The smallest app partition is nearly full"
+          EXPECTED_WARNING: "Warning: The smallest app partition is nearly full\nWarning: Deprecated: Option\n"
         shell: bash
         run: |
           . ${IDF_PATH}/export.sh
@@ -83,7 +83,7 @@ jobs:
             idf.py create-project-from-example "espressif/esp_hosted:slave"
             rm slave/sdkconfig.ci.*
             mv slave/ ./components/esp_wifi_remote/${{matrix.example.path}}/
-            export EXPECTED_WARNING="warning: the int symbol ESP_HOSTED"
+            export EXPECTED_WARNING="${EXPECTED_WARNING}warning: the int symbol ESP_HOSTED"
             cp ./components/esp_wifi_remote/examples/sdkconfig.ci.hosted_slave ./components/esp_wifi_remote/${{matrix.example.path}}/sdkconfig.ci.hosted
           fi
           python $GITHUB_WORKSPACE/protocols/ci/build_apps.py ./components/esp_wifi_remote/${{matrix.example.path}} -vv --preserve-all
