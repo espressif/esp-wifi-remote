@@ -14,7 +14,7 @@ jobs:
     name: Check API compatibility of WiFi Remote
     strategy:
       matrix:
-        idf_ver: ["latest", "release-v5.5", "release-v5.4", "release-v5.3", "v5.4", "v5.4.1", "v5.4.2", "v5.3.3", "v5.3.2", "v5.3.1", "v5.5", "v5.3"]
+        idf_ver: ["release-v5.5", "release-v5.4", "release-v5.3", "v5.4", "v5.4.1", "v5.4.2", "v5.3.3", "v5.3.2", "v5.3.1", "v5.5", "v5.3"] # add "latest" after esp_wifi breaking changes are fixed
     runs-on: ubuntu-latest
     container: espressif/idf:${{ matrix.idf_ver }}
     steps:
