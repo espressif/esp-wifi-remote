@@ -35,6 +35,8 @@ jobs:
         with:
             key: ${{ matrix.idf_ver }}
       - name: Build ${{ matrix.test.app }} with IDF-${{ matrix.idf_ver }}
+        env:
+          EXPECTED_WARNING: "Warning: Deprecated: Option"
         shell: bash
         run: |
           . ${IDF_PATH}/export.sh
