@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.1.4](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v1.1.4)
+
+### Bug Fixes
+
+- Temporarily add esp_interface.h ([c02879b](https://github.com/espressif/esp-wifi-remote/commit/c02879b))
+
 ## [1.1.3](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v1.1.3)
 
 ### Bug Fixes
