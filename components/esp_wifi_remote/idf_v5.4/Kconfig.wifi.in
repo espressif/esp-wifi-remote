@@ -522,6 +522,7 @@ config WIFI_RMT_WAPI_PSK
 config WIFI_RMT_SUITE_B_192
     bool "Enable NSA suite B support with 192 bit key"
     default n
+    depends on WIFI_RMT_ENTERPRISE_SUPPORT
     depends on SLAVE_SOC_WIFI_GCMP_SUPPORT
     select WIFI_RMT_GCMP_SUPPORT
     select WIFI_RMT_GMAC_SUPPORT

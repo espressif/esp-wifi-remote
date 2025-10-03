@@ -453,4 +453,14 @@ void run_all_wifi_remote_apis(void)
         esp_wifi_remote_get_bandwidths(ifx, bw);
     }
 
+    {
+        wifi_action_tx_req_t *req = NULL;
+        esp_wifi_remote_action_tx_req(req);
+    }
+
+    {
+        wifi_roc_req_t *req = NULL;
+        esp_wifi_remote_remain_on_channel(req);
+    }
+
 }
