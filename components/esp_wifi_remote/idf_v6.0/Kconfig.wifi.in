@@ -286,19 +286,19 @@ config WIFI_RMT_ENABLE_WPA3_SAE
         explicitly configured before attempting connection. Please refer to the Wi-Fi Driver API Guide
         for details.
 
-config WIFI_RMT_ENABLE_SAE_PK
-    bool "Enable SAE-PK"
-    default y
-    depends on (WIFI_RMT_ENABLE_WPA3_SAE && WIFI_RMT_ENABLE_SAE_H2E)
-    help
-        Select this option to enable SAE-PK
-
 config WIFI_RMT_ENABLE_SAE_H2E
     bool "Enable SAE-H2E"
     default y
     depends on WIFI_RMT_ENABLE_WPA3_SAE
     help
         Select this option to enable SAE-H2E
+
+config WIFI_RMT_ENABLE_SAE_PK
+    bool "Enable SAE-PK"
+    default y
+    depends on WIFI_RMT_ENABLE_SAE_H2E
+    help
+        Select this option to enable SAE-PK
 
 config WIFI_RMT_SOFTAP_SAE_SUPPORT
     bool "Enable WPA3 Personal(SAE) SoftAP"
@@ -317,6 +317,13 @@ config WIFI_RMT_ENABLE_WPA3_OWE_STA
         PMF (Protected Management Frames) is a prerequisite feature for a WPA3 connection, it needs to be
         explicitly configured before attempting connection. Please refer to the Wi-Fi Driver API Guide
         for details.
+
+config WIFI_RMT_WPA3_COMPATIBLE_SUPPORT
+    bool "Enable WPA3 Compatible support"
+    default y
+    depends on WIFI_RMT_ENABLE_SAE_H2E
+    help
+        Select this option to support wpa3_compatible mode for station and AP
 
 config WIFI_RMT_SLP_IRAM_OPT
     bool "WiFi SLP IRAM speed optimization"
@@ -947,18 +954,18 @@ if WIFI_RMT_ENABLE_WPA3_SAE
         default WIFI_RMT_ENABLE_WPA3_SAE
 endif
 
-if WIFI_RMT_ENABLE_SAE_PK
-    config ESP_WIFI_ENABLE_SAE_PK # ignore: multiple-definition
-        bool
-        depends on (WIFI_RMT_ENABLE_WPA3_SAE && WIFI_RMT_ENABLE_SAE_H2E)
-        default WIFI_RMT_ENABLE_SAE_PK
-endif
-
 if WIFI_RMT_ENABLE_SAE_H2E
     config ESP_WIFI_ENABLE_SAE_H2E # ignore: multiple-definition
         bool
         depends on WIFI_RMT_ENABLE_WPA3_SAE
         default WIFI_RMT_ENABLE_SAE_H2E
+endif
+
+if WIFI_RMT_ENABLE_SAE_PK
+    config ESP_WIFI_ENABLE_SAE_PK # ignore: multiple-definition
+        bool
+        depends on WIFI_RMT_ENABLE_SAE_H2E
+        default WIFI_RMT_ENABLE_SAE_PK
 endif
 
 if WIFI_RMT_SOFTAP_SAE_SUPPORT
@@ -972,6 +979,13 @@ if WIFI_RMT_ENABLE_WPA3_OWE_STA
     config ESP_WIFI_ENABLE_WPA3_OWE_STA # ignore: multiple-definition
         bool
         default WIFI_RMT_ENABLE_WPA3_OWE_STA
+endif
+
+if WIFI_RMT_WPA3_COMPATIBLE_SUPPORT
+    config ESP_WIFI_WPA3_COMPATIBLE_SUPPORT # ignore: multiple-definition
+        bool
+        depends on WIFI_RMT_ENABLE_SAE_H2E
+        default WIFI_RMT_WPA3_COMPATIBLE_SUPPORT
 endif
 
 if WIFI_RMT_SLP_IRAM_OPT
