@@ -39,6 +39,7 @@ jobs:
           EXPECTED_WARNING: "Warning: Deprecated: Option"
         shell: bash
         run: |
+          $IDF_PATH/install.sh --enable-ci
           . ${IDF_PATH}/export.sh
           pip install idf-component-manager idf-build-apps --upgrade
           python $GITHUB_WORKSPACE/protocols/ci/build_apps.py ./components/wifi_remote_over_at/${{matrix.test.path}} -vv --preserve-all
