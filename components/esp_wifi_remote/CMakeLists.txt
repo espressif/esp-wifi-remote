@@ -9,16 +9,14 @@ idf_component_register(INCLUDE_DIRS include
                     REQUIRES esp_event esp_netif
                     PRIV_REQUIRES esp_wifi esp-tls vfs)
 
+# Set default version directory (branch version)
 set(IDF_VER_DIR "${CMAKE_CURRENT_SOURCE_DIR}/idf_v${IDF_VERSION_MAJOR}.${IDF_VERSION_MINOR}")
 
-# Check if we're on tagged version of ESP-IDF and if we need to supply specific version
-string(REGEX MATCH "^v[0-9]+\\.[0-9]+(\\.[0-9]+)?(-dirty)?$" IDF_VER_TAG "${IDF_VER}")
-if (IDF_VER_TAG)
-    string(REGEX REPLACE "-dirty$" "" IDF_VER_TAG "${IDF_VER_TAG}")
-    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/idf_tag_${IDF_VER_TAG}")
-        set(IDF_VER_DIR "${CMAKE_CURRENT_SOURCE_DIR}/idf_tag_${IDF_VER_TAG}")
-    endif()
+# Try exact tag version first (idf_tag_vX.Y.Z)
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/idf_tag_v${IDF_VERSION_MAJOR}.${IDF_VERSION_MINOR}.${IDF_VERSION_PATCH}")
+    set(IDF_VER_DIR "${CMAKE_CURRENT_SOURCE_DIR}/idf_tag_v${IDF_VERSION_MAJOR}.${IDF_VERSION_MINOR}.${IDF_VERSION_PATCH}")
 endif()
+# If exact tag doesn't exist, fall back to branch version (idf_vX.Y) - already set above
 
 idf_component_get_property(wifi esp_wifi COMPONENT_LIB)
 

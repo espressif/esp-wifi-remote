@@ -51,6 +51,25 @@ CONFIG_ESP_WIFI_AMPDU_RX_ENABLED → CONFIG_WIFI_RMT_AMPDU_RX_ENABLED
 
 > **Note**: Some configuration options are compile-time only. Manual slave-side configuration and rebuild required for consistency.
 
+## IDF Version-Specific Configuration
+
+The `esp_wifi_remote` component maintains compatibility across different ESP-IDF versions through automatic version resolution.
+
+### Version Resolution Logic
+
+The component uses a two-tier approach for version-specific configurations:
+
+1. **Exact Tag Versions** (`idf_tag_vX.Y.Z`): For specific release tags (e.g., `v5.4.1`, `v5.5.0`)
+2. **Branch Versions** (`idf_vX.Y`): For release branches (e.g., `v5.4`, `v5.5`)
+
+### Resolution Priority
+
+- **ESP-IDF v5.3**: Direct inclusion of `idf_v5.3/Kconfig.in` (no `$IDF_VERSION` variable available)
+- **ESP-IDF > v5.3**: Dynamic inclusion via `Kconfig.$IDF_VERSION.in`
+- **Tag Resolution**: First attempts `idf_tag_v$major.$minor.$patch`, then falls back to `idf_v$major.$minor`
+
+Both Kconfig and CMake follow the same pattern: try exact tag version first, fallback to branch version if not found.
+
 ## Dependencies on `esp_wifi`
 
 Public API needs to correspond exactly to the `esp_wifi` API. Some of the internal types depend on the actual wifi target, as well as some default configuration values. Therefore it's easier to maintain consistency between this component and the exact version of `esp_wifi` automatically in CI:
