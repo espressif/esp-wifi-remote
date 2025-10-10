@@ -45,6 +45,7 @@ static void event_handler_remote(void* arg, esp_event_base_t event_base,
 
 void wifi_init_remote_sta(void)
 {
+    s_wifi_event_group = xEventGroupCreate();
     esp_wifi_remote_create_default_sta();
 
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
