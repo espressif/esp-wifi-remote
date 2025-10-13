@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.1.5](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v1.1.5)
+
+### Bug Fixes
+
+- Fix issues when building the same file twice ([f195b64](https://github.com/espressif/esp-wifi-remote/commit/f195b64), [#84](https://github.com/espressif/esp-wifi-remote/issues/84))
+- Fix two-station example init issues ([2e7ae1b](https://github.com/espressif/esp-wifi-remote/commit/2e7ae1b))
+- Update per v6.0 changes ([12bff90](https://github.com/espressif/esp-wifi-remote/commit/12bff90))
+- Update per v5.4 changes ([88e1116](https://github.com/espressif/esp-wifi-remote/commit/88e1116))
+
 ## [1.1.4](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v1.1.4)
 
 ### Bug Fixes
