@@ -192,7 +192,7 @@ private:
     {
         ESP_LOGI(TAG, "Received IP event %" PRIi32, id);
         Events ev{api_id::IP_EVENT, id, nullptr};
-        if (ip_data->esp_netif) {
+        if (id == IP_EVENT_STA_GOT_IP && ip_data->esp_netif) {
             ESP_RETURN_ON_ERROR(ev.create_ip_data(), TAG, "Failed to allocate event data");
             ev.ip_data->id = id;
             ESP_RETURN_ON_ERROR(esp_netif_get_dns_info(ip_data->esp_netif, ESP_NETIF_DNS_MAIN, &ev.ip_data->dns), TAG, "Failed to get DNS info");

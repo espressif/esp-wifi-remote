@@ -1,14 +1,13 @@
 if(NOT CONFIG_ESP_WIFI_ENABLED AND NOT CONFIG_ESP_HOST_WIFI_ENABLED)
-    set(src_wifi_is_remote esp_wifi_remote.c esp_wifi_remote_net.c)
+    set(wifi_remote_sources esp_wifi_remote.c esp_wifi_remote_net.c)
+else()
+    set(wifi_remote_sources esp_wifi_remote_net2.c)
 endif()
 
 idf_component_register(INCLUDE_DIRS include
-                    SRCS ${src_wifi_is_remote}
-                         ${src_wifi_remote_eppp}
-                         dummy_src.c    # Prevents making this component potentially INTERFACE only
+                    SRCS ${wifi_remote_sources}
                     REQUIRES esp_event esp_netif
                     PRIV_REQUIRES esp_wifi esp-tls vfs)
-
 
 set(IDF_VER_DIR "${CMAKE_CURRENT_SOURCE_DIR}/idf_v${IDF_VERSION_MAJOR}.${IDF_VERSION_MINOR}")
 
@@ -39,10 +38,6 @@ if(CONFIG_ESP_WIFI_REMOTE_LIBRARY_HOSTED)
     if(CONFIG_ESP_WIFI_REMOTE_EAP_ENABLED)
         list(APPEND src_wifi_remote_weak ${IDF_VER_DIR}/esp_eap_client_remote_weak.c)
     endif()
-endif()
-
-if(CONFIG_ESP_WIFI_ENABLED OR CONFIG_ESP_HOST_WIFI_ENABLED)
-    list(APPEND wifi_sources "esp_wifi_remote_net2.c")
 endif()
 
 target_include_directories(${COMPONENT_LIB} PUBLIC   ${IDF_VER_DIR}/include)
