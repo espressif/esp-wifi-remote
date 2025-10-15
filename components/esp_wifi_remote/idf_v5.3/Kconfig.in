@@ -1,0 +1,6 @@
+rsource "./Kconfig.slave_select.in"
+rsource "./Kconfig.soc_wifi_caps.in"
+
+menu "Wi-Fi configuration"
+    rsource "./Kconfig.wifi.in"
+endmenu

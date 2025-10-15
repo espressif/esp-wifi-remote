@@ -570,7 +570,7 @@ def generate_kconfig(idf_path, idf_ver_dir, component_path):
     return [remote_kconfig]
 
 
-def generate_wifi_static(idf_vr_dir, component_path):
+def generate_wifi_static(idf_ver_dir, component_path, idf_version):
     wifi_static = os.path.join(component_path, idf_ver_dir, 'include', 'esp_wifi_default_config.h')
     with open(wifi_static, 'w') as f:
         f.write(COPYRIGHT_HEADER)
@@ -585,7 +585,7 @@ def generate_wifi_static(idf_vr_dir, component_path):
             for slave_target in all_targets:
                 value = 'y' if slave_target == target else 'n'
                 file.write(f'CONFIG_SLAVE_IDF_TARGET_{slave_target.upper()}={value}\n')
-        rc, _, err, cmd = exec_cmd(['python', '-m', 'kconfgen', '--kconfig', f'{kconfig_path}',
+        rc, _, err, cmd = exec_cmd(['python', '-m', 'kconfgen', '--kconfig', f'{kconfig_path}', '--env', f'IDF_VERSION={idf_version}',
                                     '--config', f'{default_config}', '--output', 'header', f'{default_config}'])
         if rc != 0:
             print(f'command {cmd} failed!')
@@ -619,28 +619,49 @@ def compare_files(base_dir, component_path, files_to_check):
     return failures
 
 
-def get_idf_ver_dir(idf_path, component_path):
+def get_idf_version(idf_path):
+    """Extract IDF version from git or environment variable"""
     try:
-        # Run `git describe` inside the IDF_PATH directory
+        # Run `git describe` inside the IDF_PATH directory (exclude qa-test-* tags)
         result = subprocess.run(
-            ['git', 'describe', '--tags', '--dirty'],
+            ['git', 'describe', '--exclude', 'qa-test-*'],
             cwd=idf_path,
             capture_output=True,
             text=True,
             check=True
         )
-        idf_ver = result.stdout.strip()
+        git_desc = result.stdout.strip()
     except subprocess.CalledProcessError:
         raise RuntimeError('Failed to retrieve IDF version using `git describe`.')
-    # Regex to match version tags like vX.Y or vX.Y.Z (with optional -dirty)
-    match = re.match(r'^(v\d+\.\d+(\.\d+)?)(-dirty)?$', idf_ver)
 
-    if match and os.path.isdir(os.path.join(component_path, f'idf_tag_{match.group(1)}')):
-        return f'idf_tag_{match.group(1)}'  # Return the clean tag (without -dirty)
+    # Regex to match version tags like vX.Y or vX.Y.Z (with optional suffix)
+    # This matches the IDF build system format: ^v([0-9]+)\.([0-9]+)(\.([0-9]+))?.*$
+    match = re.match(r'^v(\d+)\.(\d+)(\.(\d+))?.*$', git_desc)
+
+    if match:
+        major = match.group(1)
+        minor = match.group(2)
+        patch = match.group(4) if match.group(4) else '0'  # Default to 0 if patch not present
+        return f'{major}.{minor}.{patch}'
+    # Fallback to environment variable
     idf_version = os.getenv('ESP_IDF_VERSION')
     if idf_version is None:
         raise RuntimeError("Environment variable 'ESP_IDF_VERSION' wasn't set.")
-    return f'idf_v{idf_version}'
+    return idf_version
+
+
+def get_idf_ver_dir(idf_path, component_path):
+    # Get the IDF version using the existing function
+    idf_version = get_idf_version(idf_path)
+
+    # Try exact tag version first (idf_tag_vX.Y.Z)
+    tag_dir = f'idf_tag_v{idf_version}'
+    if os.path.isdir(os.path.join(component_path, tag_dir)):
+        return tag_dir
+
+    # Fall back to branch version (idf_vX.Y)
+    major, minor, _ = idf_version.split('.')
+    return f'idf_v{major}.{minor}'
 
 
 if __name__ == '__main__':
@@ -669,6 +690,7 @@ making changes you might need to modify 'copyright_header.h' in the script direc
     if idf_path is None:
         raise RuntimeError("Environment variable 'IDF_PATH' wasn't set.")
     idf_ver_dir = get_idf_ver_dir(idf_path, component_path)
+    idf_version = get_idf_version(idf_path)
 
     header = os.path.join(idf_path, 'components', 'esp_wifi', 'include', 'esp_wifi.h')
     eap_header = os.path.join(idf_path, 'components', 'wpa_supplicant', 'esp_supplicant', 'include', 'esp_eap_client.h')
@@ -684,7 +706,7 @@ making changes you might need to modify 'copyright_header.h' in the script direc
     files_to_check += generate_test_cases(function_prototypes, idf_ver_dir, component_path)
     files_to_check += generate_wifi_native(idf_path, idf_ver_dir, component_path)
     files_to_check += generate_kconfig(idf_path, idf_ver_dir, component_path)
-    files_to_check += generate_wifi_static(idf_ver_dir, component_path)
+    files_to_check += generate_wifi_static(idf_ver_dir, component_path, idf_version)
 
     for f in files_to_check:
         print(f)

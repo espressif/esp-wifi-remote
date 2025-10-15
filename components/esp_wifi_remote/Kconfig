@@ -5,9 +5,18 @@ menu "Wi-Fi Remote"
         default n if ESP_HOST_WIFI_ENABLED
 
     if ESP_WIFI_REMOTE_ENABLED
-        orsource "./idf_v$ESP_IDF_VERSION/Kconfig.slave_select.in"
-        orsource "./idf_v$ESP_IDF_VERSION/Kconfig.soc_wifi_caps.in"
-        orsource "./Kconfig.rpc.in"
+        # Resolve version-specific includes via generated fragment located in the build directory.
+        config ESP_IDF_VERSION
+            string
+            default "$ESP_IDF_VERSION"
+        if ESP_IDF_VERSION>"5.3"
+            orsource "./Kconfig.$IDF_VERSION.in"
+        endif
+        if ESP_IDF_VERSION<="5.4"
+            rsource "./idf_v$ESP_IDF_VERSION/Kconfig.in"
+        endif
+
+        rsource "./Kconfig.rpc.in"
 
         config ESP_WIFI_REMOTE_EAP_ENABLED
             bool "Enable EAP client remote API"
@@ -16,10 +25,6 @@ menu "Wi-Fi Remote"
             help
                 When enabled, the EAP client remote API will be available.
                 This allows remote control of EAP authentication functions.
-
-        menu "Wi-Fi configuration"
-            orsource "./idf_v$ESP_IDF_VERSION/Kconfig.wifi.in"
-        endmenu
     endif
     if !ESP_WIFI_REMOTE_ENABLED
 

@@ -1,0 +1,6 @@
+
+orsource "./idf_tag_v6.0.0/Kconfig.in"
+
+if !ESP_WIFI_REMOTE_IDF_SPECIFIC_ADDED
+rsource "./idf_v6.0/Kconfig.in"
+endif
