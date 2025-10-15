@@ -651,27 +651,17 @@ def get_idf_version(idf_path):
 
 
 def get_idf_ver_dir(idf_path, component_path):
-    try:
-        # Run `git describe` inside the IDF_PATH directory
-        result = subprocess.run(
-            ['git', 'describe', '--tags', '--dirty'],
-            cwd=idf_path,
-            capture_output=True,
-            text=True,
-            check=True
-        )
-        idf_ver = result.stdout.strip()
-    except subprocess.CalledProcessError:
-        raise RuntimeError('Failed to retrieve IDF version using `git describe`.')
-    # Regex to match version tags like vX.Y or vX.Y.Z (with optional -dirty)
-    match = re.match(r'^(v\d+\.\d+(\.\d+)?)(-dirty)?$', idf_ver)
+    # Get the IDF version using the existing function
+    idf_version = get_idf_version(idf_path)
 
-    if match and os.path.isdir(os.path.join(component_path, f'idf_tag_{match.group(1)}')):
-        return f'idf_tag_{match.group(1)}'  # Return the clean tag (without -dirty)
-    idf_version = os.getenv('ESP_IDF_VERSION')
-    if idf_version is None:
-        raise RuntimeError("Environment variable 'ESP_IDF_VERSION' wasn't set.")
-    return f'idf_v{idf_version}'
+    # Try exact tag version first (idf_tag_vX.Y.Z)
+    tag_dir = f'idf_tag_v{idf_version}'
+    if os.path.isdir(os.path.join(component_path, tag_dir)):
+        return tag_dir
+
+    # Fall back to branch version (idf_vX.Y)
+    major, minor, _ = idf_version.split('.')
+    return f'idf_v{major}.{minor}'
 
 
 if __name__ == '__main__':
