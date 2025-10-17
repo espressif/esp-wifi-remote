@@ -14,8 +14,21 @@ SCRIPTS_DIR="${WIFI_REMOTE_DIR}/scripts"
 MASTER_VERSION="6.0"
 MASTER_BRANCH="master"
 
+# Specific version overrides
+# Define specific SHAs for versions that need exact commits
+# Format: "version:sha" pairs, one per line
+# Example: "5.5:1234567890abcdef1234567890abcdef12345678"
+SPECIFIC_VERSIONS=(
+    # Example usage:
+    # "5.3:e0991facf5ecb362af6aac1fae972139eb38d2e4"
+    # "5.4:1bfe1595fa6bc64dcd5241047dc677cc194ecdaf"
+    # "5.5:4b2b5d7baf92473bf2fc881081507dbbbb7362e1"
+    # "6.0:800f141f94c0f880c162de476512e183df671307"
+)
+
 # Default to processing both branches and tags
 VERSION_TYPE="all"
+SINGLE_VERSION=""
 
 # Parse command line arguments
 while [[ $# -gt 0 ]]; do
@@ -24,9 +37,15 @@ while [[ $# -gt 0 ]]; do
             VERSION_TYPE="$2"
             shift 2
             ;;
+        --version)
+            SINGLE_VERSION="$2"
+            shift 2
+            ;;
         *)
             echo "Unknown option: $1"
-            echo "Usage: $0 [--type {all|branches|tags}]"
+            echo "Usage: $0 [--type {all|branches|tags}] [--version <version_dir>]"
+            echo "  --type: Process all, branches only, or tags only"
+            echo "  --version: Process only the specified version directory (e.g., idf_v5.5, idf_tag_v5.4.1)"
             exit 1
             ;;
     esac
@@ -43,6 +62,28 @@ if [ -z "$IDF_PATH" ]; then
     echo "Error: IDF_PATH environment variable is not set"
     exit 1
 fi
+
+# Function to get specific SHA for a version
+get_specific_sha() {
+    local version=$1
+    for entry in "${SPECIFIC_VERSIONS[@]}"; do
+        if [[ "$entry" =~ ^[[:space:]]*# ]]; then
+            # Skip commented lines
+            continue
+        fi
+        if [[ "$entry" =~ ^[[:space:]]*$ ]]; then
+            # Skip empty lines
+            continue
+        fi
+        local entry_version="${entry%%:*}"
+        local entry_sha="${entry##*:}"
+        if [[ "$version" == "$entry_version" ]]; then
+            echo "$entry_sha"
+            return 0
+        fi
+    done
+    return 1
+}
 
 # Function to process a version
 process_version() {
@@ -69,9 +110,19 @@ process_version() {
             else
                 branch="release/v$version_num"
             fi
-            echo "Checking out branch: $branch"
-            git fetch "$REMOTE" "$branch"
-            git checkout "$REMOTE/$branch"
+
+            # Check if this version has a specific SHA override
+            local specific_sha
+            if specific_sha=$(get_specific_sha "$version_num"); then
+                echo "Using specific SHA for version $version_num: $specific_sha"
+                echo "Fetching from remote to ensure we have the commit..."
+                git fetch "$REMOTE" "$branch"
+                git checkout "$specific_sha"
+            else
+                echo "Checking out branch: $branch"
+                git fetch "$REMOTE" "$branch"
+                git checkout "$REMOTE/$branch"
+            fi
         elif [[ $version_name =~ ^idf_tag_v[0-9]+\.[0-9]+(\.[0-9]+)?$ ]]; then
             # Skip if we're only processing branches
             if [[ "$VERSION_TYPE" == "branches" ]]; then
@@ -106,14 +157,35 @@ process_version() {
 }
 
 # Main execution
-echo "Starting generation for all versions..."
-cd "$IDF_PATH"
+if [ -n "$SINGLE_VERSION" ]; then
+    echo "Starting generation for single version: $SINGLE_VERSION"
+    cd "$IDF_PATH"
 
-# Find all version directories
-for version_dir in "$WIFI_REMOTE_DIR"/idf_*; do
+    # Check if the specified version directory exists
+    version_dir="$WIFI_REMOTE_DIR/$SINGLE_VERSION"
     if [ -d "$version_dir" ]; then
         process_version "$version_dir"
+        echo "Version $SINGLE_VERSION processed successfully!"
+    else
+        echo "Error: Version directory '$version_dir' does not exist"
+        echo "Available version directories:"
+        for dir in "$WIFI_REMOTE_DIR"/idf_*; do
+            if [ -d "$dir" ]; then
+                echo "  $(basename "$dir")"
+            fi
+        done
+        exit 1
     fi
-done
+else
+    echo "Starting generation for all versions..."
+    cd "$IDF_PATH"
 
-echo "All versions processed successfully!"
+    # Find all version directories
+    for version_dir in "$WIFI_REMOTE_DIR"/idf_*; do
+        if [ -d "$version_dir" ]; then
+            process_version "$version_dir"
+        fi
+    done
+
+    echo "All versions processed successfully!"
+fi
