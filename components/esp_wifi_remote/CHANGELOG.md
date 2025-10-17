@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.6](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v1.1.6)
+
+### Bug Fixes
+
+- Fix Kconfig source indirecting per IDF version ([01e106c](https://github.com/espressif/esp-wifi-remote/commit/01e106c))
+- Update per v5.3 changes ([93cc864](https://github.com/espressif/esp-wifi-remote/commit/93cc864))
+
 ## [1.1.5](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v1.1.5)
 
 ### Bug Fixes
