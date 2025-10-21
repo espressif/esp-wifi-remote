@@ -1,0 +1,10 @@
+config ESP_WIFI_REMOTE_IDF_SPECIFIC_ADDED
+    bool
+    default y
+
+rsource "./idf_v5.5/Kconfig.slave_select.in"
+rsource "./idf_v5.5/Kconfig.soc_wifi_caps.in"
+
+menu "Wi-Fi configuration"
+    rsource "./idf_v5.5/Kconfig.wifi.in"
+endmenu
