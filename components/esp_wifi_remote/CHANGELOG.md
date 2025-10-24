@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.2.0](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v1.2.0)
+
+### Features
+
+- Add support for v6.1 release branch ([13df7d5](https://github.com/espressif/esp-wifi-remote/commit/13df7d5))
+- Add support for IDF v5.5.1 release tag ([361d3a9](https://github.com/espressif/esp-wifi-remote/commit/361d3a9))
+
+### Bug Fixes
+
+- Move eppp slave to the wrmt-over-eppp component ([36a35a7](https://github.com/espressif/esp-wifi-remote/commit/36a35a7))
+
 ## [1.1.6](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v1.1.6)
 
 ### Bug Fixes
