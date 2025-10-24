@@ -50,13 +50,13 @@ jobs:
       matrix:
         idf_ver: ["latest"]
         example:
-          - { app: host, path: "examples/mqtt", bin: "build_esp32p4_p4" }
-          - { app: host_1, path: "examples/mqtt", bin: "build_esp32p4_p4_1" }
-          - { app: 2sta, path: "examples/two_stations", bin: "build_esp32s3_s3" }
-          - { app: slave, path: "examples/server", bin: "build_esp32c6_c6" }
-          - { app: slave_1, path: "examples/server", bin: "build_esp32c6_c6_1" }
-          - { app: esp_hosted, path: "examples/mqtt", bin: "build_esp32p4_hosted" }
-          - { app: esp_hosted_slave, path: "examples/hosted_slave", bin: "build_esp32c6_hosted" }
+          - { app: host, path: "esp_wifi_remote/examples/mqtt", bin: "build_esp32p4_p4" }
+          - { app: host_1, path: "esp_wifi_remote/examples/mqtt", bin: "build_esp32p4_p4_1" }
+          - { app: 2sta, path: "esp_wifi_remote/examples/two_stations", bin: "build_esp32s3_s3" }
+          - { app: slave, path: "wifi_remote_over_eppp/examples/server", bin: "build_esp32c6_c6" }
+          - { app: slave_1, path: "wifi_remote_over_eppp/examples/server", bin: "build_esp32c6_c6_1" }
+          - { app: esp_hosted, path: "esp_wifi_remote/examples/mqtt", bin: "build_esp32p4_hosted" }
+          - { app: esp_hosted_slave, path: "esp_wifi_remote/examples/hosted_slave", bin: "build_esp32c6_hosted" }
 
     runs-on: ubuntu-latest
     container: espressif/idf:${{ matrix.idf_ver }}
@@ -84,18 +84,18 @@ jobs:
           if [ "${{matrix.example.app}}" == "esp_hosted_slave" ]; then
             idf.py create-project-from-example "espressif/esp_hosted:slave"
             rm slave/sdkconfig.ci.*
-            mv slave/ ./components/esp_wifi_remote/${{matrix.example.path}}/
+            mv slave/ ./components/${{matrix.example.path}}/
             export EXPECTED_WARNING="${EXPECTED_WARNING}warning: the int symbol ESP_HOSTED"
-            cp ./components/esp_wifi_remote/examples/sdkconfig.ci.hosted_slave ./components/esp_wifi_remote/${{matrix.example.path}}/sdkconfig.ci.hosted
+            cp ./components/esp_wifi_remote/examples/sdkconfig.ci.hosted_slave ./components/${{matrix.example.path}}/sdkconfig.ci.hosted
           fi
-          python $GITHUB_WORKSPACE/protocols/ci/build_apps.py ./components/esp_wifi_remote/${{matrix.example.path}} -vv --preserve-all
-          cd ./components/esp_wifi_remote/${{matrix.example.path}}
+          python $GITHUB_WORKSPACE/protocols/ci/build_apps.py ./components/${{matrix.example.path}} -vv --preserve-all
+          cd ./components/${{matrix.example.path}}
           ${GITHUB_WORKSPACE}/protocols/ci/clean_build_artifacts.sh `pwd`/${{matrix.example.bin}}
           zip -qur artifacts.zip ${{matrix.example.bin}}
       - uses: actions/upload-artifact@v4
         with:
           name: eppp_${{ matrix.idf_ver }}_${{matrix.example.bin}}
-          path: components/esp_wifi_remote/${{matrix.example.path}}/artifacts.zip
+          path: components/${{matrix.example.path}}/artifacts.zip
           if-no-files-found: error
 
   run_example:

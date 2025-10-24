@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/espressif/esp-wifi-remote/commits/wifi_rmt_eppp-v0.2.1)
+
+### Bug Fixes
+
+- Move eppp slave to the wrmt-over-eppp component ([36a35a7](https://github.com/espressif/esp-wifi-remote/commit/36a35a7))
+- Fix EPPP server to process only wifi-station IP event ([59f6fc2](https://github.com/espressif/esp-wifi-remote/commit/59f6fc2))
+
 ## [0.2.0](https://github.com/espressif/esp-wifi-remote/commits/wifi_rmt_eppp-v0.2.0)
 
 ### Features

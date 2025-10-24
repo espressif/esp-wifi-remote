@@ -1,4 +1,4 @@
-version: 0.2.0
+version: 0.2.1
 url: https://github.com/espressif/esp-wifi-remote/components/wifi_remote_over_eppp
 description: EPPP based implementation of wifi_remote APIs
 license: Apache-2.0
