@@ -555,13 +555,20 @@ config WIFI_RMT_ESPNOW_MAX_ENCRYPT_NUM
         Maximum espnow encrypted peers number + maximum number of connections of SoftAP = Max hardware
         keys number. When using ESP mesh, this value should be set to a maximum of 6.
 
-config WIFI_RMT_NAN_ENABLE
-    bool "WiFi Aware"
+config WIFI_RMT_NAN_SYNC_ENABLE
+    bool "Enable Wi-Fi Aware: Synchronization (NAN-Sync)"
     default n
     depends on SLAVE_SOC_WIFI_NAN_SUPPORT
     select LWIP_IPV6
     help
-        Enable WiFi Aware (NAN) feature.
+        Enable Wi-Fi Aware: Synchronization feature (NAN-Sync).
+
+config WIFI_RMT_NAN_USD_ENABLE
+    bool "Enable Wi-Fi Aware: Unsynchronized service discovery (NAN-USD)"
+    depends on IDF_EXPERIMENTAL_FEATURES
+    default n
+    help
+        Enable Wi-Fi Aware: Unsynchronized service discovery (NAN-USD)
 
 config WIFI_RMT_MBEDTLS_CRYPTO
     bool "Use MbedTLS crypto APIs"
@@ -1122,11 +1129,18 @@ endif
         int
         default WIFI_RMT_ESPNOW_MAX_ENCRYPT_NUM
 
-if WIFI_RMT_NAN_ENABLE
-    config ESP_WIFI_NAN_ENABLE # ignore: multiple-definition
+if WIFI_RMT_NAN_SYNC_ENABLE
+    config ESP_WIFI_NAN_SYNC_ENABLE # ignore: multiple-definition
         bool
         depends on SLAVE_SOC_WIFI_NAN_SUPPORT
-        default WIFI_RMT_NAN_ENABLE
+        default WIFI_RMT_NAN_SYNC_ENABLE
+endif
+
+if WIFI_RMT_NAN_USD_ENABLE
+    config ESP_WIFI_NAN_USD_ENABLE # ignore: multiple-definition
+        bool
+        depends on IDF_EXPERIMENTAL_FEATURES
+        default WIFI_RMT_NAN_USD_ENABLE
 endif
 
 if WIFI_RMT_MBEDTLS_CRYPTO
