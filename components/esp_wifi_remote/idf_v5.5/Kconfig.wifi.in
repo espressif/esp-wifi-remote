@@ -613,6 +613,7 @@ config WIFI_RMT_WAPI_PSK
 config WIFI_RMT_SUITE_B_192
     bool "Enable NSA suite B support with 192 bit key"
     default n
+    depends on WIFI_RMT_ENTERPRISE_SUPPORT
     depends on SLAVE_SOC_WIFI_GCMP_SUPPORT
     select WIFI_RMT_GCMP_SUPPORT
     select WIFI_RMT_GMAC_SUPPORT
@@ -791,6 +792,14 @@ menu "WPS Configuration Options"
             be shared to other devices, making it in readable format increases
             that risk, also passphrase requires pbkdf2 to convert in psk.
 
+    config WIFI_RMT_WPS_RECONNECT_ON_FAIL
+        bool "Reconnect to previous SSID if WPS failed"
+        default n
+        help
+            Select this option to enable reconnection to previous SSID if WPS fails.
+            This option will only work if station was connected to a network
+            when WPS was started.
+
 endmenu # "WPS Configuration Options"
 
 
@@ -804,12 +813,6 @@ config WIFI_RMT_DEBUG_PRINT
 
         Enabling this could increase the build size ~60kb
         depending on the project logging level.
-
-config WIFI_RMT_TESTING_OPTIONS
-    bool "Add DPP testing code"
-    default n
-    help
-        Select this to enable unity test for DPP.
 
 config WIFI_RMT_ENTERPRISE_SUPPORT
     bool "Enable enterprise option"
@@ -1271,16 +1274,16 @@ if WIFI_RMT_WPS_PASSPHRASE
         default WIFI_RMT_WPS_PASSPHRASE
 endif
 
+if WIFI_RMT_WPS_RECONNECT_ON_FAIL
+    config ESP_WIFI_WPS_RECONNECT_ON_FAIL # ignore: multiple-definition
+        bool
+        default WIFI_RMT_WPS_RECONNECT_ON_FAIL
+endif
+
 if WIFI_RMT_DEBUG_PRINT
     config ESP_WIFI_DEBUG_PRINT # ignore: multiple-definition
         bool
         default WIFI_RMT_DEBUG_PRINT
-endif
-
-if WIFI_RMT_TESTING_OPTIONS
-    config ESP_WIFI_TESTING_OPTIONS # ignore: multiple-definition
-        bool
-        default WIFI_RMT_TESTING_OPTIONS
 endif
 
 if WIFI_RMT_ENTERPRISE_SUPPORT
