@@ -11,7 +11,7 @@ SCRIPTS_DIR="${WIFI_REMOTE_DIR}/scripts"
 
 # Master branch configuration
 # Update this when a new major version is released
-MASTER_VERSION="6.0"
+MASTER_VERSION="6.1"
 MASTER_BRANCH="master"
 
 # Specific version overrides
