@@ -106,6 +106,10 @@ if SLAVE_IDF_TARGET_ESP32C3
         bool
         default y
 
+    config SLAVE_SOC_WIFI_TXOP_SUPPORT # ignore: multiple-definition
+        bool
+        default y
+
     config SLAVE_SOC_WIFI_CSI_SUPPORT # ignore: multiple-definition
         bool
         default y
@@ -158,6 +162,10 @@ if SLAVE_IDF_TARGET_ESP32S3
         bool
         default y
 
+    config SLAVE_SOC_WIFI_TXOP_SUPPORT # ignore: multiple-definition
+        bool
+        default y
+
     config SLAVE_SOC_WIFI_CSI_SUPPORT # ignore: multiple-definition
         bool
         default y
@@ -195,6 +203,10 @@ if SLAVE_IDF_TARGET_ESP32C2
         default y
 
     config SLAVE_SOC_WIFI_FTM_SUPPORT # ignore: multiple-definition
+        bool
+        default y
+
+    config SLAVE_SOC_WIFI_TXOP_SUPPORT # ignore: multiple-definition
         bool
         default y
 
@@ -239,6 +251,10 @@ if SLAVE_IDF_TARGET_ESP32C6
         default y
 
     config SLAVE_SOC_WIFI_WAPI_SUPPORT # ignore: multiple-definition
+        bool
+        default y
+
+    config SLAVE_SOC_WIFI_TXOP_SUPPORT # ignore: multiple-definition
         bool
         default y
 
@@ -291,6 +307,10 @@ if SLAVE_IDF_TARGET_ESP32C5
         default y
 
     config SLAVE_SOC_WIFI_WAPI_SUPPORT # ignore: multiple-definition
+        bool
+        default y
+
+    config SLAVE_SOC_WIFI_TXOP_SUPPORT # ignore: multiple-definition
         bool
         default y
 
@@ -351,6 +371,10 @@ if SLAVE_IDF_TARGET_ESP32C61
         default y
 
     config SLAVE_SOC_WIFI_WAPI_SUPPORT # ignore: multiple-definition
+        bool
+        default y
+
+    config SLAVE_SOC_WIFI_TXOP_SUPPORT # ignore: multiple-definition
         bool
         default y
 
