@@ -81,6 +81,10 @@ jobs:
         run: |
           ${IDF_PATH}/install.sh --enable-ci
           . ${IDF_PATH}/export.sh
+          if [ "${{matrix.example.path}}" == "esp_wifi_remote/examples/mqtt" ]; then
+            echo -e "config ESP32P4_SELECTS_REV_LESS_V3    # ignore: multiple-definition\n  bool\n  default y\n" >>  ./components/${{matrix.example.path}}/main/Kconfig.projbuild
+            cat ./components/${{matrix.example.path}}/main/Kconfig.projbuild
+          fi
           if [ "${{matrix.example.app}}" == "esp_hosted_slave" ]; then
             idf.py create-project-from-example "espressif/esp_hosted:slave"
             rm slave/sdkconfig.ci.*
