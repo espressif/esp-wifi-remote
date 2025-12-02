@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.2.2](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v1.2.2)
+
+### Bug Fixes
+
+- Remove legacy compat esp_interface.h ([e67f024](https://github.com/espressif/esp-wifi-remote/commit/e67f024), [#80](https://github.com/espressif/esp-wifi-remote/issues/80))
+- Use P4 chip-rev 1 in CI ([cbd9d1b](https://github.com/espressif/esp-wifi-remote/commit/cbd9d1b))
+- Add optional mqtt dependency ([548b002](https://github.com/espressif/esp-wifi-remote/commit/548b002))
+- Mark IDF v6.1 as master ([8a18cf7](https://github.com/espressif/esp-wifi-remote/commit/8a18cf7))
+- Update per v6.0 changes ([0b57724](https://github.com/espressif/esp-wifi-remote/commit/0b57724))
+- Update per recent v6.1 changes ([e3bf8fd](https://github.com/espressif/esp-wifi-remote/commit/e3bf8fd))
+
 ## [1.2.1](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v1.2.1)
 
 ### Bug Fixes
