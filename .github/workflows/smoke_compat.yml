@@ -53,17 +53,33 @@ jobs:
           . ${IDF_PATH}/export.sh
           export OVERRIDE_PATH=`pwd`/components/esp_wifi_remote
           echo ${OVERRIDE_PATH}
+          # Determine the correct path for MQTT example based on what exists
+          TEST_PATH="${{matrix.test.path}}"
+          if [ "${{matrix.test.app}}" = "idf_mqtt_example" ]; then
+            # Check if the newer path structure exists (latest and release-v6.0)
+            if [ -f "${IDF_PATH}/examples/protocols/mqtt/main/idf_component.yml" ]; then
+              TEST_PATH="examples/protocols/mqtt"
+            # Fall back to older path structure (release-v5.x and earlier)
+            elif [ -f "${IDF_PATH}/examples/protocols/mqtt/tcp/main/idf_component.yml" ]; then
+              TEST_PATH="examples/protocols/mqtt/tcp"
+            else
+              echo "Error: Could not find MQTT example at either path"
+              ls -la ${IDF_PATH}/examples/protocols/mqtt/ || true
+              exit 1
+            fi
+            echo "Using MQTT example path: ${TEST_PATH}"
+          fi
           if [ "${{matrix.test.app}}" = "wifi_enterprise" ]; then
-            cd ${IDF_PATH}/${{matrix.test.path}}
+            cd ${IDF_PATH}/${TEST_PATH}
             echo -e "dependencies:\n  espressif/esp_wifi_remote:\n    version: \"*\"\n    rules:\n      - if: \"target in [esp32p4, esp32h2]\"" > main/idf_component.yml
             echo -e "CONFIG_ESP_WIFI_REMOTE_EAP_ENABLED=y" > sdkconfig.defaults
             cd -
           fi
-          sed -i '/espressif\/esp_wifi_remote:/a \ \ \ \ override_path: "${OVERRIDE_PATH}"' ${IDF_PATH}/${{matrix.test.path}}/main/idf_component.yml
-          cat ${IDF_PATH}/${{matrix.test.path}}/main/idf_component.yml
+          sed -i '/espressif\/esp_wifi_remote:/a \ \ \ \ override_path: "${OVERRIDE_PATH}"' ${IDF_PATH}/${TEST_PATH}/main/idf_component.yml
+          cat ${IDF_PATH}/${TEST_PATH}/main/idf_component.yml
           export PEDANTIC_FLAGS="-DIDF_CI_BUILD -Werror -Werror=deprecated-declarations -Werror=unused-variable -Werror=unused-but-set-variable -Werror=unused-function"
           export EXTRA_CFLAGS="${PEDANTIC_FLAGS} -Wstrict-prototypes"
           export EXTRA_CXXFLAGS="${PEDANTIC_FLAGS}"
-          cd ${IDF_PATH}/${{matrix.test.path}}
+          cd ${IDF_PATH}/${TEST_PATH}
           idf-build-apps find --config sdkconfig.ci* -vv --target ${{ matrix.idf_target }}
           idf-build-apps build --config sdkconfig.ci* -vv --target ${{ matrix.idf_target }}
