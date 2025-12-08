@@ -2,6 +2,14 @@ menu "Wi-Fi Remote over EPPP"
 
 if ESP_WIFI_REMOTE_LIBRARY_EPPP
 
+    config WIFI_RMT_OVER_EPPP_UNSECURE
+        bool "Enable unsecure mode"
+        default n
+        help
+            Enable unsecure mode.
+            This will disable the TLS encryption and authentication.
+            This is useful for testing purposes.
+
     if EPPP_LINK_DEVICE_UART
         config WIFI_RMT_OVER_EPPP_UART_PORT
             int "UART port number"
