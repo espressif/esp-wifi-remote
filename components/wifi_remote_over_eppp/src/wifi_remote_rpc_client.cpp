@@ -6,6 +6,11 @@
 #include <netdb.h>
 #include <memory>
 #include <cinttypes>
+#ifdef CONFIG_WIFI_RMT_OVER_EPPP_UNSECURE
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#endif
 #include "esp_log.h"
 #include "esp_tls.h"
 #include "esp_wifi.h"
@@ -32,10 +37,12 @@ namespace eppp_rpc {
 namespace client {
 const char *TAG = "rpc_client";
 
+#ifndef CONFIG_WIFI_RMT_OVER_EPPP_UNSECURE
 const unsigned char ca_crt[] = "-----BEGIN CERTIFICATE-----\n" CONFIG_WIFI_RMT_OVER_EPPP_SERVER_CA "\n-----END CERTIFICATE-----";
 const unsigned char crt[] = "-----BEGIN CERTIFICATE-----\n" CONFIG_WIFI_RMT_OVER_EPPP_CLIENT_CRT "\n-----END CERTIFICATE-----";
 const unsigned char key[] = "-----BEGIN PRIVATE KEY-----\n" CONFIG_WIFI_RMT_OVER_EPPP_CLIENT_KEY "\n-----END PRIVATE KEY-----";
 // TODO: Add option to supply keys and certs via a global symbol (file)
+#endif
 
 }
 
@@ -242,6 +249,30 @@ RpcInstance *RpcEngine::init_client()
         return nullptr;
     }
 
+#ifdef CONFIG_WIFI_RMT_OVER_EPPP_UNSECURE
+    // In unsecure mode, create a plain TCP socket connection
+    int sock = socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
+    ESP_RETURN_ON_FALSE(sock >= 0, nullptr, TAG, "Failed to create socket");
+
+    struct sockaddr_in server_addr = {};
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_port = htons(rpc_port);
+    server_addr.sin_addr.s_addr = inet_addr(host);
+    ESP_RETURN_ON_FALSE(server_addr.sin_addr.s_addr != INADDR_NONE, nullptr, TAG, "Invalid IP address: %s", host);
+
+    int retries = 0;
+    while (connect(sock, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0) {
+        close(sock);
+        ESP_RETURN_ON_FALSE(retries++ < 3, nullptr, TAG, "Failed to connect to %s", host);
+        ESP_LOGW(TAG, "Connection to RPC server failed! Will retry in %d second(s)", retries);
+        vTaskDelay(pdMS_TO_TICKS(1000 * retries));
+        sock = socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
+        ESP_RETURN_ON_FALSE(sock >= 0, nullptr, TAG, "Failed to create socket");
+    }
+    plain_sock_ = sock;
+    tls_ = nullptr;
+    return &client::instance;
+#else
     esp_tls_cfg_t cfg = {};
     cfg.cacert_buf = client::ca_crt;
     cfg.cacert_bytes = sizeof(client::ca_crt);
@@ -262,6 +293,7 @@ RpcInstance *RpcEngine::init_client()
         ESP_RETURN_ON_FALSE(tls_ = esp_tls_init(), nullptr, TAG, "Failed to create ESP-TLS instance");
     }
     return &client::instance;
+#endif
 }
 }   // namespace eppp_rpc
 
