@@ -49,3 +49,102 @@ jobs:
             grep esp_wifi_remote_init ${dir}sample.map | grep libwifi_remote_over_at.a || exit 1
             echo -e "esp_wifi_remote_init linked from libwifi_remote_over_at"
           done
+
+
+  build_wrmt_over_at_slave:
+    if: contains(github.event.pull_request.labels.*.name, 'at') || github.event_name == 'push'
+    name: Build WRMT-AT Slave
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Checkout esp-protocols
+        uses: actions/checkout@v3
+        with:
+          repository: espressif/esp-protocols
+          ref: mqtt_cxx-v0.5.0
+          path: protocols
+      - name: Checkout idf
+        uses: actions/checkout@v3
+        with:
+          repository: espressif/esp-idf
+          ref: 8ad0d3d8f2faab752635bee36070313c47c07a13
+          path: idf
+      - name: Build modem_sim from esp-protocols
+        shell: bash
+        run: |
+          export IDF_PATH=$GITHUB_WORKSPACE/idf
+          ${IDF_PATH}/install.sh
+          cd $GITHUB_WORKSPACE/protocols/common_components/modem_sim
+          ./install.sh PLATFORM_ESP32C6 ESP32C6-4MB 22 23
+          source export.sh
+          idf.py build
+          ${GITHUB_WORKSPACE}/ci/clean_build_artifacts.sh build
+          zip -qur artifacts.zip build
+          mv artifacts.zip ${GITHUB_WORKSPACE}/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wrmt_over_at_slave
+          path: artifacts.zip
+          if-no-files-found: error
+
+  build_wrmt_over_at_host:
+    name: Build WRMT-AT Host
+    strategy:
+      matrix:
+        idf_ver: ["latest"]
+    runs-on: ubuntu-latest
+    container: espressif/idf:${{ matrix.idf_ver }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Build with IDF-${{ matrix.idf_ver }}
+        shell: bash
+        run: |
+          ${IDF_PATH}/install.sh --enable-ci
+          . ${IDF_PATH}/export.sh
+          cd ./components/esp_wifi_remote/examples/mqtt
+          # Add wifi_remote_over_at dependency to idf_component.yml (manually with override_path)
+          echo -e "  wifi_remote_over_at:\n    version: '*'\n    override_path: ../../../../wifi_remote_over_at" >> main/idf_component.yml
+          idf.py build -D SDKCONFIG_DEFAULTS=custom.sdkconfig.at
+          ${GITHUB_WORKSPACE}/ci/clean_build_artifacts.sh build
+          zip -qur artifacts.zip build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wrmt_over_at_host
+          path: ./components/esp_wifi_remote/examples/mqtt/artifacts.zip
+          if-no-files-found: error
+
+  run_example:
+    # Skip running on forks since it won't have access to secrets
+    if: github.repository == 'espressif/esp-wifi-remote'
+    name: AT target test
+    needs:
+      - build_wrmt_over_at_slave
+      - build_wrmt_over_at_host
+    strategy:
+      matrix:
+        idf_ver: ["latest"]
+    runs-on: [self-hosted, wifi-remote]
+    container:
+      image: python:3.11-bookworm
+      options: --privileged # Privileged mode has access to serial ports
+    env:
+      TEST_DIR: components/esp_wifi_remote/examples
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: wrmt_over_at_host
+          path: ${{ env.TEST_DIR }}/mqtt/
+      - uses: actions/download-artifact@v4
+        with:
+          name: wrmt_over_at_slave
+          path: ${{ env.TEST_DIR }}/server/
+      - name: Run Test
+        working-directory: ${{ env.TEST_DIR }}
+        run: |
+          python -m pip install pytest-embedded-serial-esp pytest-embedded-idf pytest-rerunfailures pytest-timeout pytest-ignore-test-results
+          unzip server/artifacts.zip -d server/
+          unzip mqtt/artifacts.zip -d mqtt/
+          python -m pytest --log-cli-level DEBUG --target esp32c6,esp32p4
