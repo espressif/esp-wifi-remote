@@ -1,11 +1,15 @@
 /*
- * SPDX-FileCopyrightText: 2024 Espressif Systems (Shanghai) CO LTD
+ * SPDX-FileCopyrightText: 2024-2025 Espressif Systems (Shanghai) CO LTD
  *
  * SPDX-License-Identifier: Apache-2.0
  */
 #pragma once
 #include <cstring>
 #include <cerrno>
+#ifdef CONFIG_WIFI_RMT_OVER_EPPP_UNSECURE
+#include <unistd.h>
+#include <sys/socket.h>
+#endif
 
 namespace eppp_rpc {
 
@@ -73,13 +77,23 @@ class RpcInstance;
  */
 class RpcEngine {
 public:
-    constexpr explicit RpcEngine(role r) : tls_(nullptr), role_(r) {}
+    constexpr explicit RpcEngine(role r) : tls_(nullptr), role_(r)
+#ifdef CONFIG_WIFI_RMT_OVER_EPPP_UNSECURE
+        , plain_sock_(-1)
+#endif
+    {}
 
     esp_err_t init()
     {
+#ifdef CONFIG_WIFI_RMT_OVER_EPPP_UNSECURE
+        if (plain_sock_ >= 0) {
+            return ESP_OK;
+        }
+#else
         if (tls_ != nullptr) {
             return ESP_OK;
         }
+#endif
         if (role_ == role::CLIENT) {
             instance = init_client();
         }
@@ -91,15 +105,20 @@ public:
 
     void deinit()
     {
-        if (tls_ == nullptr) {
-            return;
+#ifdef CONFIG_WIFI_RMT_OVER_EPPP_UNSECURE
+        if (plain_sock_ >= 0) {
+            close(plain_sock_);
+            plain_sock_ = -1;
         }
-        if (role_ == role::CLIENT) {
-            esp_tls_conn_destroy(tls_);
-        } else if (role_ == role::SERVER) {
-            esp_tls_server_session_delete(tls_);
+#endif
+        if (tls_ != nullptr) {
+            if (role_ == role::CLIENT) {
+                esp_tls_conn_destroy(tls_);
+            } else if (role_ == role::SERVER) {
+                esp_tls_server_session_delete(tls_);
+            }
+            tls_ = nullptr;
         }
-        tls_ = nullptr;
     }
 
     template<typename T>
@@ -110,7 +129,11 @@ public:
         auto buf = req.marshall(t, size);
         ESP_LOGD("rpc", "Sending API id:%d", (int) id);
         ESP_LOG_BUFFER_HEXDUMP("rpc", buf, size, ESP_LOG_VERBOSE);
+#ifdef CONFIG_WIFI_RMT_OVER_EPPP_UNSECURE
+        int len = write(plain_sock_, buf, size);
+#else
         int len = esp_tls_conn_write(tls_, buf, size);
+#endif
         if (len <= 0) {
             ESP_LOGE("rpc", "Failed to write data to the connection");
             return ESP_FAIL;
@@ -121,7 +144,11 @@ public:
     esp_err_t send(api_id id) // overload for (void)
     {
         RpcHeader head = {.id = id, .size = 0};
+#ifdef CONFIG_WIFI_RMT_OVER_EPPP_UNSECURE
+        int len = write(plain_sock_, &head, sizeof(head));
+#else
         int len = esp_tls_conn_write(tls_, &head, sizeof(head));
+#endif
         if (len <= 0) {
             ESP_LOGE("rpc", "Failed to write data to the connection");
             return ESP_FAIL;
@@ -131,17 +158,25 @@ public:
 
     int get_socket_fd()
     {
+#ifdef CONFIG_WIFI_RMT_OVER_EPPP_UNSECURE
+        return plain_sock_;
+#else
         int sock;
         if (esp_tls_get_conn_sockfd(tls_, &sock) != ESP_OK) {
             return -1;
         }
         return sock;
+#endif
     }
 
     RpcHeader get_header()
     {
         RpcHeader header{};
+#ifdef CONFIG_WIFI_RMT_OVER_EPPP_UNSECURE
+        int len = read(plain_sock_, (char *) &header, sizeof(header));
+#else
         int len = esp_tls_conn_read(tls_, (char *) &header, sizeof(header));
+#endif
         if (len <= 0) {
             if (len < 0 && errno != EAGAIN) {
                 ESP_LOGE("rpc", "Failed to read header data from the connection %d %s", errno, strerror(errno));
@@ -160,7 +195,11 @@ public:
             ESP_LOGE("rpc", "unexpected header %d %d or sizes %" PRIu32 " %" PRIu32, (int)head.id, (int)id, head.size, resp.head.size);
             return {};
         }
+#ifdef CONFIG_WIFI_RMT_OVER_EPPP_UNSECURE
+        int len = read(plain_sock_, (char *) resp.value(), resp.head.size);
+#else
         int len = esp_tls_conn_read(tls_, (char *) resp.value(), resp.head.size);
+#endif
         if (len <= 0) {
             ESP_LOGE("rpc", "Failed to read data from the connection");
             return {};
@@ -174,6 +213,9 @@ private:
     esp_tls_t *tls_;
     role role_;
     RpcInstance *instance{nullptr};
+#ifdef CONFIG_WIFI_RMT_OVER_EPPP_UNSECURE
+    int plain_sock_;
+#endif
 };
 
 };

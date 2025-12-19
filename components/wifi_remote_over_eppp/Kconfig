@@ -2,6 +2,14 @@ menu "Wi-Fi Remote over EPPP"
 
 if ESP_WIFI_REMOTE_LIBRARY_EPPP
 
+    config WIFI_RMT_OVER_EPPP_UNSECURE
+        bool "Enable unsecure mode"
+        default n
+        help
+            Enable unsecure mode.
+            This will disable the TLS encryption and authentication.
+            This is useful for testing purposes.
+
     if EPPP_LINK_DEVICE_UART
         config WIFI_RMT_OVER_EPPP_UART_PORT
             int "UART port number"
@@ -74,6 +82,57 @@ if ESP_WIFI_REMOTE_LIBRARY_EPPP
             range 1000000 20000000
             help
                 SPI frequency in Hz.
+    endif
+
+    if EPPP_LINK_DEVICE_SDIO
+        config WIFI_RMT_OVER_EPPP_SDIO_WIDTH
+            int "SDIO bus width"
+            default 4
+            range 1 4
+            help
+                SDIO bus width (1, 2, or 4 bits).
+
+        config WIFI_RMT_OVER_EPPP_SDIO_CLK_PIN
+            int "CLK Pin Number"
+            default 18
+            range 0 54
+            help
+                Pin number of SDIO CLK.
+
+        config WIFI_RMT_OVER_EPPP_SDIO_CMD_PIN
+            int "CMD Pin Number"
+            default 19
+            range 0 54
+            help
+                Pin number of SDIO CMD.
+
+        config WIFI_RMT_OVER_EPPP_SDIO_D0_PIN
+            int "D0 Pin Number"
+            default 14
+            range 0 54
+            help
+                Pin number of SDIO D0.
+
+        config WIFI_RMT_OVER_EPPP_SDIO_D1_PIN
+            int "D1 Pin Number"
+            default 15
+            range 0 54
+            help
+                Pin number of SDIO D1.
+
+        config WIFI_RMT_OVER_EPPP_SDIO_D2_PIN
+            int "D2 Pin Number"
+            default 16
+            range 0 54
+            help
+                Pin number of SDIO D2.
+
+        config WIFI_RMT_OVER_EPPP_SDIO_D3_PIN
+            int "D3 Pin Number"
+            default 17
+            range 0 54
+            help
+                Pin number of SDIO D3.
     endif
 
     config WIFI_RMT_OVER_EPPP_HOST_SIDE_NETIF
