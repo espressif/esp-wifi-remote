@@ -53,10 +53,12 @@ jobs:
           - { app: host, path: "esp_wifi_remote/examples/mqtt", bin: "build_esp32p4_p4" }
           - { app: host_1, path: "esp_wifi_remote/examples/mqtt", bin: "build_esp32p4_p4_1" }
           - { app: host_2, path: "esp_wifi_remote/examples/mqtt", bin: "build_esp32p4_p4_2" }
+          - { app: host_3, path: "esp_wifi_remote/examples/mqtt", bin: "build_esp32p4_p4_3" }
           - { app: 2sta, path: "esp_wifi_remote/examples/two_stations", bin: "build_esp32s3_s3" }
           - { app: slave, path: "wifi_remote_over_eppp/examples/server", bin: "build_esp32c6_c6" }
           - { app: slave_1, path: "wifi_remote_over_eppp/examples/server", bin: "build_esp32c6_c6_1" }
           - { app: slave_2, path: "wifi_remote_over_eppp/examples/server", bin: "build_esp32c6_c6_2" }
+          - { app: slave_3, path: "wifi_remote_over_eppp/examples/server", bin: "build_esp32c6_c6_3" }
           - { app: esp_hosted, path: "esp_wifi_remote/examples/mqtt", bin: "build_esp32p4_hosted" }
           - { app: esp_hosted_slave, path: "esp_wifi_remote/examples/hosted_slave", bin: "build_esp32c6_hosted" }
 
@@ -116,6 +118,7 @@ jobs:
           - { p4: "build_esp32p4_p4", c6: "build_esp32c6_c6" }
           - { p4: "build_esp32p4_p4_1", c6: "build_esp32c6_c6_1" }
           - { p4: "build_esp32p4_p4_2", c6: "build_esp32c6_c6_2" }
+          - { p4: "build_esp32p4_p4_3", c6: "build_esp32c6_c6_3" }
           - { p4: "build_esp32p4_hosted", c6: "build_esp32c6_hosted" }
     runs-on: [self-hosted, wifi-remote]
     container:

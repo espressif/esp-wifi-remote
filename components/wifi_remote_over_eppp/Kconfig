@@ -84,6 +84,57 @@ if ESP_WIFI_REMOTE_LIBRARY_EPPP
                 SPI frequency in Hz.
     endif
 
+    if EPPP_LINK_DEVICE_SDIO
+        config WIFI_RMT_OVER_EPPP_SDIO_WIDTH
+            int "SDIO bus width"
+            default 4
+            range 1 4
+            help
+                SDIO bus width (1, 2, or 4 bits).
+
+        config WIFI_RMT_OVER_EPPP_SDIO_CLK_PIN
+            int "CLK Pin Number"
+            default 18
+            range 0 54
+            help
+                Pin number of SDIO CLK.
+
+        config WIFI_RMT_OVER_EPPP_SDIO_CMD_PIN
+            int "CMD Pin Number"
+            default 19
+            range 0 54
+            help
+                Pin number of SDIO CMD.
+
+        config WIFI_RMT_OVER_EPPP_SDIO_D0_PIN
+            int "D0 Pin Number"
+            default 14
+            range 0 54
+            help
+                Pin number of SDIO D0.
+
+        config WIFI_RMT_OVER_EPPP_SDIO_D1_PIN
+            int "D1 Pin Number"
+            default 15
+            range 0 54
+            help
+                Pin number of SDIO D1.
+
+        config WIFI_RMT_OVER_EPPP_SDIO_D2_PIN
+            int "D2 Pin Number"
+            default 16
+            range 0 54
+            help
+                Pin number of SDIO D2.
+
+        config WIFI_RMT_OVER_EPPP_SDIO_D3_PIN
+            int "D3 Pin Number"
+            default 17
+            range 0 54
+            help
+                Pin number of SDIO D3.
+    endif
+
     config WIFI_RMT_OVER_EPPP_HOST_SIDE_NETIF
         bool "Enable host side netif"
         default n
