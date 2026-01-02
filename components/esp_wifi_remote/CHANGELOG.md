@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.2.3](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v1.2.3)
+
+### Features
+
+- Add support for easier SDIO setup ([6835259](https://github.com/espressif/esp-wifi-remote/commit/6835259))
+- Support for unsecure connection ([bbff8bd](https://github.com/espressif/esp-wifi-remote/commit/bbff8bd))
+- Add target test for wrmt-over-at ([44b9830](https://github.com/espressif/esp-wifi-remote/commit/44b9830))
+
+### Bug Fixes
+
+- Update per v6.1 changes ([981fcf0](https://github.com/espressif/esp-wifi-remote/commit/981fcf0))
+- Update per recent v6.1 changes ([56bca24](https://github.com/espressif/esp-wifi-remote/commit/56bca24))
+- Ignore __FILE with newer IDFv6.1 ([206bb53](https://github.com/espressif/esp-wifi-remote/commit/206bb53))
+
 ## [1.2.2](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v1.2.2)
 
 ### Bug Fixes
