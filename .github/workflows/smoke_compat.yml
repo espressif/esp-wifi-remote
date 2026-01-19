@@ -10,6 +10,17 @@ on:
     - cron: '0 0 * * *' # Once per day at midnight
 
 jobs:
+  version_consistency_check:
+    name: Check version consistency between header and component file
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Check version consistency
+        shell: bash
+        run: |
+          ./ci/version_check.sh
+
   wifi_remote_api_compat:
     name: Check API compatibility of WiFi Remote
     strategy:
