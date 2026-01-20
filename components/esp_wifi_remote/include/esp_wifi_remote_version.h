@@ -15,7 +15,7 @@
  /** Minor version number (x.X.x) */
  #define ESP_WIFI_REMOTE_VERSION_MINOR   2
  /** Patch version number (x.x.X) */
- #define ESP_WIFI_REMOTE_VERSION_PATCH   4
+ #define ESP_WIFI_REMOTE_VERSION_PATCH   5
 
  /**
   * Macro to convert IDF version number into an integer
