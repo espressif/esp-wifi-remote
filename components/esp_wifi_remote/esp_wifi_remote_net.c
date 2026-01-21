@@ -24,6 +24,7 @@ WEAK esp_err_t esp_wifi_remote_channel_rx(void *h, void *buffer, void *buff_to_f
     if (h == s_channel[1] && s_rx_fn[1]) {
         return s_rx_fn[1](buffer, len, buff_to_free);
     }
+    esp_wifi_internal_free_rx_buffer(buff_to_free);
     return ESP_FAIL;
 }
 

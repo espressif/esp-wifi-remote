@@ -18,16 +18,16 @@
  #define ESP_WIFI_REMOTE_VERSION_PATCH   5
 
  /**
-  * Macro to convert IDF version number into an integer
+  * Macro to convert WIFI_REMOTE version number into an integer
   *
-  * To be used in comparisons, such as ESP_WIFI_REMOTE_VERSION >= ESP_WIFI_REMOTE_VERSION_VAL(4, 0, 0)
+  * To be used in comparisons, such as ESP_WIFI_REMOTE_VERSION >= ESP_WIFI_REMOTE_VERSION_VAL(1, 3, 0)
   */
  #define ESP_WIFI_REMOTE_VERSION_VAL(major, minor, patch) ((major << 16) | (minor << 8) | (patch))
 
  /**
-  * Current IDF version, as an integer
+  * Current WIFI_REMOTE version, as an integer
   *
-  * To be used in comparisons, such as ESP_WIFI_REMOTE_VERSION >= ESP_WIFI_REMOTE_VERSION_VAL(4, 0, 0)
+  * To be used in comparisons, such as ESP_WIFI_REMOTE_VERSION >= ESP_WIFI_REMOTE_VERSION_VAL(1, 3, 0)
   */
  #define ESP_WIFI_REMOTE_VERSION  ESP_WIFI_REMOTE_VERSION_VAL(ESP_WIFI_REMOTE_VERSION_MAJOR, \
                                               ESP_WIFI_REMOTE_VERSION_MINOR, \
