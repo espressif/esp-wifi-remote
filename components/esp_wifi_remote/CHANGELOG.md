@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.3.0](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v1.3.0)
+
+### Bug Fixes
+
+- Free external buffer if Rx path not configured ([1b55e5f](https://github.com/espressif/esp-wifi-remote/commit/1b55e5f))
+
 ## [1.2.5](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v1.2.5)
 
 ### Features

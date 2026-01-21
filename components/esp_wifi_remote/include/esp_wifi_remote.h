@@ -6,6 +6,7 @@
 #pragma once
 #include "esp_wifi.h"
 #include "esp_wifi_remote_api.h"
+#include "esp_wifi_remote_version.h"
 
 #ifdef __cplusplus
 extern "C" {
