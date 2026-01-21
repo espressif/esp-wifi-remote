@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.3.1](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v1.3.1)
+
+### Bug Fixes
+
+- Restrict esp-hosted to manage ext Rx buffer ([8a37c6b](https://github.com/espressif/esp-wifi-remote/commit/8a37c6b))
+
 ## [1.3.0](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v1.3.0)
 
 ### Bug Fixes

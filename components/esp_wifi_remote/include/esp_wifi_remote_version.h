@@ -15,7 +15,7 @@
  /** Minor version number (x.X.x) */
  #define ESP_WIFI_REMOTE_VERSION_MINOR   3
  /** Patch version number (x.x.X) */
- #define ESP_WIFI_REMOTE_VERSION_PATCH   0
+ #define ESP_WIFI_REMOTE_VERSION_PATCH   1
 
  /**
   * Macro to convert WIFI_REMOTE version number into an integer
