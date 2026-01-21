@@ -5,7 +5,7 @@ dependencies:
   idf:
     version: '>=5.3'
   espressif/esp_hosted:
-    version: '>=0.0.6'
+    version: '>=2.11'
     rules:
     - if: "target in [esp32h2, esp32p4]"
   espressif/wifi_remote_over_eppp:
