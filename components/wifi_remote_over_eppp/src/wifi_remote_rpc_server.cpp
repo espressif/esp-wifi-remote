@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: 2024-2025 Espressif Systems (Shanghai) CO LTD
+ * SPDX-FileCopyrightText: 2024-2026 Espressif Systems (Shanghai) CO LTD
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -141,14 +141,20 @@ private:
     static esp_err_t channel_rx(esp_netif_t *netif, int nr, void *buffer, size_t len)
     {
         if (get_instance()->started) {
-            return esp_wifi_internal_tx(WIFI_IF_STA, buffer, len);
+            if (nr == 1) {
+                return esp_wifi_internal_tx(WIFI_IF_STA, buffer, len);
+            }
+            if (nr == 2) {
+                return esp_wifi_internal_tx(WIFI_IF_AP, buffer, len);
+            }
         }
         return ESP_OK;
     }
+    template<int T>
     static esp_err_t wifi_receive(void *buffer, uint16_t len, void *eb)
     {
         if (get_instance()->channel_tx) {
-            auto ret = get_instance()->channel_tx(get_instance()->netif, 1, buffer, len);
+            auto ret = get_instance()->channel_tx(get_instance()->netif, T, buffer, len);
             esp_wifi_internal_free_rx_buffer(eb);
             return ret;
         }
@@ -325,7 +331,8 @@ private:
                 return ESP_FAIL;
             }
 #ifdef CONFIG_WIFI_RMT_OVER_EPPP_HOST_SIDE_NETIF
-            esp_wifi_internal_reg_rxcb(WIFI_IF_STA, wifi_receive);
+            esp_wifi_internal_reg_rxcb(WIFI_IF_STA, wifi_receive<1>);
+            esp_wifi_internal_reg_rxcb(WIFI_IF_AP,  wifi_receive<2>);
             esp_wifi_internal_reg_netstack_buf_cb(esp_netif_netstack_buf_ref, esp_netif_netstack_buf_free);
             started = true;
 #endif

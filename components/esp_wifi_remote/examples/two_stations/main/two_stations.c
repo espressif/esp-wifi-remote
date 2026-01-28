@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: 2025 Espressif Systems (Shanghai) CO LTD
+ * SPDX-FileCopyrightText: 2025-2026 Espressif Systems (Shanghai) CO LTD
  *
  * SPDX-License-Identifier: Unlicense OR CC0-1.0
  */
@@ -20,9 +20,7 @@
 #define WIFI_CONNECTED_BIT BIT0
 #define WIFI_FAIL_BIT      BIT1
 #define WIFI_BITS (WIFI_CONNECTED_BIT | WIFI_FAIL_BIT)
-#define EXAMPLE_ESP_MAXIMUM_RETRY  CONFIG_ESP_MAXIMUM_RETRY
 
-static int s_retry_num = 0;
 static EventGroupHandle_t s_wifi_event_group;
 
 #if CONFIG_ESP_WIFI_REMOTE_ENABLE
@@ -32,9 +30,11 @@ static EventGroupHandle_t s_wifi_event_group;
  * targets, we cannot combine both in a single compilation unit
  */
 void wifi_init_remote_sta(void);
+void wifi_init_remote_ap(void);
 #endif
 
 #if CONFIG_ESP_WIFI_LOCAL_ENABLE
+static int s_retry_num = 0;
 static const char *TAG_local = "two_stations_local";
 
 static void event_handler(void* arg, esp_event_base_t event_base,
@@ -43,7 +43,7 @@ static void event_handler(void* arg, esp_event_base_t event_base,
     if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_START) {
         esp_wifi_connect();
     } else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED) {
-        if (s_retry_num < EXAMPLE_ESP_MAXIMUM_RETRY) {
+        if (s_retry_num < CONFIG_ESP_WIFI_REMOTE_MAX_RETRIES) {
             esp_wifi_connect();
             s_retry_num++;
             ESP_LOGI(TAG_local, "retry to connect to the AP");
@@ -124,8 +124,10 @@ void app_main(void)
     wifi_init_sta();
 #endif
 
-#if CONFIG_ESP_WIFI_REMOTE_ENABLE
+#if CONFIG_ESP_WIFI_REMOTE_STA
     wifi_init_remote_sta();
+#elif CONFIG_ESP_WIFI_REMOTE_AP
+    wifi_init_remote_ap();
 #endif
 
     // at this point, we should be connected (via at least one station)
