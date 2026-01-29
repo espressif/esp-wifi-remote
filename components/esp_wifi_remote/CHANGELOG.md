@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.3.2](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v1.3.2)
+
+### Bug Fixes
+
+- Minor updates per v6.1, v5.5 changes ([03f4e65](https://github.com/espressif/esp-wifi-remote/commit/03f4e65))
+
 ## [1.3.1](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v1.3.1)
 
 ### Bug Fixes
