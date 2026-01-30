@@ -3,6 +3,6 @@ commitizen:
   bump_message: 'bump(eppp): $current_version -> $new_version'
   pre_bump_hooks: python ../../ci/changelog.py wifi_remote_over_eppp
   tag_format: wifi_rmt_eppp-v$version
-  version: 0.3.0
+  version: 0.3.1
   version_files:
   - idf_component.yml

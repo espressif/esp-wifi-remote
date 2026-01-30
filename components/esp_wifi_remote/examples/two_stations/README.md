@@ -5,9 +5,10 @@
 * Run `server` example as the slave project (communication coprocessor)
 * Select the backend solution
   - (in case of EPPP configure both the server and the client with mutual keys/certs as described in [mqtt example](../mqtt/README.md))
-* Configure SSID and Password for two access points
-  - one for local Wi-Fi (using the Wi-Fi library on the chip itself)
+* Configure SSID and Password
+  - one for local Wi-Fi access point (using the Wi-Fi library on the chip itself)
   - the second one for remote Wi-Fi (using the network offloading -- communication coprocessor)
+    - also set the mode of the remote Wi-Fi (either station or soft AP)
 * Build and run the example
 
 ## Wi-Fi types limitation

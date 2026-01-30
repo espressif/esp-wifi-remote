@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.3.1](https://github.com/espressif/esp-wifi-remote/commits/wifi_rmt_eppp-v0.3.1)
+
+### Bug Fixes
+
+- Fix remote Station vs AP in host-network mode ([83e8a71](https://github.com/espressif/esp-wifi-remote/commit/83e8a71))
+
 ## [0.3.0](https://github.com/espressif/esp-wifi-remote/commits/wifi_rmt_eppp-v0.3.0)
 
 ### Features

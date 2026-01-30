@@ -26,6 +26,21 @@ menu "Example Configuration"
         help
             WiFi password (WPA or WPA2) for the example to use.
 
+    choice ESP_WIFI_REMOTE_MODE
+        bool "Remote WiFi as Station or AP"
+        depends on ESP_WIFI_REMOTE_ENABLE
+        default ESP_WIFI_REMOTE_STA
+        help
+            Sets either station or softAP
+
+        config ESP_WIFI_REMOTE_STA
+            bool "WiFi Remote Station"
+
+        config ESP_WIFI_REMOTE_AP
+            bool "WiFi Remote AP"
+
+    endchoice
+
     config ESP_WIFI_REMOTE_SSID
         string "Remote WiFi SSID"
         default "myssid"
@@ -40,10 +55,18 @@ menu "Example Configuration"
         help
             WiFi password (WPA or WPA2) for the example to use.
 
-    config ESP_MAXIMUM_RETRY
+    config ESP_WIFI_REMOTE_MAX_RETRIES
         int "Maximum retry"
         default 5
+        depends on ESP_WIFI_REMOTE_ENABLE
         help
             Set the Maximum retry to avoid station reconnecting to the AP unlimited when the AP is really inexistent.
+
+    config ESP_WIFI_REMOTE_MAX_STATIONS
+        int "Maximum number of stations"
+        default 5
+        depends on ESP_WIFI_REMOTE_ENABLE
+        help
+            Set the Maximum number of stations connected to the AP.
 
 endmenu

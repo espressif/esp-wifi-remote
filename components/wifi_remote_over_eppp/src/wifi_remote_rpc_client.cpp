@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: 2024-2025 Espressif Systems (Shanghai) CO LTD
+ * SPDX-FileCopyrightText: 2024-2026 Espressif Systems (Shanghai) CO LTD
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -42,6 +42,10 @@ const unsigned char ca_crt[] = "-----BEGIN CERTIFICATE-----\n" CONFIG_WIFI_RMT_O
 const unsigned char crt[] = "-----BEGIN CERTIFICATE-----\n" CONFIG_WIFI_RMT_OVER_EPPP_CLIENT_CRT "\n-----END CERTIFICATE-----";
 const unsigned char key[] = "-----BEGIN PRIVATE KEY-----\n" CONFIG_WIFI_RMT_OVER_EPPP_CLIENT_KEY "\n-----END PRIVATE KEY-----";
 // TODO: Add option to supply keys and certs via a global symbol (file)
+#endif
+
+#ifdef CONFIG_WIFI_RMT_OVER_EPPP_HOST_SIDE_NETIF
+    RpcInstance* get_instance();
 #endif
 
 }
@@ -131,7 +135,8 @@ public:
 
 #ifdef CONFIG_WIFI_RMT_OVER_EPPP_HOST_SIDE_NETIF
         ESP_RETURN_ON_ERROR(eppp_add_channels(netif, &channel_tx, channel_rx, this), TAG, "Failed to add EPPP channel");
-        ESP_RETURN_ON_ERROR(esp_wifi_remote_channel_set(WIFI_IF_STA, (void*)this, wifi_remote_tx), TAG, "Failed to configure WiFi remote channel");
+        ESP_RETURN_ON_ERROR(esp_wifi_remote_channel_set(WIFI_IF_STA, &sta, wifi_remote_tx), TAG, "Failed to configure WiFi remote channel");
+        ESP_RETURN_ON_ERROR(esp_wifi_remote_channel_set(WIFI_IF_AP, &ap, wifi_remote_tx), TAG, "Failed to configure WiFi remote channel");
 #endif
 
         ESP_RETURN_ON_ERROR(esp_event_handler_register(IP_EVENT, IP_EVENT_PPP_GOT_IP, got_ip, this), TAG, "Failed to register event");
@@ -220,18 +225,25 @@ private:
 #ifdef CONFIG_WIFI_RMT_OVER_EPPP_HOST_SIDE_NETIF
     static esp_err_t channel_rx(esp_netif_t *netif, int nr, void *buffer, size_t len)
     {
-        auto instance = static_cast<RpcInstance *>(eppp_get_context(netif));
-        return esp_wifi_remote_channel_rx(instance, buffer, nullptr, len);
+        if (nr < 1 || nr > 2) {
+            return ESP_FAIL;
+        }
+        ChannelCtx *ch = nr == 1 ? &get_instance()->sta : &get_instance()->ap;
+        return esp_wifi_remote_channel_rx(ch, buffer, nullptr, len);
     }
     static esp_err_t wifi_remote_tx(void *h, void *buffer, size_t len)
     {
-        auto instance = static_cast<RpcInstance *>(h);
-        if (instance->channel_tx) {
-            return instance->channel_tx(instance->netif, 1, buffer, len);
+        auto inst = get_instance();
+        auto *ch = static_cast<ChannelCtx*>(h);
+        if (ch->id < 1 || ch->id > 2 || inst->channel_tx == nullptr) {
+            return ESP_FAIL;
         }
-        return ESP_FAIL;
+        return inst->channel_tx(inst->netif, ch->id, buffer, len);
     }
     eppp_channel_fn_t channel_tx{nullptr};
+    struct ChannelCtx { int id; };
+    ChannelCtx sta{1};
+    ChannelCtx ap{2};
 #endif // CONFIG_WIFI_RMT_OVER_EPPP_HOST_SIDE_NETIF
     esp_netif_t *netif{nullptr};
 };
@@ -239,7 +251,15 @@ private:
 
 namespace client {
 constinit RpcInstance instance;
+#ifdef CONFIG_WIFI_RMT_OVER_EPPP_HOST_SIDE_NETIF
+    // This is needed in wifi-callbacks which lack context param
+    RpcInstance* get_instance()
+    {
+        return &client::instance;
+    }
+#endif
 }   // namespace client
+
 
 RpcInstance *RpcEngine::init_client()
 {
