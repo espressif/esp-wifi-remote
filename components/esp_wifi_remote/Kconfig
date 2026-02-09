@@ -1,4 +1,7 @@
+if !ESP_WIFI_HAS_REMOTE
+
 menu "Wi-Fi Remote"
+
     config ESP_WIFI_REMOTE_ENABLED
         bool
         default y if !ESP_HOST_WIFI_ENABLED
@@ -36,3 +39,5 @@ menu "Wi-Fi Remote"
     endif
 
 endmenu # Wi-Fi Remote
+
+endif

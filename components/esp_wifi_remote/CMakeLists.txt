@@ -1,3 +1,8 @@
+if (EXISTS $ENV{IDF_PATH}/components/esp_wifi/remote/CMakeLists.txt)
+    idf_component_register()
+    return()
+endif()
+
 if(NOT CONFIG_ESP_WIFI_ENABLED AND NOT CONFIG_ESP_HOST_WIFI_ENABLED)
     set(wifi_remote_sources esp_wifi_remote.c esp_wifi_remote_net.c)
 else()
