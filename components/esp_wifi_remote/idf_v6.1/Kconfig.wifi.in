@@ -851,6 +851,15 @@ config WIFI_RMT_ENT_FREE_DYNAMIC_BUFFER
         Select this configuration to free dynamic buffers during WiFi enterprise connection.
         This will enable chip to reduce heap consumption during WiFi enterprise connection.
 
+config WIFI_RMT_MODEM_RF_FLAG_UPDATE_DEBUG
+    bool "Enable debug assertions for modem RF flag update"
+    depends on WIFI_RMT_ENHANCED_LIGHT_SLEEP
+    default n
+    help
+        Enable debug assertions to verify modem RF flag update operations.
+        This option enables assert checks to verify that modem RF power state
+        is correctly cleared before pmu sleep.
+
 if !ESP_WIFI_ENABLED
     config ESP_WIFI_STATIC_RX_BUFFER_NUM # ignore: multiple-definition
         int
@@ -1325,6 +1334,13 @@ if WIFI_RMT_ENT_FREE_DYNAMIC_BUFFER
         bool
         depends on WIFI_RMT_ENTERPRISE_SUPPORT
         default WIFI_RMT_ENT_FREE_DYNAMIC_BUFFER
+endif
+
+if WIFI_RMT_MODEM_RF_FLAG_UPDATE_DEBUG
+    config ESP_WIFI_MODEM_RF_FLAG_UPDATE_DEBUG # ignore: multiple-definition
+        bool
+        depends on WIFI_RMT_ENHANCED_LIGHT_SLEEP
+        default WIFI_RMT_MODEM_RF_FLAG_UPDATE_DEBUG
 endif
 
 endif # ESP_WIFI_ENABLED
