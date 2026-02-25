@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.4.0](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v1.4.0)
+
+### Features
+
+- Use IDF-internal wifi-remote if available ([383ae39](https://github.com/espressif/esp-wifi-remote/commit/383ae39))
+
+### Bug Fixes
+
+- Update per v5.4 changes ([99f5904](https://github.com/espressif/esp-wifi-remote/commit/99f5904))
+- Update per v6.0 changes ([3c8c185](https://github.com/espressif/esp-wifi-remote/commit/3c8c185))
+- Update per v6.1 Kconfig changes ([6a3cac3](https://github.com/espressif/esp-wifi-remote/commit/6a3cac3))
+- Minor updates5.3 changes ([127d15f](https://github.com/espressif/esp-wifi-remote/commit/127d15f))
+- Fix remote Station vs AP in host-network mode ([83e8a71](https://github.com/espressif/esp-wifi-remote/commit/83e8a71))
+
 ## [1.3.2](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v1.3.2)
 
 ### Bug Fixes
