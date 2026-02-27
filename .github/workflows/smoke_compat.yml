@@ -102,3 +102,12 @@ jobs:
           cd ${IDF_PATH}/${TEST_PATH}
           idf-build-apps find --config sdkconfig.ci* -vv --target ${{ matrix.idf_target }}
           idf-build-apps build --config sdkconfig.ci* -vv --target ${{ matrix.idf_target }}
+          cd $GITHUB_WORKSPACE
+          find ${IDF_PATH} -name "build_log.txt" -path "*/examples/*" | zip build_logs.zip -@ || touch build_logs.zip
+      - name: Upload build logs
+        uses: actions/upload-artifact@v4
+        with:
+          name: build_logs_idf_examples_${{ matrix.idf_ver }}_${{ matrix.idf_target }}_${{ matrix.test.app }}
+          path: build_logs.zip
+          retention-days: 3
+          if-no-files-found: warn
