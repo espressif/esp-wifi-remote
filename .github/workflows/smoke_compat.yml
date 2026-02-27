@@ -31,6 +31,10 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+      - name: Apply patch to ESP-IDF (latest only)
+        if: matrix.idf_ver == 'latest'
+        run: |
+          git -C ${IDF_PATH} apply --verbose $GITHUB_WORKSPACE/0001-feat-wifi-remote-Add-support-for-wifi-remote-to-esp_.patch
       - name: Check that headers are the same as generated
         shell: bash
         run: |
@@ -53,6 +57,10 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+      - name: Apply patch to ESP-IDF (latest only)
+        if: matrix.idf_ver == 'latest'
+        run: |
+          git -C ${IDF_PATH} apply --verbose $GITHUB_WORKSPACE/0001-feat-wifi-remote-Add-support-for-wifi-remote-to-esp_.patch
       - name: ccache
         uses: hendrikmuhs/ccache-action@v1.2
         with:
