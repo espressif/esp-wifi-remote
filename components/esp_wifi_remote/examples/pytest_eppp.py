@@ -20,7 +20,7 @@ def test_wifi_remote_eppp(dut: Tuple[IdfDut, IdfDut]) -> None:
 
     # Check for wifi station connected event (different for hosted and eppp)
     if dut[1].app.sdkconfig.get('ESP_WIFI_REMOTE_LIBRARY_HOSTED') is True:
-        server.expect('slave_rpc: Sta mode connected', timeout=100)
+        server.expect('wifi:mode : sta', timeout=100)
     elif dut[1].app.sdkconfig.get('ESP_WIFI_REMOTE_LIBRARY_CUSTOM') is True:
         server.expect('Got IPv4 event: Interface', timeout=100)
     else:
