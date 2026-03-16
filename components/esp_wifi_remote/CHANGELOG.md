@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.4.1](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v1.4.1)
+
+### Bug Fixes
+
+- Fix config duplication issue with IDF values ([2bd50b3](https://github.com/espressif/esp-wifi-remote/commit/2bd50b3))
+- Minor update per v5.4 changes ([1c85285](https://github.com/espressif/esp-wifi-remote/commit/1c85285))
+- Update test with correct esp-hosted slave check ([6615231](https://github.com/espressif/esp-wifi-remote/commit/6615231))
+- Minor update per v5.5 changes ([29ee533](https://github.com/espressif/esp-wifi-remote/commit/29ee533))
+- Add ignore tags for multiple config definitions ([61d7719](https://github.com/espressif/esp-wifi-remote/commit/61d7719))
+
 ## [1.4.0](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v1.4.0)
 
 ### Features
