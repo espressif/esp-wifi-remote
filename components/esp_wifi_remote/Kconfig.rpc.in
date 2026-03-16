@@ -11,11 +11,11 @@ choice ESP_WIFI_REMOTE_LIBRARY
         in any other component or application (needs to set link dependency from wifi-remote
         to the custom implementation)
 
-    config ESP_WIFI_REMOTE_LIBRARY_HOSTED
+    config ESP_WIFI_REMOTE_LIBRARY_HOSTED # ignore: multiple-definition
         bool "ESP-HOSTED"
-    config ESP_WIFI_REMOTE_LIBRARY_EPPP
+    config ESP_WIFI_REMOTE_LIBRARY_EPPP # ignore: multiple-definition
         bool "EPPP"
-    config ESP_WIFI_REMOTE_LIBRARY_CUSTOM
+    config ESP_WIFI_REMOTE_LIBRARY_CUSTOM # ignore: multiple-definition
         bool "CUSTOM"
 
 endchoice

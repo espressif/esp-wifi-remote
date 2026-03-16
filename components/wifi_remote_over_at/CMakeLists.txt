@@ -14,4 +14,12 @@ elseif(espressif__esp_wifi_remote IN_LIST build_components)
 else()
     message(FATAL_ERROR "This component requires esp_wifi_remote")
 endif()
+
+get_target_property(component_lib_type ${wifi_remote} TYPE)
+if(component_lib_type STREQUAL "INTERFACE_LIBRARY")
+    idf_component_get_property(wifi_remote esp_wifi COMPONENT_LIB)
+    target_link_libraries(${wifi_remote} PRIVATE ${COMPONENT_LIB})
+    return()
+endif()
+
 target_link_libraries(${wifi_remote} PRIVATE ${COMPONENT_LIB})

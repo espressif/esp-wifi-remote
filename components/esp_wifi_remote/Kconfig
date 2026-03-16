@@ -11,7 +11,7 @@ menu "Wi-Fi Remote"
         orsource "./Kconfig.idf_v$ESP_IDF_VERSION.in"
         orsource "./Kconfig.rpc.in"
 
-        config ESP_WIFI_REMOTE_EAP_ENABLED
+        config ESP_WIFI_REMOTE_EAP_ENABLED # ignore: multiple-definition
             bool "Enable EAP client remote API"
             default y
             depends on WIFI_RMT_ENTERPRISE_SUPPORT
@@ -24,7 +24,7 @@ menu "Wi-Fi Remote"
 
         # This helper variables is only used to indicate that Wi-Fi remote if OFF
         # and explains why
-        config ESP_WIFI_REMOTE_IS_DISABLED
+        config ESP_WIFI_REMOTE_IS_DISABLED # ignore: multiple-definition
             bool "Wi-Fi Remote is disabled (Host Wi-Fi is ON)"
             default y
             help
@@ -32,7 +32,7 @@ menu "Wi-Fi Remote"
                 These options are mutually exclusive.
                 Disable ESP_HOST_WIFI_ENABLED to use ESP_WIFI_REMOTE.
 
-        config ESP_WIFI_REMOTE_FORCE_DISABLED
+        config ESP_WIFI_REMOTE_FORCE_DISABLED # ignore: multiple-definition
             bool
             default y
             select ESP_WIFI_REMOTE_IS_DISABLED

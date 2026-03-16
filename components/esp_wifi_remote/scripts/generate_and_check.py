@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2024-2025 Espressif Systems (Shanghai) CO LTD
+# SPDX-FileCopyrightText: 2024-2026 Espressif Systems (Shanghai) CO LTD
 # SPDX-License-Identifier: Apache-2.0
 import argparse
 import glob
@@ -234,7 +234,7 @@ def generate_kconfig_wifi_caps(idf_path, idf_ver_dir, component_path):
                 slave_caps.write(f'endif # {slave_target.upper()}\n')
 
                 slave_config_name = 'SLAVE_IDF_TARGET_' + slave_target.upper()
-                slave.write(f'    config {slave_config_name}\n')
+                slave.write(f'    config {slave_config_name} {KCONFIG_MULTIPLE_DEF}\n')
                 slave.write(f'        bool "{slave_target}"\n')
 
         slave.write('    endchoice\n')
@@ -555,6 +555,10 @@ def generate_kconfig(idf_path, idf_ver_dir, component_path):
                 # Adjust indentation relative to the captured initial indent
                 if len(modified_line) > initial_indent and modified_line[:initial_indent].isspace():
                     modified_line = modified_line[initial_indent:]
+                # Add multiple-definition pragma for wifi-remote configs (duplicated in managed_components)
+                if KCONFIG_MULTIPLE_DEF not in modified_line and re.match(
+                        r'^\s*(config|choice)\s+(WIFI_RMT_|SLAVE_)[A-Z0-9_]+', modified_line.strip()):
+                    modified_line = modified_line.rstrip('\n') + f' {KCONFIG_MULTIPLE_DEF}\n'
                 outfile.write(modified_line)
 
             # When an ESP_WIFI_ENABLED condition is encountered, update the nesting threshold
