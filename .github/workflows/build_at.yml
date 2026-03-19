@@ -41,7 +41,7 @@ jobs:
         run: |
           $IDF_PATH/install.sh --enable-ci
           . ${IDF_PATH}/export.sh
-          pip install idf-component-manager idf-build-apps --upgrade
+          pip install idf-component-manager idf-build-apps
           python $GITHUB_WORKSPACE/protocols/ci/build_apps.py ./components/wifi_remote_over_at/${{matrix.test.path}} -vv --preserve-all
           cd ./components/wifi_remote_over_at/${{matrix.test.path}}
           for dir in `ls -d build*/`; do
