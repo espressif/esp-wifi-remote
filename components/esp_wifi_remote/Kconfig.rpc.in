@@ -1,4 +1,4 @@
-choice ESP_WIFI_REMOTE_LIBRARY
+choice ESP_WIFI_REMOTE_LIBRARY # ignore: multiple-definition
     prompt "Choose WiFi-remote implementation"
     default ESP_WIFI_REMOTE_LIBRARY_HOSTED
     help

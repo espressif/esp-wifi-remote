@@ -1,5 +1,5 @@
 # This file is auto-generated
-    choice SLAVE_IDF_TARGET
+    choice SLAVE_IDF_TARGET # ignore: multiple-definition
     prompt "choose slave target"
     default SLAVE_IDF_TARGET_ESP32C6 if IDF_TARGET_ESP32P4  # To support common use-cases
     default SLAVE_IDF_TARGET_ESP32
