@@ -13,6 +13,8 @@ jobs:
     name: Publishes Tag, Release, and Uploads Component
 
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
         with:
