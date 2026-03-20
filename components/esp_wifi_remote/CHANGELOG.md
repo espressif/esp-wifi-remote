@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.4.2](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v1.4.2)
+
+### Bug Fixes
+
+- Free Rx buffer if packet path not defined ([d1e908d](https://github.com/espressif/esp-wifi-remote/commit/d1e908d), [#112](https://github.com/espressif/esp-wifi-remote/issues/112))
+- Fix per v5.4 changes ([8646e65](https://github.com/espressif/esp-wifi-remote/commit/8646e65))
+- Add multiple defs ignore tags to choices ([3a50f46](https://github.com/espressif/esp-wifi-remote/commit/3a50f46))
+
 ## [1.4.1](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v1.4.1)
 
 ### Bug Fixes
