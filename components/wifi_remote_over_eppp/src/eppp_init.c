@@ -23,6 +23,7 @@ __attribute__((weak)) esp_netif_t *wifi_remote_eppp_init(eppp_type_t role)
     return eppp_open(role, &config, portMAX_DELAY);
 #elif CONFIG_EPPP_LINK_DEVICE_SPI
     config.transport = EPPP_TRANSPORT_SPI;
+    config.spi.is_master = role == EPPP_SERVER ? false : true;
     config.spi.host = CONFIG_WIFI_RMT_OVER_EPPP_SPI_HOST;
     config.spi.mosi = CONFIG_WIFI_RMT_OVER_EPPP_SPI_MOSI_PIN;
     config.spi.miso = CONFIG_WIFI_RMT_OVER_EPPP_SPI_MISO_PIN;
