@@ -715,12 +715,6 @@ config WIFI_RMT_DEBUG_PRINT # ignore: multiple-definition
         Enabling this could increase the build size ~60kb
         depending on the project logging level.
 
-config WIFI_RMT_TESTING_OPTIONS # ignore: multiple-definition
-    bool "Add DPP testing code"
-    default n
-    help
-        Select this to enable unity test for DPP.
-
 config WIFI_RMT_ENTERPRISE_SUPPORT # ignore: multiple-definition
     bool "Enable enterprise option"
     default y
@@ -743,6 +737,15 @@ config WIFI_RMT_ENT_FREE_DYNAMIC_BUFFER # ignore: multiple-definition
     help
         Select this configuration to free dynamic buffers during WiFi enterprise connection.
         This will enable chip to reduce heap consumption during WiFi enterprise connection.
+
+config WIFI_RMT_MODEM_RF_FLAG_UPDATE_DEBUG # ignore: multiple-definition
+    bool "Enable debug assertions for modem RF flag update"
+    depends on WIFI_RMT_ENHANCED_LIGHT_SLEEP
+    default n
+    help
+        Enable debug assertions to verify modem RF flag update operations.
+        This option enables assert checks to verify that modem RF power state
+        is correctly cleared before pmu sleep.
 
 if !ESP_WIFI_ENABLED
     config ESP_WIFI_STATIC_RX_BUFFER_NUM # ignore: multiple-definition
@@ -1147,12 +1150,6 @@ if WIFI_RMT_DEBUG_PRINT
         default WIFI_RMT_DEBUG_PRINT
 endif
 
-if WIFI_RMT_TESTING_OPTIONS
-    config ESP_WIFI_TESTING_OPTIONS # ignore: multiple-definition
-        bool
-        default WIFI_RMT_TESTING_OPTIONS
-endif
-
 if WIFI_RMT_ENTERPRISE_SUPPORT
     config ESP_WIFI_ENTERPRISE_SUPPORT # ignore: multiple-definition
         bool
@@ -1164,6 +1161,13 @@ if WIFI_RMT_ENT_FREE_DYNAMIC_BUFFER
         bool
         depends on WIFI_RMT_ENTERPRISE_SUPPORT
         default WIFI_RMT_ENT_FREE_DYNAMIC_BUFFER
+endif
+
+if WIFI_RMT_MODEM_RF_FLAG_UPDATE_DEBUG
+    config ESP_WIFI_MODEM_RF_FLAG_UPDATE_DEBUG # ignore: multiple-definition
+        bool
+        depends on WIFI_RMT_ENHANCED_LIGHT_SLEEP
+        default WIFI_RMT_MODEM_RF_FLAG_UPDATE_DEBUG
 endif
 
 endif # ESP_WIFI_ENABLED
