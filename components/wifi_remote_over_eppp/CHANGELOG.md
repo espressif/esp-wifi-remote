@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.3.2](https://github.com/espressif/esp-wifi-remote/commits/wifi_rmt_eppp-v0.3.2)
+
+### Bug Fixes
+
+- Fix SPI transport master/slave config ([c59c209](https://github.com/espressif/esp-wifi-remote/commit/c59c209))
+
 ## [0.3.1](https://github.com/espressif/esp-wifi-remote/commits/wifi_rmt_eppp-v0.3.1)
 
 ### Bug Fixes
