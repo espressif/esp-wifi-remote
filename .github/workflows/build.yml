@@ -34,6 +34,10 @@ jobs:
         uses: hendrikmuhs/ccache-action@v1.2
         with:
             key: ${{ matrix.idf_ver }}
+      - name: Apply patch to ESP-IDF (latest only)
+        if: matrix.idf_ver == 'latest'
+        run: |
+          git -C ${IDF_PATH} apply --verbose $GITHUB_WORKSPACE/0001-feat-wifi-remote-Add-support-for-wifi-remote-to-esp_.patch
       - name: Build ${{ matrix.test.app }} with IDF-${{ matrix.idf_ver }}
         env:
           EXPECTED_WARNING: "Warning: Deprecated: Option"
@@ -43,6 +47,16 @@ jobs:
           . ${IDF_PATH}/export.sh
           python ./components/esp_wifi_remote/scripts/generate_slave_configs.py ./components/esp_wifi_remote/${{matrix.test.path}}
           python $GITHUB_WORKSPACE/protocols/ci/build_apps.py ./components/esp_wifi_remote/${{matrix.test.path}} -vv --preserve-all
+      - name: Collect build logs
+        run: |
+          find ./components -name "build_log.txt" | zip build_logs.zip -@ || touch build_logs.zip
+      - name: Upload build logs
+        uses: actions/upload-artifact@v4
+        with:
+          name: build_logs_wifi_remote_${{ matrix.idf_ver }}
+          path: build_logs.zip
+          retention-days: 3
+          if-no-files-found: warn
 
   build_wifi_remote_example:
     name: Build WiFi Remote Example
@@ -78,6 +92,10 @@ jobs:
             ci/clean_build_artifacts.sh
           sparse-checkout-cone-mode: false
           path: protocols
+      - name: Apply patch to ESP-IDF (latest only)
+        if: matrix.idf_ver == 'latest'
+        run: |
+          git -C ${IDF_PATH} apply --verbose $GITHUB_WORKSPACE/0001-feat-wifi-remote-Add-support-for-wifi-remote-to-esp_.patch
       - name: Build ${{ matrix.example.app }} with IDF-${{ matrix.idf_ver }}
         env:
           EXPECTED_WARNING: "Warning: The smallest app partition is nearly full\nWarning: Deprecated: Option\n"
@@ -97,6 +115,7 @@ jobs:
             cp ./components/esp_wifi_remote/examples/sdkconfig.ci.hosted_slave ./components/${{matrix.example.path}}/sdkconfig.ci.hosted
           fi
           python $GITHUB_WORKSPACE/protocols/ci/build_apps.py ./components/${{matrix.example.path}} -vv --preserve-all
+          find ./components -name "build_log.txt" | zip build_logs.zip -@ || touch build_logs.zip
           cd ./components/${{matrix.example.path}}
           ${GITHUB_WORKSPACE}/protocols/ci/clean_build_artifacts.sh `pwd`/${{matrix.example.bin}}
           zip -qur artifacts.zip ${{matrix.example.bin}}
@@ -105,6 +124,13 @@ jobs:
           name: eppp_${{ matrix.idf_ver }}_${{matrix.example.bin}}
           path: components/${{matrix.example.path}}/artifacts.zip
           if-no-files-found: error
+      - name: Upload build logs
+        uses: actions/upload-artifact@v4
+        with:
+          name: build_logs_${{ matrix.idf_ver }}_${{matrix.example.bin}}
+          path: build_logs.zip
+          retention-days: 3
+          if-no-files-found: warn
 
   run_example:
     # Skip running on forks since it won't have access to secrets
