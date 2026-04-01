@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.5.0](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v1.5.0)
+
+### Features
+
+- Add support for manual disable ([efdc2f8](https://github.com/espressif/esp-wifi-remote/commit/efdc2f8))
+
+### Bug Fixes
+
+- Update per recent v6.1 changes ([65395f0](https://github.com/espressif/esp-wifi-remote/commit/65395f0))
+- Updated per v5.3 changes ([25f3911](https://github.com/espressif/esp-wifi-remote/commit/25f3911))
+- Updated per v6.1 changes ([b387b4a](https://github.com/espressif/esp-wifi-remote/commit/b387b4a))
+
 ## [1.4.2](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v1.4.2)
 
 ### Bug Fixes
