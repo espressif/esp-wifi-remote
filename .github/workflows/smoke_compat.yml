@@ -63,7 +63,6 @@ jobs:
           export IDF_PYTHON_CHECK_CONSTRAINTS=yes
           ${IDF_PATH}/install.sh --enable-ci
           . ${IDF_PATH}/export.sh
-          pip install --upgrade 'idf-build-apps~=2.12'
           export OVERRIDE_PATH=`pwd`/components/esp_wifi_remote
           echo ${OVERRIDE_PATH}
           # Determine the correct path for MQTT example based on what exists

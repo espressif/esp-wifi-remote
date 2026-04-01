@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: 2025 Espressif Systems (Shanghai) CO LTD
+ * SPDX-FileCopyrightText: 2025-2026 Espressif Systems (Shanghai) CO LTD
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -145,6 +145,12 @@ void run_all_wifi_remote_apis(void)
         uint8_t *primary = NULL;
         wifi_second_chan_t *second = NULL;
         esp_wifi_remote_get_channel(primary, second);
+    }
+
+    {
+        uint8_t *primary = NULL;
+        wifi_second_chan_t *second = NULL;
+        esp_wifi_remote_get_home_channel(primary, second);
     }
 
     {

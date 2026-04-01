@@ -2,7 +2,7 @@ menu "Wi-Fi Remote"
     visible if !ESP_WIFI_REMOTE_IN_IDF
 
     config ESP_WIFI_REMOTE_ENABLED
-        bool
+        bool "Enable Wi-Fi Remote component"
         default y if !ESP_HOST_WIFI_ENABLED
         default n if ESP_HOST_WIFI_ENABLED
 

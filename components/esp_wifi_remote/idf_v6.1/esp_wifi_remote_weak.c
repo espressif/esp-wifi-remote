@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: 2025 Espressif Systems (Shanghai) CO LTD
+ * SPDX-FileCopyrightText: 2025-2026 Espressif Systems (Shanghai) CO LTD
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -147,6 +147,11 @@ WEAK esp_err_t esp_wifi_remote_set_channel(uint8_t primary, wifi_second_chan_t s
 }
 
 WEAK esp_err_t esp_wifi_remote_get_channel(uint8_t *primary, wifi_second_chan_t *second)
+{
+    LOG_UNSUPPORTED_AND_RETURN(ESP_ERR_NOT_SUPPORTED);
+}
+
+WEAK esp_err_t esp_wifi_remote_get_home_channel(uint8_t *primary, wifi_second_chan_t *second)
 {
     LOG_UNSUPPORTED_AND_RETURN(ESP_ERR_NOT_SUPPORTED);
 }
