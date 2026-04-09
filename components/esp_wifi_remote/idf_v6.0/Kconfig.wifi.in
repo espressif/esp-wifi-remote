@@ -860,6 +860,13 @@ config WIFI_RMT_MODEM_RF_FLAG_UPDATE_DEBUG # ignore: multiple-definition
         This option enables assert checks to verify that modem RF power state
         is correctly cleared before pmu sleep.
 
+config WIFI_RMT_PASSIVE_HIDDEN_AP_SUPPORT # ignore: multiple-definition
+    bool "Support station connection to hidden APs using passive scan when country policy is auto"
+    default n
+    help
+        Select this option to enable/disable support for station connections
+        to hidden APs using passive scan when the country policy is set to auto.
+
 if !ESP_WIFI_ENABLED
     config ESP_WIFI_STATIC_RX_BUFFER_NUM # ignore: multiple-definition
         int
@@ -1341,6 +1348,12 @@ if WIFI_RMT_MODEM_RF_FLAG_UPDATE_DEBUG
         bool
         depends on WIFI_RMT_ENHANCED_LIGHT_SLEEP
         default WIFI_RMT_MODEM_RF_FLAG_UPDATE_DEBUG
+endif
+
+if WIFI_RMT_PASSIVE_HIDDEN_AP_SUPPORT
+    config ESP_WIFI_PASSIVE_HIDDEN_AP_SUPPORT # ignore: multiple-definition
+        bool
+        default WIFI_RMT_PASSIVE_HIDDEN_AP_SUPPORT
 endif
 
 endif # ESP_WIFI_ENABLED
