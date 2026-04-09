@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: 2015-2025 Espressif Systems (Shanghai) CO LTD
+ * SPDX-FileCopyrightText: 2015-2026 Espressif Systems (Shanghai) CO LTD
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -228,8 +228,14 @@ typedef struct {
   * @brief Channel bitmap for setting specific channels to be scanned
   */
 typedef struct {
-    uint16_t ghz_2_channels;     /**< Represents 2.4 GHz channels, that bits can be set as wifi_2g_channel_bit_t shown. */
-    uint32_t ghz_5_channels;     /**< Represents 5 GHz channels, that bits can be set as wifi_5g_channel_bit_t shown. */
+    uint16_t ghz_2_channels;     /**< Represents 2.4 GHz channels.
+                                      bit0: band bypass, 0: scan as bitmap, 1: bypass all channels of 2.4GHz.
+                                      bit1-bit14: represents channels can be set as wifi_2g_channel_bit_t shown.
+                                      bit15: reserved. */
+    uint32_t ghz_5_channels;     /**< Represents 5 GHz channels.
+                                      bit0: band bypass, 0: scan as bitmap, 1: bypass all channels of 5GHz.
+                                      bit1-bit28: represents channels can be set as wifi_5g_channel_bit_t shown.
+                                      bit29-bit31: reserved. */
 } wifi_scan_channel_bitmap_t;
 
 /**
