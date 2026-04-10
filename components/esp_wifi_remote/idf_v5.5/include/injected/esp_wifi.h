@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: 2015-2025 Espressif Systems (Shanghai) CO LTD
+ * SPDX-FileCopyrightText: 2015-2026 Espressif Systems (Shanghai) CO LTD
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -804,6 +804,20 @@ esp_err_t esp_wifi_set_channel(uint8_t primary, wifi_second_chan_t second);
   *    - ESP_ERR_INVALID_ARG: invalid argument
   */
 esp_err_t esp_wifi_get_channel(uint8_t *primary, wifi_second_chan_t *second);
+
+/**
+  * @brief     Get the home channel of device
+  *
+  * @param     primary   store primary channel
+  * @param[out]  second  store second channel
+  *
+  * @return
+  *    - ESP_OK: succeed
+  *    - ESP_ERR_WIFI_NOT_INIT: WiFi is not initialized by esp_wifi_init
+  *    - ESP_ERR_WIFI_NOT_STARTED: WiFi is not started by esp_wifi_start
+  *    - ESP_ERR_INVALID_ARG: invalid argument
+  */
+esp_err_t esp_wifi_get_home_channel(uint8_t *primary, wifi_second_chan_t *second);
 
 /**
   * @brief     configure country info
@@ -1638,6 +1652,8 @@ esp_err_t esp_wifi_sta_get_aid(uint16_t *aid);
   *
   * @return
   *    - ESP_OK: succeed
+  *    - ESP_ERR_WIFI_NOT_STARTED: WiFi is not started by esp_wifi_start
+  *    - ESP_ERR_WIFI_NOT_CONNECT: No connection between STA and AP
   */
 esp_err_t esp_wifi_sta_get_negotiated_phymode(wifi_phy_mode_t *phymode);
 

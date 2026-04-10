@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: 2025 Espressif Systems (Shanghai) CO LTD
+ * SPDX-FileCopyrightText: 2025-2026 Espressif Systems (Shanghai) CO LTD
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -143,6 +143,11 @@ esp_err_t esp_wifi_remote_set_channel(uint8_t primary, wifi_second_chan_t second
 }
 
 esp_err_t esp_wifi_remote_get_channel(uint8_t *primary, wifi_second_chan_t *second)
+{
+    return ESP_OK;
+}
+
+esp_err_t esp_wifi_remote_get_home_channel(uint8_t *primary, wifi_second_chan_t *second)
 {
     return ESP_OK;
 }
