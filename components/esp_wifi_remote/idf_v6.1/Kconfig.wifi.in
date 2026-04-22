@@ -325,6 +325,14 @@ config WIFI_RMT_WPA3_COMPATIBLE_SUPPORT # ignore: multiple-definition
     help
         Select this option to support wpa3_compatible mode for station and AP
 
+config WIFI_RMT_ENABLE_WPA3_OWE_SOFTAP # ignore: multiple-definition
+    bool "Enable OWE-ONLY SOFTAP"
+    default y
+    select WIFI_RMT_MBEDTLS_CRYPTO
+    depends on WIFI_RMT_SOFTAP_SUPPORT
+    help
+        Select this option to allow the device to enable OWE Only mode for softap.
+
 config WIFI_RMT_SLP_IRAM_OPT # ignore: multiple-definition
     bool "WiFi SLP IRAM speed optimization"
     select PM_SLP_DEFAULT_PARAMS_OPT
@@ -438,7 +446,8 @@ config WIFI_RMT_SLP_BEACON_LOST_OPT # ignore: multiple-definition
 config WIFI_RMT_SLP_BEACON_LOST_TIMEOUT # ignore: multiple-definition
     int "Beacon loss timeout"
     range 5 100
-    default 10
+    default 25 if ESP_COEX_SW_COEXIST_ENABLE
+    default 10 if (!ESP_COEX_SW_COEXIST_ENABLE)
     depends on WIFI_RMT_SLP_BEACON_LOST_OPT
     help
         Timeout time for close rf phy when beacon loss occurs, Unit: 1024 microsecond.
@@ -688,18 +697,12 @@ config WIFI_RMT_MBO_SUPPORT # ignore: multiple-definition
         Select this option to enable WiFi Multiband operation certification support.
 
 config WIFI_RMT_ENABLE_ROAMING_APP # ignore: multiple-definition
-    bool "Advanced support for Wi-Fi Roaming (Experimental)"
-    depends on IDF_EXPERIMENTAL_FEATURES
+    bool "Advanced support for Wi-Fi Roaming"
     default n
     help
         Enable Espressif's roaming app to allow for efficient Wi-Fi roaming.
         This includes configurable periodic environment scans, maintaining a cache of the
         best APs, handling low rssi events etc.
-
-        Risk Warning
-        Please note that this feature is still experimental and enabling this potentially can
-        lead to unpredictable scanning, connection and roaming attempts.
-        We are still working on tuning and optimising this feature to ensure reliable and stable use.
 
 menu "Configure roaming App"
     depends on WIFI_RMT_ENABLE_ROAMING_APP
@@ -1011,6 +1014,13 @@ if WIFI_RMT_WPA3_COMPATIBLE_SUPPORT
         default WIFI_RMT_WPA3_COMPATIBLE_SUPPORT
 endif
 
+if WIFI_RMT_ENABLE_WPA3_OWE_SOFTAP
+    config ESP_WIFI_ENABLE_WPA3_OWE_SOFTAP # ignore: multiple-definition
+        bool
+        depends on WIFI_RMT_SOFTAP_SUPPORT
+        default WIFI_RMT_ENABLE_WPA3_OWE_SOFTAP
+endif
+
 if WIFI_RMT_SLP_IRAM_OPT
     config ESP_WIFI_SLP_IRAM_OPT # ignore: multiple-definition
         bool
@@ -1229,7 +1239,6 @@ endif
 if WIFI_RMT_ENABLE_ROAMING_APP
     config ESP_WIFI_ENABLE_ROAMING_APP # ignore: multiple-definition
         bool
-        depends on IDF_EXPERIMENTAL_FEATURES
         default WIFI_RMT_ENABLE_ROAMING_APP
 endif
 
