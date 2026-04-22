@@ -1300,6 +1300,7 @@ typedef struct {
     uint64_t t2;            /**< Time of arrival of FTM frame at FTM Initiator in pSec */
     uint64_t t3;            /**< Time of departure of ACK from FTM Initiator in pSec */
     uint64_t t4;            /**< Time of arrival of ACK at FTM Responder in pSec */
+    int16_t ppm;            /**< Clock frequency offset in parts per million (PPM) between local and peer device */
 } wifi_ftm_report_entry_t;
 
 /**
