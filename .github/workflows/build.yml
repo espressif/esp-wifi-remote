@@ -90,10 +90,13 @@ jobs:
             cat ./components/${{matrix.example.path}}/main/Kconfig.projbuild
           fi
           if [ "${{matrix.example.app}}" == "esp_hosted_slave" ]; then
-            idf.py create-project-from-example "espressif/esp_hosted:slave"
+            ESP_HOSTED_VERSION="$(curl -s "https://components.espressif.com/api/components/espressif/esp_hosted" \
+              | python3 -c "import sys,json; print(next(v['version'] for v in json.load(sys.stdin)['versions'] if '-' not in v['version']))")"
+            echo "Using espressif/esp_hosted ${ESP_HOSTED_VERSION} (latest stable from registry API)"
+            idf.py create-project-from-example "espressif/esp_hosted=${ESP_HOSTED_VERSION}:slave"
             rm slave/sdkconfig.ci.*
             mv slave/ ./components/${{matrix.example.path}}/
-            export EXPECTED_WARNING="${EXPECTED_WARNING}warning: the int symbol ESP_HOSTED"
+            export EXPECTED_WARNING="${EXPECTED_WARNING}warning: the int symbol ESP_HOSTED\\nunknown kconfig symbol"
             cp ./components/esp_wifi_remote/examples/sdkconfig.ci.hosted_slave ./components/${{matrix.example.path}}/sdkconfig.ci.hosted
           fi
           python $GITHUB_WORKSPACE/protocols/ci/build_apps.py ./components/${{matrix.example.path}} -vv --preserve-all
