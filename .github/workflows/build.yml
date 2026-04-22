@@ -80,7 +80,7 @@ jobs:
           path: protocols
       - name: Build ${{ matrix.example.app }} with IDF-${{ matrix.idf_ver }}
         env:
-          EXPECTED_WARNING: "Warning: The smallest app partition is nearly full\nWarning: Deprecated: Option\n"
+          EXPECTED_WARNING: "Warning: The smallest app partition is nearly full\nWarning: Deprecated: Option\nunknown kconfig symbol\nquotes recommended around\n"
         shell: bash
         run: |
           ${IDF_PATH}/install.sh --enable-ci
@@ -90,7 +90,10 @@ jobs:
             cat ./components/${{matrix.example.path}}/main/Kconfig.projbuild
           fi
           if [ "${{matrix.example.app}}" == "esp_hosted_slave" ]; then
-            idf.py create-project-from-example "espressif/esp_hosted:slave"
+            ESP_HOSTED_VERSION="$(curl -s "https://components.espressif.com/api/components/espressif/esp_hosted" \
+              | python3 -c "import sys,json; print(next(v['version'] for v in json.load(sys.stdin)['versions'] if '-' not in v['version']))")"
+            echo "Using espressif/esp_hosted ${ESP_HOSTED_VERSION} (latest stable from registry API)"
+            idf.py create-project-from-example "espressif/esp_hosted=${ESP_HOSTED_VERSION}:slave"
             rm slave/sdkconfig.ci.*
             mv slave/ ./components/${{matrix.example.path}}/
             export EXPECTED_WARNING="${EXPECTED_WARNING}warning: the int symbol ESP_HOSTED"
