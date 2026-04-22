@@ -20,4 +20,6 @@
         bool "esp32c5"
     config SLAVE_IDF_TARGET_ESP32C61 # ignore: multiple-definition
         bool "esp32c61"
+    config SLAVE_IDF_TARGET_ESP32S31 # ignore: multiple-definition
+        bool "esp32s31"
     endchoice
