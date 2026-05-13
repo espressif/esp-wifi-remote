@@ -21,6 +21,18 @@ jobs:
         run: |
           ./ci/version_check.sh
 
+  wifi_remote_idf_compat:
+    name: Check IDF compatibility of WiFi Remote
+    runs-on: ubuntu-latest
+    container: espressif/idf:latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Check IDF compatibility
+        shell: bash
+        run: |
+          ./components/esp_wifi_remote/scripts/compare_idf_remote_files.sh
+
   wifi_remote_api_compat:
     name: Check API compatibility of WiFi Remote
     strategy:
