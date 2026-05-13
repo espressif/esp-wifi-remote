@@ -699,6 +699,18 @@ config WIFI_RMT_DPP_SUPPORT # ignore: multiple-definition
     help
         Select this option to enable WiFi Easy Connect Support.
 
+config WIFI_RMT_P256_ACCEL # ignore: multiple-definition
+    bool "Enable P-256 crypto acceleration"
+    depends on WIFI_RMT_MBEDTLS_CRYPTO
+    default n
+    help
+        Enable Espressif-specific P-256 acceleration in the WPA supplicant
+        crypto layer. This reduces SAE and DPP latency on supported targets
+        at the cost of additional code size.
+
+        If disabled, the supplicant falls back to the generic Mbed TLS
+        implementation.
+
 config WIFI_RMT_11R_SUPPORT # ignore: multiple-definition
     bool "Enable 802.11R (Fast Transition) Support"
     default n
@@ -1202,6 +1214,13 @@ if WIFI_RMT_DPP_SUPPORT
     config ESP_WIFI_DPP_SUPPORT # ignore: multiple-definition
         bool
         default WIFI_RMT_DPP_SUPPORT
+endif
+
+if WIFI_RMT_P256_ACCEL
+    config ESP_WIFI_P256_ACCEL # ignore: multiple-definition
+        bool
+        depends on WIFI_RMT_MBEDTLS_CRYPTO
+        default WIFI_RMT_P256_ACCEL
 endif
 
 if WIFI_RMT_11R_SUPPORT
