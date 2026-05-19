@@ -151,6 +151,11 @@ WEAK esp_err_t esp_wifi_remote_get_channel(uint8_t *primary, wifi_second_chan_t 
     LOG_UNSUPPORTED_AND_RETURN(ESP_ERR_NOT_SUPPORTED);
 }
 
+WEAK esp_err_t esp_wifi_remote_get_home_channel(uint8_t *primary, wifi_second_chan_t *second)
+{
+    LOG_UNSUPPORTED_AND_RETURN(ESP_ERR_NOT_SUPPORTED);
+}
+
 WEAK esp_err_t esp_wifi_remote_set_country(const wifi_country_t *country)
 {
     LOG_UNSUPPORTED_AND_RETURN(ESP_ERR_NOT_SUPPORTED);

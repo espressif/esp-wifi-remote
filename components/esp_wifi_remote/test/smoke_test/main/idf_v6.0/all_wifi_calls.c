@@ -148,6 +148,12 @@ void run_all_wifi_apis(void)
     }
 
     {
+        uint8_t *primary = NULL;
+        wifi_second_chan_t *second = NULL;
+        esp_wifi_get_home_channel(primary, second);
+    }
+
+    {
         const wifi_country_t *country = NULL;
         esp_wifi_set_country(country);
     }

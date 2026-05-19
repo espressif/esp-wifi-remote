@@ -438,7 +438,8 @@ config WIFI_RMT_SLP_BEACON_LOST_OPT # ignore: multiple-definition
 config WIFI_RMT_SLP_BEACON_LOST_TIMEOUT # ignore: multiple-definition
     int "Beacon loss timeout"
     range 5 100
-    default 10
+    default 25 if ESP_COEX_SW_COEXIST_ENABLE
+    default 10 if (!ESP_COEX_SW_COEXIST_ENABLE)
     depends on WIFI_RMT_SLP_BEACON_LOST_OPT
     help
         Timeout time for close rf phy when beacon loss occurs, Unit: 1024 microsecond.
