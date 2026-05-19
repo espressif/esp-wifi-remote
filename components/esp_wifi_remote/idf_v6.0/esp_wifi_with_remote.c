@@ -147,6 +147,11 @@ esp_err_t esp_wifi_get_channel(uint8_t *primary, wifi_second_chan_t *second)
     return esp_wifi_remote_get_channel(primary, second);
 }
 
+esp_err_t esp_wifi_get_home_channel(uint8_t *primary, wifi_second_chan_t *second)
+{
+    return esp_wifi_remote_get_home_channel(primary, second);
+}
+
 esp_err_t esp_wifi_set_country(const wifi_country_t *country)
 {
     return esp_wifi_remote_set_country(country);

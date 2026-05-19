@@ -33,6 +33,7 @@ esp_err_t esp_wifi_remote_set_bandwidth(wifi_interface_t ifx, wifi_bandwidth_t b
 esp_err_t esp_wifi_remote_get_bandwidth(wifi_interface_t ifx, wifi_bandwidth_t *bw);
 esp_err_t esp_wifi_remote_set_channel(uint8_t primary, wifi_second_chan_t second);
 esp_err_t esp_wifi_remote_get_channel(uint8_t *primary, wifi_second_chan_t *second);
+esp_err_t esp_wifi_remote_get_home_channel(uint8_t *primary, wifi_second_chan_t *second);
 esp_err_t esp_wifi_remote_set_country(const wifi_country_t *country);
 esp_err_t esp_wifi_remote_get_country(wifi_country_t *country);
 esp_err_t esp_wifi_remote_set_mac(wifi_interface_t ifx, const uint8_t mac[6]);
