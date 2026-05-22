@@ -4,6 +4,7 @@
 # Generated remote API declarations are compared by generator/CI flows.
 include/esp_wifi_remote_api.h
 include/esp_eap_client_remote_api.h
+include/esp_wifi_remote_version.h
 
 # Generated native API forwarders and weak fallback stubs.
 esp_wifi_with_remote.c

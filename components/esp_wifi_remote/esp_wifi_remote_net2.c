@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: 2025 Espressif Systems (Shanghai) CO LTD
+ * SPDX-FileCopyrightText: 2026 Espressif Systems (Shanghai) CO LTD
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -65,7 +65,6 @@ WEAK esp_err_t esp_wifi_remote_channel_set(wifi_interface_t ifx, void *h, esp_re
     return ESP_FAIL;
 }
 
-
 __attribute__((always_inline)) static inline int internal_tx(wifi_interface_t ifx, void *buffer, uint16_t len)
 {
     if (ifx == WIFI_IF_STA && s_tx_cb[CHANNEL_STA]) {
@@ -83,10 +82,12 @@ __attribute__((always_inline)) static inline int internal_tx(wifi_interface_t if
                                                              { return internal_tx(interface, buffer, len); }
 
 IMPLEMENT_WIFI_TRANSMIT(transmit_sta, WIFI_IF_STA)
-IMPLEMENT_WIFI_TRANSMIT(transmit_ap, WIFI_IF_AP)
 IMPLEMENT_WIFI_TRANSMIT_WRAP(transmit_wrap_sta, WIFI_IF_STA)
-IMPLEMENT_WIFI_TRANSMIT_WRAP(transmit_wrap_ap, WIFI_IF_AP)
 
+#ifdef CONFIG_ESP_WIFI_SOFTAP_SUPPORT
+IMPLEMENT_WIFI_TRANSMIT_WRAP(transmit_wrap_ap, WIFI_IF_AP)
+IMPLEMENT_WIFI_TRANSMIT(transmit_ap, WIFI_IF_AP)
+#endif
 
 static void wifi_free(void *h, void* buffer)
 {
@@ -211,21 +212,21 @@ static esp_err_t set_default_wifi_handlers(void)
         return ret;
     }
     ESP_GOTO_ON_ERROR(esp_event_handler_register(WIFI_REMOTE_EVENT, WIFI_EVENT_STA_START, wifi_default_action_sta_start, NULL),
-        err, TAG, "Failed to register WiFi event");
+                      err, TAG, "Failed to register WiFi event");
     ESP_GOTO_ON_ERROR(esp_event_handler_register(WIFI_REMOTE_EVENT, WIFI_EVENT_STA_STOP, wifi_default_action_sta_stop, NULL),
-        err, TAG, "Failed to register WiFi event");
+                      err, TAG, "Failed to register WiFi event");
     ESP_GOTO_ON_ERROR(esp_event_handler_register(WIFI_REMOTE_EVENT, WIFI_EVENT_STA_CONNECTED, wifi_default_action_sta_connected, NULL),
-        err, TAG, "Failed to register WiFi event");
+                      err, TAG, "Failed to register WiFi event");
     ESP_GOTO_ON_ERROR(esp_event_handler_register(WIFI_REMOTE_EVENT, WIFI_EVENT_STA_DISCONNECTED, wifi_default_action_sta_disconnected, NULL),
-        err, TAG, "Failed to register WiFi event");
+                      err, TAG, "Failed to register WiFi event");
 #ifdef CONFIG_WIFI_RMT_SOFTAP_SUPPORT
     ESP_GOTO_ON_ERROR(esp_event_handler_register(WIFI_REMOTE_EVENT, WIFI_EVENT_AP_START, wifi_default_action_ap_start, NULL),
-        err, TAG, "Failed to register WiFi event");
+                      err, TAG, "Failed to register WiFi event");
     ESP_GOTO_ON_ERROR(esp_event_handler_register(WIFI_REMOTE_EVENT, WIFI_EVENT_AP_STOP, wifi_default_action_ap_stop, NULL),
-        err, TAG, "Failed to register WiFi event");
+                      err, TAG, "Failed to register WiFi event");
 #endif
     ESP_GOTO_ON_ERROR(esp_event_handler_register(IP_EVENT, IP_EVENT_STA_GOT_IP, wifi_default_action_sta_got_ip, NULL),
-        err, TAG, "Failed to register IP event");
+                      err, TAG, "Failed to register IP event");
     ret = esp_register_shutdown_handler((shutdown_handler_t)esp_wifi_stop);
     ESP_GOTO_ON_FALSE(ret == ESP_OK || ret == ESP_ERR_INVALID_STATE, ESP_FAIL, err, TAG, "Failed to register WiFi event");
     wifi_default_handlers_set = true;
@@ -242,23 +243,25 @@ err:
 esp_netif_t* esp_netif_create_wifi_remote(wifi_interface_t wifi_if, const esp_netif_inherent_config_t *esp_netif_config)
 {
     esp_netif_driver_ifconfig_t driver_ifconfig = {
-             /* This is a simplified driver, since we support static number of netifs (only STA and AP)
-              * no need to create driver pointer -> but need to make the handle is not NULL */
-            .handle =  ((void*)1),
-            .driver_free_rx_buffer = wifi_free
+        /* This is a simplified driver, since we support static number of netifs (only STA and AP)
+         * no need to create driver pointer -> but need to make the handle is not NULL */
+        .handle = ((void*)1),
+        .driver_free_rx_buffer = wifi_free
     };
     esp_netif_config_t cfg = {
-            .base = esp_netif_config,
-            .driver = &driver_ifconfig
+        .base = esp_netif_config,
+        .driver = &driver_ifconfig
     };
     if (wifi_if == WIFI_IF_STA) {
         cfg.stack = _g_esp_netif_netstack_default_wifi_sta;
         driver_ifconfig.transmit = transmit_sta;
         driver_ifconfig.transmit_wrap = transmit_wrap_sta;
+#ifdef CONFIG_ESP_WIFI_SOFTAP_SUPPORT
     } else if (wifi_if == WIFI_IF_AP) {
         cfg.stack = _g_esp_netif_netstack_default_wifi_ap;
         driver_ifconfig.transmit = transmit_ap;
         driver_ifconfig.transmit_wrap = transmit_wrap_ap;
+#endif
     } else {
         return NULL;
     }
@@ -327,15 +330,14 @@ void esp_netif_destroy_wifi_remote(void *esp_netif)
     esp_netif_destroy(esp_netif);
 }
 
-
 #if defined(CONFIG_WIFI_RMT_SOFTAP_SUPPORT) && !defined(CONFIG_ESP_WIFI_SOFTAP_SUPPORT)
 
 // We have to redefine all netif properties for AP, if IDF's AP definition is missing (i.e. WiFi AP is disabled)
 // (and at the same time Remote-WiFi AP is enabled, thus we know that we would need it)
 static const esp_netif_ip_info_t s_wifi_remote_soft_ap_ip = {
-        .ip = { .addr = ESP_IP4TOADDR( 192, 168, 4, 1) },
-        .gw = { .addr = ESP_IP4TOADDR( 192, 168, 4, 1) },
-        .netmask = { .addr = ESP_IP4TOADDR( 255, 255, 255, 0) },
+    .ip = { .addr = ESP_IP4TOADDR(192, 168, 4, 1) },
+    .gw = { .addr = ESP_IP4TOADDR(192, 168, 4, 1) },
+    .netmask = { .addr = ESP_IP4TOADDR(255, 255, 255, 0) },
 };
 
 #ifdef CONFIG_LWIP_IPV4
@@ -366,7 +368,7 @@ esp_netif_t* esp_wifi_remote_create_default_ap(void)
     esp_netif_inherent_config_t esp_netif_config = ESP_NETIF_INHERENT_DEFAULT_WIFI_AP();
     esp_netif_config.if_key = "WIFI_AP_RMT";
     esp_netif_config.if_desc = "wifi_ap_remote";
-    esp_netif_t *netif= esp_netif_create_wifi_remote(WIFI_IF_AP, &esp_netif_config);
+    esp_netif_t *netif = esp_netif_create_wifi_remote(WIFI_IF_AP, &esp_netif_config);
     esp_wifi_set_default_wifi_remote_ap_handlers();
     return netif;
 }
@@ -379,7 +381,7 @@ esp_netif_t* esp_wifi_remote_create_default_sta(void)
     esp_netif_inherent_config_t esp_netif_config = ESP_NETIF_INHERENT_DEFAULT_WIFI_STA();
     esp_netif_config.if_key = "WIFI_STA_RMT";
     esp_netif_config.if_desc = "wifi_sta_remote";
-    esp_netif_t *netif= esp_netif_create_wifi_remote(WIFI_IF_STA, &esp_netif_config);
+    esp_netif_t *netif = esp_netif_create_wifi_remote(WIFI_IF_STA, &esp_netif_config);
     esp_wifi_set_default_wifi_remote_sta_handlers();
     return netif;
 }
