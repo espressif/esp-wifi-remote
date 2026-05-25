@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.6.0](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v1.6.0)
+
+### Features
+
+- Add compat checks with wifi/remote in IDF ([5ffa484](https://github.com/espressif/esp-wifi-remote/commit/5ffa484))
+
+### Bug Fixes
+
+- Update net2 source per IDF changes ([70e9b8d](https://github.com/espressif/esp-wifi-remote/commit/70e9b8d))
+- Update per v6.1 changes ([f1532e3](https://github.com/espressif/esp-wifi-remote/commit/f1532e3))
+
 ## [1.5.3](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v1.5.3)
 
 ### Bug Fixes
