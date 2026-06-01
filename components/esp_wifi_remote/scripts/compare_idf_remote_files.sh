@@ -13,29 +13,30 @@ if [[ -z "${IDF_REMOTE_DIR:-}" ]]; then
         IDF_REMOTE_DIR="${REPO_DIR}/idf/components/esp_wifi/remote"
     fi
 fi
-EXTERNAL_VERSION_DIR="${EXTERNAL_VERSION_DIR:-idf_v6.1}"
-EXCLUDE_FILE="${EXCLUDE_FILE:-${SCRIPT_DIR}/compare_idf_remote_excludes.txt}"
+
+# Hand-maintained Wi-Fi remote sources kept in sync with IDF (not generated per-version files).
+CONSTANT_FILES=(
+    esp_wifi_remote.c
+    esp_wifi_remote_net.c
+    esp_wifi_remote_net2.c
+    include/esp_wifi_remote.h
+)
+
 DIFF_OPTS="${DIFF_OPTS:--u -w -B -I Copyright}"
 
 usage() {
     cat <<EOF
 Usage: $(basename "$0") [options]
 
-Compare relevant Wi-Fi remote sources from IDF with this external component.
+Compare constant Wi-Fi remote sources and headers between IDF and this component.
 
 Options:
   --idf-remote-dir <dir>     IDF remote directory to compare from
                              (default: \$IDF_PATH/components/esp_wifi/remote, or repo idf checkout)
-  --version-dir <dir>        External generated version directory fallback
-                             (default: ${EXTERNAL_VERSION_DIR})
-  --exclude-file <file>      Relative path exclude list
-                             (default: scripts/compare_idf_remote_excludes.txt)
   -h, --help                 Show this help
 
 Environment:
   IDF_REMOTE_DIR             Same as --idf-remote-dir
-  EXTERNAL_VERSION_DIR       Same as --version-dir
-  EXCLUDE_FILE               Same as --exclude-file
   DIFF_OPTS                  Options passed to diff (default: -u -w -B -I Copyright)
 EOF
 }
@@ -55,16 +56,6 @@ while [[ $# -gt 0 ]]; do
             IDF_REMOTE_DIR="$2"
             shift 2
             ;;
-        --version-dir)
-            require_value "$@"
-            EXTERNAL_VERSION_DIR="$2"
-            shift 2
-            ;;
-        --exclude-file)
-            require_value "$@"
-            EXCLUDE_FILE="$2"
-            shift 2
-            ;;
         -h|--help)
             usage
             exit 0
@@ -82,41 +73,18 @@ if [[ ! -d "$IDF_REMOTE_DIR" ]]; then
     exit 2
 fi
 
-if [[ ! -f "$EXCLUDE_FILE" ]]; then
-    echo "Exclude file not found: $EXCLUDE_FILE" >&2
-    exit 2
-fi
-
-declare -A EXCLUDES=()
-while IFS= read -r line || [[ -n "$line" ]]; do
-    line="${line%%#*}"
-    line="${line#"${line%%[![:space:]]*}"}"
-    line="${line%"${line##*[![:space:]]}"}"
-    [[ -z "$line" ]] && continue
-    EXCLUDES["$line"]=1
-done < "$EXCLUDE_FILE"
-
-shopt -s globstar nullglob
-
-idf_files=(
-    "$IDF_REMOTE_DIR"/*.c
-    "$IDF_REMOTE_DIR"/include/**/*.h
-)
-
 diff_count=0
 missing_count=0
 checked_count=0
 
-for idf_file in "${idf_files[@]}"; do
-    rel="${idf_file#"$IDF_REMOTE_DIR"/}"
-
-    if [[ -n "${EXCLUDES[$rel]:-}" ]]; then
-        continue
-    fi
-
+for rel in "${CONSTANT_FILES[@]}"; do
+    idf_file="${IDF_REMOTE_DIR}/${rel}"
     external_file="${WIFI_REMOTE_DIR}/${rel}"
-    if [[ ! -f "$external_file" ]]; then
-        external_file="${WIFI_REMOTE_DIR}/${EXTERNAL_VERSION_DIR}/${rel}"
+
+    if [[ ! -f "$idf_file" ]]; then
+        echo "Missing IDF file: $rel" >&2
+        missing_count=$((missing_count + 1))
+        continue
     fi
 
     if [[ ! -f "$external_file" ]]; then
@@ -134,7 +102,7 @@ done
 echo
 echo "Checked files: $checked_count"
 echo "Files with differences: $diff_count"
-echo "Missing external counterparts: $missing_count"
+echo "Missing files: $missing_count"
 
 if (( diff_count > 0 || missing_count > 0 )); then
     exit 1
