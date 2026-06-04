@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.6.1](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v1.6.1)
+
+### Features
+
+- Remove v6.1+ branch support in ext component ([c0361db](https://github.com/espressif/esp-wifi-remote/commit/c0361db))
+
+### Bug Fixes
+
+- Update per IDFv5.5 changes ([20c60a7](https://github.com/espressif/esp-wifi-remote/commit/20c60a7))
+- Update per IDFv5.3 changes ([cbfdb16](https://github.com/espressif/esp-wifi-remote/commit/cbfdb16))
+- Update per IDFv5.5 changes ([6cc524b](https://github.com/espressif/esp-wifi-remote/commit/6cc524b))
+- Update per IDFv5.4 changes ([fbfc196](https://github.com/espressif/esp-wifi-remote/commit/fbfc196))
+- use IDF internal slave config file for v6.1+ ([a027524](https://github.com/espressif/esp-wifi-remote/commit/a027524))
+
 ## [1.6.0](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v1.6.0)
 
 ### Features
