@@ -5,6 +5,7 @@
  */
 #include <netdb.h>
 #include <memory>
+#include <mutex>
 #include <cinttypes>
 #ifdef CONFIG_WIFI_RMT_OVER_EPPP_UNSECURE
 #include <sys/socket.h>
