@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.6.3](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v1.6.3)
+
+### Bug Fixes
+
+- Restrict esp-hosted to <v3.0 versions ([b522178](https://github.com/espressif/esp-wifi-remote/commit/b522178))
+
 ## [1.6.2](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v1.6.2)
 
 ### Bug Fixes
