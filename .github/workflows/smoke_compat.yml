@@ -73,7 +73,6 @@ jobs:
       - name: Build ${{ matrix.test.app }} with IDF-${{ matrix.idf_ver }} for ${{ matrix.idf_target }}
         shell: bash
         run: |
-          export IDF_PYTHON_CHECK_CONSTRAINTS=yes
           ${IDF_PATH}/install.sh --enable-ci
           . ${IDF_PATH}/export.sh
           export OVERRIDE_PATH=`pwd`/components/esp_wifi_remote
@@ -107,5 +106,9 @@ jobs:
           export EXTRA_CFLAGS="${PEDANTIC_FLAGS} -Wstrict-prototypes"
           export EXTRA_CXXFLAGS="${PEDANTIC_FLAGS}"
           cd ${IDF_PATH}/${TEST_PATH}
+          # IDF's own .idf_build_apps.toml enables check_warnings. The docker images disable python
+          # constraints, so we get esptool v5, which warns about the '--flash_mode' style options
+          # that IDF < v6.0 still passes. Ignore those, they say nothing about this component.
           idf-build-apps find --config sdkconfig.ci* -vv --target ${{ matrix.idf_target }}
-          idf-build-apps build --config sdkconfig.ci* -vv --target ${{ matrix.idf_target }}
+          idf-build-apps build --config sdkconfig.ci* -vv --target ${{ matrix.idf_target }} \
+            --ignore-warning-str "Option '--flash_\w+' is deprecated"
