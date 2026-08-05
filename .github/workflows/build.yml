@@ -102,7 +102,15 @@ jobs:
           fi
           python $GITHUB_WORKSPACE/protocols/ci/build_apps.py ./components/${{matrix.example.path}} -vv --preserve-all
           cd ./components/${{matrix.example.path}}
+          # clean_build_artifacts.sh keeps only binaries and sdkconfig, so stash the
+          # idf_build_apps log and put it back to ship it in the uploaded artifact
+          if [ -f ${{matrix.example.bin}}/build_log.txt ]; then
+            cp ${{matrix.example.bin}}/build_log.txt build_log.txt
+          fi
           ${GITHUB_WORKSPACE}/protocols/ci/clean_build_artifacts.sh `pwd`/${{matrix.example.bin}}
+          if [ -f build_log.txt ]; then
+            mv build_log.txt ${{matrix.example.bin}}/build_log.txt
+          fi
           zip -qur artifacts.zip ${{matrix.example.bin}}
       - uses: actions/upload-artifact@v4
         with:
