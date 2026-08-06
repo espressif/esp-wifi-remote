@@ -90,19 +90,27 @@ jobs:
             cat ./components/${{matrix.example.path}}/main/Kconfig.projbuild
           fi
           if [ "${{matrix.example.app}}" == "esp_hosted_slave" ]; then
-            # Match idf_component.yml: espressif/esp_hosted '>=2.11,<3.0' (hardcoded <3.0 for now)
             ESP_HOSTED_VERSION="$(curl -s "https://components.espressif.com/api/components/espressif/esp_hosted" \
-              | python3 -c "import sys,json; print(next(v['version'] for v in json.load(sys.stdin)['versions'] if '-' not in v['version'] and int(v['version'].split('.')[0]) < 3))")"
-            echo "Using espressif/esp_hosted ${ESP_HOSTED_VERSION} (latest stable <3.0 from registry API)"
-            idf.py create-project-from-example "espressif/esp_hosted=${ESP_HOSTED_VERSION}:slave"
-            rm slave/sdkconfig.ci.*
-            mv slave/ ./components/${{matrix.example.path}}/
+              | python3 -c "import sys,json; print(next(v['version'] for v in json.load(sys.stdin)['versions'] if '-' not in v['version']))")"
+            echo "Using espressif/esp_hosted ${ESP_HOSTED_VERSION} (latest stable from registry API)"
+            # firmware is now the Wi-Fi station coprocessor at wifi/sta/cp.
+            idf.py create-project-from-example "espressif/esp_hosted=${ESP_HOSTED_VERSION}:wifi/sta/cp"
+            rm -f cp/sdkconfig.ci.*
+            mv cp/ ./components/${{matrix.example.path}}/
             export EXPECTED_WARNING="${EXPECTED_WARNING}warning: the int symbol ESP_HOSTED"
             cp ./components/esp_wifi_remote/examples/sdkconfig.ci.hosted_slave ./components/${{matrix.example.path}}/sdkconfig.ci.hosted
           fi
           python $GITHUB_WORKSPACE/protocols/ci/build_apps.py ./components/${{matrix.example.path}} -vv --preserve-all
           cd ./components/${{matrix.example.path}}
+          # clean_build_artifacts.sh keeps only binaries and sdkconfig, so stash the
+          # idf_build_apps log and put it back to ship it in the uploaded artifact
+          if [ -f ${{matrix.example.bin}}/build_log.txt ]; then
+            cp ${{matrix.example.bin}}/build_log.txt build_log.txt
+          fi
           ${GITHUB_WORKSPACE}/protocols/ci/clean_build_artifacts.sh `pwd`/${{matrix.example.bin}}
+          if [ -f build_log.txt ]; then
+            mv build_log.txt ${{matrix.example.bin}}/build_log.txt
+          fi
           zip -qur artifacts.zip ${{matrix.example.bin}}
       - uses: actions/upload-artifact@v4
         with:
