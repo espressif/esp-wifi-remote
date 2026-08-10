@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.6.4](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v1.6.4)
+
+### Bug Fixes
+
+- Regenerate v6.0 injected wifi types header ([ae98a2f](https://github.com/espressif/esp-wifi-remote/commit/ae98a2f))
+- Regenerate v5.3 Kconfig for roaming-app select ([f9db751](https://github.com/espressif/esp-wifi-remote/commit/f9db751))
+- Revert esp-hosted restriction (~v3.0) ([5811ce4](https://github.com/espressif/esp-wifi-remote/commit/5811ce4))
+
+### Updated
+
+- ci: use esp_hosted wifi/sta/cp example (slave dropped in v3.x) ([a76c0da](https://github.com/espressif/esp-wifi-remote/commit/a76c0da))
+
 ## [1.6.3](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v1.6.3)
 
 ### Bug Fixes
