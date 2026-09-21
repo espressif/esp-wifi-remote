@@ -97,7 +97,9 @@ jobs:
           if [ "${{matrix.test.app}}" = "wifi_enterprise" ]; then
             cd ${IDF_PATH}/${TEST_PATH}
             echo -e "dependencies:\n  espressif/esp_wifi_remote:\n    version: \"*\"\n    rules:\n      - if: \"target in [esp32p4, esp32h2]\"" > main/idf_component.yml
-            echo -e "CONFIG_ESP_WIFI_REMOTE_EAP_ENABLED=y" > sdkconfig.defaults
+            # Target-specific defaults: EAP Kconfig only exists when wifi_remote is included
+            echo -e "CONFIG_ESP_WIFI_REMOTE_EAP_ENABLED=y" > sdkconfig.defaults.esp32p4
+            echo -e "CONFIG_ESP_WIFI_REMOTE_EAP_ENABLED=y" > sdkconfig.defaults.esp32h2
             cd -
           fi
           sed -i '/espressif\/esp_wifi_remote:/a \ \ \ \ override_path: "${OVERRIDE_PATH}"' ${IDF_PATH}/${TEST_PATH}/main/idf_component.yml
