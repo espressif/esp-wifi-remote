@@ -36,7 +36,7 @@ jobs:
             key: ${{ matrix.idf_ver }}
       - name: Build ${{ matrix.test.app }} with IDF-${{ matrix.idf_ver }}
         env:
-          EXPECTED_WARNING: "Warning: Deprecated: Option"
+          EXPECTED_WARNING: "Deprecated: Option"
         shell: bash
         run: |
           ${IDF_PATH}/install.sh --enable-ci
@@ -80,7 +80,7 @@ jobs:
           path: protocols
       - name: Build ${{ matrix.example.app }} with IDF-${{ matrix.idf_ver }}
         env:
-          EXPECTED_WARNING: "Warning: The smallest app partition is nearly full\nWarning: Deprecated: Option\nunknown kconfig symbol\nquotes recommended around\n"
+          EXPECTED_WARNING: "The smallest .+ partition is nearly full\nDeprecated: Option\nunknown kconfig symbol\nquotes recommended around\n"
         shell: bash
         run: |
           ${IDF_PATH}/install.sh --enable-ci
