@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.6.5](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v1.6.5)
+
+### Bug Fixes
+
+- Update per recent IDF changes ([d2689ea](https://github.com/espressif/esp-wifi-remote/commit/d2689ea))
+
 ## [1.6.4](https://github.com/espressif/esp-wifi-remote/commits/wifi_remote-v1.6.4)
 
 ### Bug Fixes
