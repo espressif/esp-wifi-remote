@@ -105,9 +105,12 @@ jobs:
           sed -i '/espressif\/esp_wifi_remote:/a \ \ \ \ override_path: "${OVERRIDE_PATH}"' ${IDF_PATH}/${TEST_PATH}/main/idf_component.yml
           cat ${IDF_PATH}/${TEST_PATH}/main/idf_component.yml
           export EXPECTED_WARNING="Pydantic serializer warnings"
-          export PEDANTIC_FLAGS="-DIDF_CI_BUILD -Werror -Werror=deprecated-declarations -Werror=unused-variable -Werror=unused-but-set-variable -Werror=unused-function"
+          # Drop -Werror=unused-function: esp-hosted still has defined-but-unused helpers on IDF master;
+          # they will be cleaned up in esp-hosted. Keep it a warning and ignore for check_warnings.
+          export PEDANTIC_FLAGS="-DIDF_CI_BUILD -Werror -Werror=deprecated-declarations -Werror=unused-variable -Werror=unused-but-set-variable -Wno-error=unused-function"
           export EXTRA_CFLAGS="${PEDANTIC_FLAGS} -Wstrict-prototypes"
           export EXTRA_CXXFLAGS="${PEDANTIC_FLAGS}"
           cd ${IDF_PATH}/${TEST_PATH}
           idf-build-apps find --config sdkconfig.ci* -vv --target ${{ matrix.idf_target }}
-          idf-build-apps build --config sdkconfig.ci* -vv --target ${{ matrix.idf_target }}
+          idf-build-apps build --config sdkconfig.ci* -vv --target ${{ matrix.idf_target }} \
+            --ignore-warning-str "defined but not used"
