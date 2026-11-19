@@ -391,3 +391,8 @@ esp_err_t esp_wifi_remote_sta_get_rssi(int *rssi)
 {
     return ESP_OK;
 }
+
+esp_err_t esp_wifi_remote_configure_station_tbtt_event(_Bool enabled)
+{
+    return ESP_OK;
+}

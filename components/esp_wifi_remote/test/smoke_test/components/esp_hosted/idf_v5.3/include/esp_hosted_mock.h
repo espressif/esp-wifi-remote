@@ -82,3 +82,4 @@ esp_err_t esp_wifi_remote_sta_get_aid(uint16_t *aid);
 esp_err_t esp_wifi_remote_sta_get_negotiated_phymode(wifi_phy_mode_t *phymode);
 esp_err_t esp_wifi_remote_set_dynamic_cs(_Bool enabled);
 esp_err_t esp_wifi_remote_sta_get_rssi(int *rssi);
+esp_err_t esp_wifi_remote_configure_station_tbtt_event(_Bool enabled);

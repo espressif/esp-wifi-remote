@@ -395,3 +395,8 @@ WEAK esp_err_t esp_wifi_remote_sta_get_rssi(int *rssi)
 {
     LOG_UNSUPPORTED_AND_RETURN(ESP_ERR_NOT_SUPPORTED);
 }
+
+WEAK esp_err_t esp_wifi_remote_configure_station_tbtt_event(_Bool enabled)
+{
+    LOG_UNSUPPORTED_AND_RETURN(ESP_ERR_NOT_SUPPORTED);
+}

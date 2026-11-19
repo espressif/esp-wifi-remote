@@ -409,4 +409,9 @@ void run_all_wifi_remote_apis(void)
         esp_wifi_remote_sta_get_rssi(rssi);
     }
 
+    {
+        _Bool enabled = 0;
+        esp_wifi_remote_configure_station_tbtt_event(enabled);
+    }
+
 }
