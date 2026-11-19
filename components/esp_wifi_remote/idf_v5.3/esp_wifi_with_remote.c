@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: 2025 Espressif Systems (Shanghai) CO LTD
+ * SPDX-FileCopyrightText: 2025-2026 Espressif Systems (Shanghai) CO LTD
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -390,4 +390,9 @@ esp_err_t esp_wifi_set_dynamic_cs(_Bool enabled)
 esp_err_t esp_wifi_sta_get_rssi(int *rssi)
 {
     return esp_wifi_remote_sta_get_rssi(rssi);
+}
+
+esp_err_t esp_wifi_configure_station_tbtt_event(_Bool enabled)
+{
+    return esp_wifi_remote_configure_station_tbtt_event(enabled);
 }
